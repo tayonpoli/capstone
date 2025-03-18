@@ -1,0 +1,21 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: build image
+        run: docker build . -t tayonpoli/capstone-project
+      - name: push image
+        run: |
+          docker login -u tayonpoli -p ${{ secrets.DOCKER_HUB_SECRET }}
+          docker push tayonpoli/capstone-project
