@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: .
+    image: capstone-app-express
+    stdin_open: true
+    ports:
+      - '3000:3000'
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /app
+          ignore:
+            - /app/node_modules
+        - action: rebuild
+          path: /app
