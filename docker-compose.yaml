@@ -21,8 +21,11 @@ services:
     # volumes:
     #   - .:/app
     #   - /app/node_modules
-    environment:
+    environment: |
       - DATABASE_URL: postgresql://tayon:tayon123@localhost:5431/capstone
       - NODE_ENV=development
     depends_on:
       - postgres
+
+  volumes:
+    postgres_data:
