@@ -1,4 +1,16 @@
 services:
+  postgres:
+    image: postgres:17
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: tayon
+      POSTGRES_PASSWORD: tayon123
+      POSTGRES_DB: capstone
+    ports:
+      - '5431:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   app:
     build:
       context: .
@@ -10,13 +22,7 @@ services:
     #   - .:/app
     #   - /app/node_modules
     environment:
+      - DATABASE_URL: postgresql://tayon:tayon123@localhost:5431/capstone
       - NODE_ENV=development
-    develop:
-      watch:
-        - action: sync
-          path: ./app
-          target: /app
-          ignore:
-            - /app/node_modules
-        - action: rebuild
-          path: /app
+    depends_on:
+      - postgres
