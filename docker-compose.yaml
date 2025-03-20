@@ -1,16 +1,4 @@
 services:
-  # postgres:
-  #   image: postgres:17
-  #   container_name: postgres_db
-  #   environment:
-  #     POSTGRES_USER: tayon
-  #     POSTGRES_PASSWORD: tayon123
-  #     POSTGRES_DB: capstone
-  #   ports:
-  #     - '5431:5432'
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-
   app:
     build:
       context: .
