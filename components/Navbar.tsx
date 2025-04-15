@@ -11,6 +11,7 @@ import {
     faCommentDots,
     faCircleQuestion,
     faBell,
+    faUser
 } from '@fortawesome/free-regular-svg-icons';
 import { Button, buttonVariants } from './ui/button';
 import { getServerSession } from "next-auth";
@@ -51,7 +52,10 @@ const Navbar = async () => {
                     <span className="text-xs leading-3 font-medium"> {session?.user.name} </span>
                     <span className="text-[10px] text-gray-500 text-right">MauNgopi</span>
                 </div>
-                <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full" />
+                {/* <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full" /> */}
+                <Button variant="outline" size="icon">
+                        <FontAwesomeIcon icon={faUser} />
+                    </Button>
                 {session?.user ? (
                     <UserAccountNav />
                 ) : (
