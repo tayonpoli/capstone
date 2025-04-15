@@ -23,6 +23,7 @@ import {
 import { DataTablePagination } from "./data-table-pagination"
 import React from "react"
 import { Input } from "@/components/ui/input"
+import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -67,13 +68,13 @@ export function DataTable<TData, TValue>({
                     }
                     className="max-w-sm"
                 />
-                {table.getColumn("status") && (
+                {/* {table.getColumn("status") && (
                     <DataTableFacetedFilter
                         column={table.getColumn("status")}
                         title="Status"
-                        options={statuses}
+                        options={table.getColumn("status")}
                     />
-                )}
+                )} */}
             </div>
             <div className="rounded-md border">
                 <Table>

@@ -4,107 +4,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CirclePlusIcon } from "lucide-react"
 import { Payment, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
+import { prisma } from "@/lib/prisma"
 
 async function getData(): Promise<Payment[]> {
     // Fetch data from your API here.
-    return [
-        {
-            "id": "728ed52f",
-            "amount": 100000,
-            "status": "pending",
-            "email": "m@example.com"
-        },
-        {
-            "id": "489e1d42",
-            "amount": 125000,
-            "status": "processing",
-            "email": "example@gmail.com"
-        },
-        {
-            "id": "3a7b8c2d",
-            "amount": 189000,
-            "status": "success",
-            "email": "user1@domain.com"
-        },
-        {
-            "id": "5e6f7a1b",
-            "amount": 150000,
-            "status": "failed",
-            "email": "test@test.org"
-        },
-        {
-            "id": "9c8d7e2f",
-            "amount": 200000,
-            "status": "processing",
-            "email": "sample@mail.net"
-        },
-        {
-            "id": "1b2c3d4e",
-            "amount": 75000,
-            "status": "pending",
-            "email": "contact@company.io"
-        },
-        {
-            "id": "6f5e4d3c",
-            "amount": 225000,
-            "status": "success",
-            "email": "support@service.com"
-        },
-        {
-            "id": "a1b2c3d4",
-            "amount": 50000,
-            "status": "failed",
-            "email": "info@website.co"
-        },
-        {
-            "id": "e5f6g7h8",
-            "amount": 175000,
-            "status": "processing",
-            "email": "hello@world.ai"
-        },
-        {
-            "id": "i9j0k1l2",
-            "amount": 95000,
-            "status": "pending",
-            "email": "data@science.edu"
-        },
-        {
-            "id": "m3n4o5p6",
-            "amount": 110000,
-            "status": "success",
-            "email": "dev@project.dev"
-        },
-        {
-            "id": "q7r8s9t0",
-            "amount": 60000,
-            "status": "failed",
-            "email": "admin@system.gov"
-        },
-        {
-            "id": "u1v2w3x4",
-            "amount": 140000,
-            "status": "processing",
-            "email": "service@api.io"
-        },
-        {
-            "id": "y5z6a7b8",
-            "amount": 85000,
-            "status": "pending",
-            "email": "client@customer.biz"
-        },
-        {
-            "id": "c9d0e1f2",
-            "amount": 190000,
-            "status": "success",
-            "email": "payment@gateway.com"
-        },
-        {
-            "id": "g3h4i5j6",
-            "amount": 45000,
-            "status": "failed",
-            "email": "no-reply@notification.mail"
-        }
-    ]
+    try {
+        const customers = await prisma.customer.findMany()
+        return customers
+    } catch (error) {
+        console.error('Error fetching data:', error)
+        return []
+    } finally {
+        await prisma.$disconnect()
+    }
 }
 
 export default async function page() {

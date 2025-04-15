@@ -18,10 +18,13 @@ import { Checkbox } from "@/components/ui/checkbox"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
-    id: string
-    amount: number
-    status: "pending" | "processing" | "success" | "failed"
+    id: number
+    name: string | null
     email: string
+    phone: string
+    address: string
+    createdAt: Date
+    // status: "pending" | "processing" | "success" | "failed"
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -48,8 +51,8 @@ export const columns: ColumnDef<Payment>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "status",
-        header: "Status",
+        accessorKey: "name",
+        header: "Name",
     },
     {
         accessorKey: "email",
@@ -66,28 +69,36 @@ export const columns: ColumnDef<Payment>[] = [
         },
     },
     {
-        accessorKey: "amount",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Amount
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("amount"))
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "IDR",
-            }).format(amount)
-
-            return <div className="text-right font-medium">{formatted}</div>
-        },
+        accessorKey: "phone",
+        header: "Phone",
     },
+    {
+        accessorKey: "address",
+        header: "Address",
+    },
+    // {
+    //     accessorKey: "amount",
+    //     header: ({ column }) => {
+    //         return (
+    //             <Button
+    //                 variant="ghost"
+    //                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    //             >
+    //                 Amount
+    //                 <ArrowUpDown className="ml-2 h-4 w-4" />
+    //             </Button>
+    //         )
+    //     },
+    //     cell: ({ row }) => {
+    //         const amount = parseFloat(row.getValue("amount"))
+    //         const formatted = new Intl.NumberFormat("en-US", {
+    //             style: "currency",
+    //             currency: "IDR",
+    //         }).format(amount)
+
+    //         return <div className="text-right font-medium">{formatted}</div>
+    //     },
+    // },
     {
         id: "actions",
         cell: ({ row }) => {
@@ -103,11 +114,11 @@ export const columns: ColumnDef<Payment>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
+                        {/* <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(payment.id)}
                         >
                             Copy payment ID
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>View customer</DropdownMenuItem>
                         <DropdownMenuItem>View payment details</DropdownMenuItem>
