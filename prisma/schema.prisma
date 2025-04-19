@@ -29,3 +29,25 @@ model Customer {
   address   String
   createdAt DateTime @default(now())
 }
+
+model Inventory {
+  id        Int      @id @default(autoincrement())
+  product   String
+  code      String @unique
+  category  String
+  description String?
+  unit Unit @default(Pcs)
+  buyprice  Int?
+  sellprice Int?
+  stock     Int @default(0)
+  limit Int?
+}
+
+enum Unit {
+  Pcs
+  Box
+  Kg
+  gram
+  Litre
+  ml
+}

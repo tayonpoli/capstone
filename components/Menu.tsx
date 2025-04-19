@@ -76,7 +76,7 @@ const menuItems = [
             {
                 icon: faBoxOpen,
                 label: "Inventory",
-                href: "/list/subjects",
+                href: "/product",
                 visible: ["admin"],
             },
             {
