@@ -35,11 +35,16 @@ const FormSchema = z
         limit: z.coerce.number().int(),
     })
 
-const ProductForm = () => {
+export function ProductForm({ initialData }: { initialData?: any }) {
     const router = useRouter();
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
-        defaultValues: {
+        defaultValues: initialData ? {
+            ...initialData,
+            isBuyable: initialData.buyprice !== 0,
+            isSellable: initialData.sellprice !== 0,
+            isTrack: initialData.limit !== 0
+        } : {
             product: '',
             code: '',
             category: '',
@@ -67,41 +72,38 @@ const ProductForm = () => {
         { value: 'ml', label: 'ml' },
     ] as const;
 
-    const onSubmit = async (values: z.infer<typeof FormSchema>) => {
-        const response = await fetch('/api/product', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                product: values.product,
-                code: values.code,
-                category: values.category,
-                unit: values.unit,
-                description: values.description,
-                buyprice: values.buyprice,
-                sellprice: values.sellprice,
-                limit: values.limit,
-            })
-        })
+    async function onSubmit(values: z.infer<typeof FormSchema>) {
+        try {
+            const url = initialData
+                ? `/api/products/${initialData.id}`
+                : '/api/products'
+            const method = initialData ? 'PUT' : 'POST'
 
-        if (response.ok) {
-            router.push('/product');
-        } else {
-            toast("Error", {
-                description: "Oops! Something went wrong!"
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
             })
+
+            if (response.ok) {
+                toast.success(
+                    initialData ? "Product updated!" : "Product created!"
+                )
+                router.push('/products')
+                router.refresh()
+            } else {
+                throw new Error("Failed to save product")
+            }
+        } catch (error) {
+            toast.error("Something went wrong")
+            console.error(error)
         }
-    };
+    }
 
     return (
         <div className='p-3'>
-            <div className='text-sm font-light text-gray-400'>
-                Inventory
-            </div>
-            <div className='mb-10 text-3xl font-semibold'>
-                Add New Product
-            </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4 items-start'>
