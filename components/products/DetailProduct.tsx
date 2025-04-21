@@ -1,6 +1,6 @@
 import { formatIDR } from "@/lib/formatCurrency"
 import { Inventory } from "@prisma/client"
-import { InfoIcon } from "lucide-react"
+import { InfoIcon, Undo2Icon } from "lucide-react"
 import { Button } from "../ui/button"
 import Link from "next/link"
 
@@ -20,14 +20,16 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         Product Details
                     </h1>
                 </div>
-                <div className="ml-auto space-x-4">
+                <div className="flex flex-center ml-auto space-x-4">
                     <Button asChild variant='outline'>
+                        <Link href={`/product`}>
+                            <Undo2Icon />  Back
+                        </Link>
+                    </Button>
+                    <Button asChild>
                         <Link href={`/product/${product.id}/edit`}>
                             Edit
                         </Link>
-                    </Button>
-                    <Button type='submit'>
-                        Adjust
                     </Button>
                 </div>
             </div>

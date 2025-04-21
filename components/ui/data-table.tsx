@@ -28,11 +28,21 @@ import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    searchColumn?: string
+    searchPlaceholder?: string
+    facetedFilters?: {
+        columnId: string
+        title: string
+        options: { label: string; value: string }[]
+    }[]
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    searchColumn,
+    searchPlaceholder,
+    facetedFilters,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -59,22 +69,28 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center py-4">
-                {/* <Input
-                    placeholder="Filter emails..."
-                    value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("email")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                /> */}
-                {/* {table.getColumn("status") && (
-                    <DataTableFacetedFilter
-                        column={table.getColumn("status")}
-                        title="Status"
-                        options={table.getColumn("status")}
+            <div className="flex items-center py-4 gap-4">
+                {searchColumn && (
+                    <Input
+                        placeholder={searchPlaceholder || "Search..."}
+                        value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn(searchColumn)?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
                     />
-                )} */}
+                )}
+                {facetedFilters?.map(
+                    (filter) =>
+                        table.getColumn(filter.columnId) && (
+                            <DataTableFacetedFilter
+                                key={filter.columnId}
+                                column={table.getColumn(filter.columnId)!}
+                                title={filter.title}
+                                options={filter.options}
+                            />
+                        )
+                )}
             </div>
             <div className="rounded-md border">
                 <Table>

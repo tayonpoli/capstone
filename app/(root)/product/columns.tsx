@@ -18,6 +18,7 @@ import Link from "next/link"
 import { DeleteProduct } from "@/components/products/DeleteProduct"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -61,21 +62,19 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: "code",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    SKU
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: "Product Code",
     },
     {
         accessorKey: "category",
         header: "Category",
+        cell: ({ row }) => (
+            <div className="w-32">
+                <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                    {row.original.category}
+                </Badge>
+            </div>
+        ),
+
     },
     {
         accessorKey: "buyprice",
@@ -125,7 +124,23 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: "stock",
-        header: "Stock",
+        header: ({ column }) => {
+            return (
+                <div className="w-full text-center">
+                    <Button
+                        variant="ghost"
+                        className="mx-auto"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Stock
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            )
+        },
+        cell: ({ row }) => (
+            <div className="text-center">{row.getValue("stock")}</div>
+        ),
     },
     {
         id: "actions",

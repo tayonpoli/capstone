@@ -20,23 +20,24 @@ import { Textarea } from '../ui/textarea';
 import { Checkbox } from '../ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
-const FormSchema = z
-    .object({
-        product: z.string().min(1, 'Product name is required').max(100),
-        code: z.string().min(1, 'SKU is required'),
-        category: z.string().min(1, 'Category is required'),
-        description: z.string(),
-        unit: z.string().min(1, 'Unit is required'),
-        isBuyable: z.boolean().default(false),
-        buyprice: z.coerce.number().int(),
-        isSellable: z.boolean().default(false),
-        sellprice: z.coerce.number().int(),
-        isTrack: z.boolean().default(false),
-        limit: z.coerce.number().int(),
-    })
+const FormSchema = z.object({
+    product: z.string().min(1, 'Product name is required').max(100),
+    code: z.string().min(1, 'SKU is required'),
+    category: z.string().min(1, 'Category is required'),
+    description: z.string(),
+    unit: z.string().min(1, 'Unit is required'),
+    isBuyable: z.boolean().default(false),
+    buyprice: z.coerce.number().int(),
+    isSellable: z.boolean().default(false),
+    sellprice: z.coerce.number().int(),
+    isTrack: z.boolean().default(false),
+    limit: z.coerce.number().int(),
+});
 
 export function ProductForm({ initialData }: { initialData?: any }) {
     const router = useRouter();
+    const isEditMode = Boolean(initialData?.id);
+
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: initialData ? {
@@ -74,10 +75,10 @@ export function ProductForm({ initialData }: { initialData?: any }) {
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
-            const url = initialData
-                ? `/api/products/${initialData.id}`
-                : '/api/products'
-            const method = initialData ? 'PUT' : 'POST'
+            const url = isEditMode
+                ? `/api/product/${initialData.id}`
+                : '/api/product';
+            const method = isEditMode ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
                 method,
@@ -85,20 +86,20 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(values),
-            })
+            });
 
             if (response.ok) {
                 toast.success(
-                    initialData ? "Product updated!" : "Product created!"
-                )
-                router.push('/products')
-                router.refresh()
+                    isEditMode ? "Product updated successfully!" : "Product created successfully!"
+                );
+                router.push('/product');
+                router.refresh();
             } else {
-                throw new Error("Failed to save product")
+                throw new Error("Failed to save product");
             }
         } catch (error) {
-            toast.error("Something went wrong")
-            console.error(error)
+            toast.error("Something went wrong");
+            console.error(error);
         }
     }
 
@@ -293,12 +294,12 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                     </div>
                     <div className='fixed bottom-16 right-14 space-x-4'>
                         <Button asChild variant='outline'>
-                            <Link href='/product'>
+                            <Link href={isEditMode ? `/product/${initialData.id}` : '/product'}>
                                 Cancel
                             </Link>
                         </Button>
                         <Button type='submit'>
-                            Create
+                            {isEditMode ? 'Update' : 'Create'}
                         </Button>
                     </div>
                 </form>

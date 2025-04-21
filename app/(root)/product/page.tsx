@@ -1,14 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CirclePlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon } from "lucide-react"
+import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon } from "lucide-react"
 import { Product, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 
 async function getData(): Promise<Product[]> {
-    // Fetch data from your API here.
     try {
         const products = await prisma.inventory.findMany()
         return products
@@ -77,7 +75,7 @@ export default async function page() {
                 <div className="flex justify-end">
                     <Link href='/product/create'>
                         <Button>
-                            <CirclePlusIcon /> Create New Product
+                            <PlusIcon /> Create New Product
                         </Button>
                     </Link>
                 </div>
@@ -140,17 +138,32 @@ export default async function page() {
                     </CardContent>
                 </Card>
             </div>
-            <Tabs defaultValue="completed" className="py-10">
-                <TabsList className="grid w-[400px] grid-cols-2">
-                    <TabsTrigger value="completed">In Stock</TabsTrigger>
-                    <TabsTrigger value="receivable">Out of Stock</TabsTrigger>
-                </TabsList>
-                <TabsContent value="completed" className="space-y-4">
-                    <div className="container mx-auto py-4">
-                        <DataTable columns={columns} data={data} />
-                    </div>
-                </TabsContent>
-            </Tabs>
+            <div className="container mx-auto py-8">
+                <DataTable
+                    columns={columns}
+                    data={data}
+                    searchColumn="product"
+                    searchPlaceholder="Search by product ..."
+                    facetedFilters={[
+                        {
+                            columnId: "category",
+                            title: "Category",
+                            options: [
+                                { label: "Milk", value: "Milk" },
+                                { label: "Coffee", value: "Coffee" },
+                            ],
+                        },
+                        {
+                            columnId: "product",
+                            title: "Product",
+                            options: [
+                                { label: "Oat Milk", value: "Oat Milk" },
+                                { label: "Almond Milk", value: "Almond Milk" },
+                            ],
+                        },
+                    ]}
+                />
+            </div>
         </div>
     )
 }
