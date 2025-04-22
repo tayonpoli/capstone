@@ -71,12 +71,12 @@ export default async function page() {
         <div className="min-h-screen m-3 p-5 bg-white rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="text-3xl font-semibold pl-1">
-                    Sales
+                    Purchase
                 </div>
                 <div className="flex justify-end">
-                    <Link href='/sales/create'>
+                    <Link href='/purchase/create'>
                         <Button>
-                            <PlusIcon /> Create New Sales
+                            <PlusIcon /> Create New Purchase
                         </Button>
                     </Link>
                 </div>
@@ -85,7 +85,7 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Revenue
+                            Total Purchase
                         </CardTitle>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

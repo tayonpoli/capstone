@@ -64,7 +64,7 @@ const menuItems = [
             {
                 icon: faDolly,
                 label: "Purchases",
-                href: "/list/parents",
+                href: "/purchase",
                 visible: ["admin", "teacher"],
             },
             {

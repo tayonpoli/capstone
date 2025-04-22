@@ -8,12 +8,22 @@ const page = async () => {
   console.log(session);
   if (session?.user) {
     return (
-      <div className="grid gap-4">
-        <div>
-          <RevenueChart />
+      <div className=" m-3 p-5 bg-white rounded-md">
+        <div className="p-3">
+          <p className="text-sm text-gray-500">
+            Dashboard
+          </p>
+          <h1 className="font-semibold text-3xl">
+            Business Overview
+          </h1>
         </div>
-        <div>
-          <RevenueChart />
+        <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4 items-start p-3'>
+          <div>
+            <RevenueChart />
+          </div>
+          <div>
+            <RevenueChart />
+          </div>
         </div>
       </div>
     )
