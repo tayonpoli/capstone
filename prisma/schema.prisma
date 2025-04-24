@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   email     String   @unique
   name      String?
   password  String
@@ -22,25 +22,40 @@ model User {
 }
 
 model Customer {
-  id        Int      @id @default(autoincrement())
-  name      String?
-  email     String  
-  phone     String
-  address   String
-  createdAt DateTime @default(now())
+  id         String       @id @default(uuid())
+  name       String?
+  email      String
+  phone      String
+  address    String
+  createdAt  DateTime     @default(now())
+  SalesOrder SalesOrder[]
+}
+
+model Staff {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  position       String?
+  purchaseOrders PurchaseOrder[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("staff")
 }
 
 model Inventory {
-  id        Int      @id @default(autoincrement())
-  product   String
-  code      String @unique
-  category  String
-  description String?
-  unit Unit @default(Pcs)
-  buyprice  Int?
-  sellprice Int?
-  stock     Int @default(0)
-  limit Int?
+  id            String         @id @default(uuid())
+  product       String
+  code          String         @unique
+  category      String
+  description   String?
+  unit          Unit           @default(Pcs)
+  buyprice      Int?
+  sellprice     Int?
+  stock         Int            @default(0)
+  limit         Int?
+  purchaseItems PurchaseItem[]
+  SalesItem     SalesItem[]
 }
 
 enum Unit {
@@ -50,4 +65,97 @@ enum Unit {
   gram
   Litre
   ml
+}
+
+model Supplier {
+  id             String          @id @default(uuid())
+  name           String?
+  email          String
+  phone          String
+  address        String
+  createdAt      DateTime        @default(now())
+  purchaseOrders PurchaseOrder[]
+}
+
+model SalesOrder {
+  id         String      @id @default(uuid())
+  customerId String
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  address    String?
+  email String?
+  orderDate  DateTime
+  tag        String?
+  total      Float       @default(0)
+  status     Status      @default(Completed) // Draft, Approved, Completed, Cancelled
+  memo       String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  items      SalesItem[]
+
+  @@map("sales_orders")
+}
+
+model SalesItem {
+  id           String     @id @default(uuid())
+  salesOrderId String
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id])
+  productId    String
+  product      Inventory  @relation(fields: [productId], references: [id])
+  note         String?
+  quantity     Int        @default(1)
+  price        Float
+  total        Float      @default(0)
+
+  @@map("sales_items")
+}
+
+model PurchaseOrder {
+  id           String         @id @default(uuid())
+  staffId      String
+  staff        Staff          @relation(fields: [staffId], references: [id])
+  supplierId   String
+  supplier     Supplier       @relation(fields: [supplierId], references: [id])
+  purchaseDate DateTime
+  dueDate      DateTime
+  urgency      Urgency        @default(Medium) // Low, Medium, High
+  subtotal     Float          @default(0)
+  tax          Float          @default(0)
+  total        Float          @default(0)
+  status       Status         @default(Draft) // Draft, Approved, Completed, Cancelled
+  memo         String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  items        PurchaseItem[]
+
+  @@map("purchase_orders")
+}
+
+enum Urgency {
+  Low
+  Medium
+  High
+}
+
+enum Status {
+  Draft
+  Approved
+  Completed
+  Cancelled
+}
+
+model PurchaseItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  productId       String
+  product         Inventory     @relation(fields: [productId], references: [id])
+  quantity        Int           @default(1)
+  unit            String // pcs, kg, box, etc
+  unitPrice       Float
+  totalPrice      Float         @default(0)
+  description     String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("purchase_items")
 }

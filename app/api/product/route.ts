@@ -46,6 +46,26 @@ export async function POST(req: Request) {
     }
 }
 
+export async function GET() {
+    try {
+        const inventory = await prisma.inventory.findMany({
+            select: {
+                id: true,
+                product: true,
+                code: true,
+                unit: true,
+                buyprice: true
+            }
+        })
+        return NextResponse.json(inventory)
+    } catch (error) {
+        return NextResponse.json(
+            { error: 'Failed to fetch inventory' },
+            { status: 500 }
+        )
+    }
+}
+
 export async function DELETE(request: Request) {
     const { id } = await request.json()
 

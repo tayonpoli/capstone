@@ -25,18 +25,22 @@ import { Calendar } from '../ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const ProductSchema = z.object({
+    productId: z.string(),
     name: z.string().min(1, 'Product name is required'),
     quantity: z.coerce.number().min(1, 'Quantity must be at least 1'),
     unit: z.string().min(1, 'Unit is required'),
     unitPrice: z.coerce.number().min(0, 'Unit price must be positive'),
-    memo: z.string().optional(),
+    description: z.string().optional(),
     total: z.coerce.number().min(0, 'Total must be positive').default(0),
 });
 
 const FormSchema = z.object({
+    staffId: z.string().min(1, 'Staff is required'),
+    staffEmail: z.string(),
+    supplierId: z.string().min(1, 'Supplier is required'),
     supplier: z.string().min(1, 'Choose the supplier').max(100),
     address: z.string().min(1, 'Supplier address is required'),
     email: z.string().min(1, 'Supplier email is required'),
@@ -52,7 +56,7 @@ const FormSchema = z.object({
 
 export function PurchaseForm({ initialData }: { initialData?: any }) {
     const router = useRouter();
-    const isEditMode = Boolean(initialData?.id);
+    // const isEditMode = Boolean(initialData?.id);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -63,10 +67,13 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                 quantity: 1,
                 unit: '',
                 unitPrice: 0,
-                memo: '',
+                description: '',
                 total: 0,
             }],
         } : {
+            staffId: '',
+            staffEmail: '',
+            supplierId: '',
             supplier: '',
             address: '',
             email: '',
@@ -78,11 +85,12 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
             sellprice: 0,
             limit: 0,
             products: [{
+                productId: '',
                 name: '',
                 quantity: 1,
                 unit: '',
                 unitPrice: 0,
-                memo: '',
+                description: '',
                 total: 0,
             }],
         },
@@ -102,6 +110,33 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
         { value: 'm', label: 'Meters' },
         { value: 'box', label: 'Boxes' },
     ];
+
+    const [inventoryItems, setInventoryItems] = useState<Inventory[]>([])
+    const [staffList, setStaffList] = useState<Staff[]>([])
+    const [suppliers, setSuppliers] = useState<Supplier[]>([])
+
+    useEffect(() => {
+        const fetchInventory = async () => {
+            const response = await fetch('/api/product')
+            const data = await response.json()
+            setInventoryItems(data)
+        }
+        fetchInventory()
+    }, [])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const [staffRes, suppliersRes] = await Promise.all([
+                fetch('/api/staff'),
+                fetch('/api/supplier')
+            ])
+            const staffData = await staffRes.json()
+            const suppliersData = await suppliersRes.json()
+            setStaffList(staffData)
+            setSuppliers(suppliersData)
+        }
+        fetchData()
+    }, [])
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
@@ -131,11 +166,12 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
 
     const addProduct = () => {
         append({
+            productId: '',
             name: '',
             quantity: 1,
             unit: '',
             unitPrice: 0,
-            memo: '',
+            description: '',
             total: 0,
         });
     };
@@ -149,38 +185,22 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
     };
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
+        console.log("Form values:", JSON.stringify(values, null, 2));
         try {
-            // Calculate final totals before submission
-            const productsWithTotals = values.products.map(product => ({
-                ...product,
-                total: product.quantity * product.unitPrice
-            }));
-
-            const totalBuyPrice = productsWithTotals.reduce((sum, product) => sum + product.total, 0);
-
-            const submissionData = {
-                ...values,
-                products: productsWithTotals,
-                buyprice: totalBuyPrice
-            };
-
-            const url = isEditMode
-                ? `/api/product/${initialData.id}`
-                : '/api/product';
-            const method = isEditMode ? 'PUT' : 'POST';
-
-            const response = await fetch(url, {
-                method,
+            const response = await fetch('/api/purchase', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(submissionData),
+                body: JSON.stringify({
+                    ...values,
+                    purchasedate: values.purchasedate.toISOString(),
+                    duedate: values.duedate.toISOString(),
+                })
             });
 
             if (response.ok) {
-                toast.success(
-                    isEditMode ? "Purchase updated successfully!" : "Purchase created successfully!"
-                );
+                toast.success("Purchase created successfully!");
                 router.push('/purchase');
                 router.refresh();
             } else {
@@ -195,18 +215,92 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
     return (
         <div className='p-3'>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
+                <form onSubmit={(e) => {
+                    e.preventDefault(); // ← Ini penting!
+                    form.handleSubmit((data) => {
+                        console.log("Form data before submit:", data);
+                        onSubmit(data);
+                    })();
+                }}>
                     <div className='space-y-6 grid gap-6 md:grid-cols-2 lg:grid-cols-4 my-4 items-start'>
-                        <div className='space-y-6 gap-6 items-start'>
+                        <FormField
+                            control={form.control}
+                            name='staffId'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Staff Name</FormLabel>
+                                    <Select onValueChange={(value) => {
+                                        field.onChange(value)
+                                        const selectedStaff = staffList.find(s => s.id === value)
+                                        if (selectedStaff) {
+                                            form.setValue('staffEmail', selectedStaff.email)
+                                        }
+                                    }}
+                                        value={field.value}
+                                    >
+                                        <FormControl className='w-full'>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select staff" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {staffList.map((staff) => (
+                                                <SelectItem key={staff.id} value={staff.id}>
+                                                    {staff.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='staffEmail'
+                            render={({ field }) => (
+                                <FormItem
+                                    className='col-span-3 col-start-2 col-end-2'>
+                                    <FormLabel>Staff Email</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder='Staff email' {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <div className='space-y-6 gap-6 items-start col-start-1'>
                             <FormField
                                 control={form.control}
-                                name='supplier'
+                                name='supplierId'
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Vendor Name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='Your vendor name' {...field} />
-                                        </FormControl>
+                                        <Select
+                                            onValueChange={(value) => {
+                                                field.onChange(value)
+                                                // Auto-fill vendor details
+                                                const selectedSupplier = suppliers.find(s => s.id === value)
+                                                if (selectedSupplier) {
+                                                    form.setValue('address', selectedSupplier.address)
+                                                    form.setValue('email', selectedSupplier.email)
+                                                }
+                                            }}
+                                            value={field.value}
+                                        >
+                                            <FormControl className='w-full'>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select vendor" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {suppliers.map((supplier) => (
+                                                    <SelectItem key={supplier.id} value={supplier.id}>
+                                                        {supplier.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -230,7 +324,7 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                             name='address'
                             render={({ field }) => (
                                 <FormItem
-                                    className='col-span-3 max-w-lg'
+                                    className='col-start-2 col-end-2'
                                 >
                                     <FormLabel>Vendor Address</FormLabel>
                                     <FormControl>
@@ -245,7 +339,7 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                             control={form.control}
                             name="purchasedate"
                             render={({ field }) => (
-                                <FormItem className="flex flex-col">
+                                <FormItem className="col-start-1">
                                     <FormLabel>Purchase Date</FormLabel>
                                     <Popover>
                                         <PopoverTrigger asChild>
@@ -364,13 +458,13 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                     <div className="my-8">
                         <h3 className="text-lg font-medium mb-4">Products</h3>
                         <Table>
-                            <TableHeader>
+                            <TableHeader className='bg-muted/50'>
                                 <TableRow>
                                     <TableHead>Product Name</TableHead>
-                                    <TableHead>Quantity</TableHead>
+                                    <TableHead>Description</TableHead>
                                     <TableHead>Unit</TableHead>
                                     <TableHead>Unit Price</TableHead>
-                                    <TableHead>Memo</TableHead>
+                                    <TableHead>Quantity</TableHead>
                                     <TableHead>Total</TableHead>
                                     <TableHead>Action</TableHead>
                                 </TableRow>
@@ -381,33 +475,57 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                                         <TableCell>
                                             <FormField
                                                 control={form.control}
-                                                name={`products.${index}.name`}
+                                                name={`products.${index}.productId`} // Ubah name menjadi productId
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormControl>
-                                                            <Input placeholder="Product name" {...field} />
-                                                        </FormControl>
+                                                        <Select
+                                                            onValueChange={(value) => {
+                                                                field.onChange(value)
+                                                                // Set product name dan unit secara otomatis
+                                                                const selectedProduct = inventoryItems.find(item => item.id === value)
+                                                                if (selectedProduct) {
+                                                                    form.setValue(`products.${index}.name`, selectedProduct.product)
+                                                                    form.setValue(`products.${index}.unit`, selectedProduct.unit)
+                                                                    form.setValue(`products.${index}.unitPrice`, selectedProduct.buyprice || 0)
+                                                                }
+                                                            }}
+                                                            value={field.value}
+                                                        >
+                                                            <FormControl className='w-full'>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Select product" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {inventoryItems.map((item) => (
+                                                                    <SelectItem key={item.id} value={item.id}>
+                                                                        {item.product} ({item.code})
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
                                         </TableCell>
-                                        <TableCell className="w-24">
+
+                                        <TableCell className="p-0">
+                                            <FormField
+                                                name={`products.${index}.productId`}
+                                                render={({ field }) => (
+                                                    <input type="hidden" {...field} />
+                                                )}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
                                             <FormField
                                                 control={form.control}
-                                                name={`products.${index}.quantity`}
+                                                name={`products.${index}.description`}
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                min="1"
-                                                                {...field}
-                                                                onChange={(e) => {
-                                                                    const value = parseInt(e.target.value) || 0;
-                                                                    field.onChange(value);
-                                                                }}
-                                                            />
+                                                            <Input placeholder="Description" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -439,19 +557,45 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                                                 )}
                                             />
                                         </TableCell>
-                                        <TableCell className="w-32">
+                                        <TableCell className="w-42">
                                             <FormField
                                                 control={form.control}
                                                 name={`products.${index}.unitPrice`}
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
+                                                            <div className="relative flex items-center">
+                                                                <span className="absolute left-3 text-sm text-muted-foreground">Rp</span>
+                                                                <Input
+                                                                    type="number"
+                                                                    className='justify-items-end'
+                                                                    min="0"
+                                                                    {...field}
+                                                                    onChange={(e) => {
+                                                                        const value = parseFloat(e.target.value) || 0;
+                                                                        field.onChange(value);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TableCell>
+                                        <TableCell className="w-24">
+                                            <FormField
+                                                control={form.control}
+                                                name={`products.${index}.quantity`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
                                                             <Input
                                                                 type="number"
-                                                                min="0"
+                                                                min="1"
                                                                 {...field}
                                                                 onChange={(e) => {
-                                                                    const value = parseFloat(e.target.value) || 0;
+                                                                    const value = parseInt(e.target.value) || 0;
                                                                     field.onChange(value);
                                                                 }}
                                                             />
@@ -461,14 +605,22 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                                                 )}
                                             />
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="w-42">
                                             <FormField
                                                 control={form.control}
-                                                name={`products.${index}.memo`}
+                                                name={`products.${index}.total`}
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input placeholder="Memo" {...field} />
+                                                            <div className="relative flex items-center">
+                                                                <span className="absolute left-3 text-sm text-muted-foreground">Rp</span>
+                                                                <Input
+                                                                    className='justify-items-end'
+                                                                    readOnly
+                                                                    {...field}
+                                                                    value={field.value.toLocaleString('id-ID')}
+                                                                />
+                                                            </div>
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -476,25 +628,6 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                                             />
                                         </TableCell>
                                         <TableCell className="w-32">
-                                            <FormField
-                                                control={form.control}
-                                                name={`products.${index}.total`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                readOnly
-                                                                {...field}
-                                                                value={field.value.toFixed(2)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </TableCell>
-                                        <TableCell className="w-20">
                                             <Button
                                                 type="button"
                                                 variant="ghost"
@@ -522,82 +655,49 @@ export function PurchaseForm({ initialData }: { initialData?: any }) {
                     </div>
 
                     {/* Summary Section */}
-                    <div className="grid grid-cols-3 gap-4 my-6">
-                        <div className="col-span-2">
-                            <FormField
-                                control={form.control}
-                                name='buyprice'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Total Purchase Price</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                readOnly
-                                                {...field}
-                                                value={field.value.toFixed(2)}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div>
-                            <FormField
-                                control={form.control}
-                                name='sellprice'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Estimated Sell Price</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                min="0"
-                                                {...field}
-                                                onChange={(e) => {
-                                                    const value = parseFloat(e.target.value) || 0;
-                                                    field.onChange(value);
-                                                }}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div>
-                            <FormField
-                                control={form.control}
-                                name='limit'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Stock Limit</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type='number'
-                                                min="0"
-                                                {...field}
-                                                onChange={(e) => {
-                                                    const value = parseInt(e.target.value) || 0;
-                                                    field.onChange(value);
-                                                }}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                    <div className="flex justify-end my-6">
+                        <div className="space-y-3 w-120 p-4">
+                            <div className="flex justify-between">
+                                <h2 className='text-xl font-semibold'>Subtotal</h2>
+                                <span className="font-semibold text-xl">
+                                    {form.watch('buyprice').toLocaleString('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                    })}
+                                </span>
+                            </div>
+                            <div className="flex justify-between">
+                                <h2 className='text-xl font-semibold'>Tax (10%)</h2>
+                                <span className="font-semibold text-xl">
+                                    {(form.watch('buyprice') * 0.1).toLocaleString('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                    })}
+                                </span>
+                            </div>
+                            <div className="border-t my-4"></div>
+
+                            {/* Total */}
+                            <div className="flex justify-between font-medium">
+                                <h1 className='text-2xl font-semibold'>Total</h1>
+                                <span className="font-semibold text-2xl">
+                                    {(form.watch('buyprice') * 1.1).toLocaleString('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                    })}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className='fixed bottom-16 right-14 space-x-4'>
+                    <div className='flex justify-end space-x-4'>
                         <Button asChild variant='outline'>
-                            <Link href={isEditMode ? `/purchase/${initialData.id}` : '/purchase'}>
+                            <Link href='/purchase'>
                                 Cancel
                             </Link>
                         </Button>
                         <Button type='submit'>
-                            {isEditMode ? 'Update' : 'Create'}
+                            Create
                         </Button>
                     </div>
                 </form>

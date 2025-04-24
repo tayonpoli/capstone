@@ -44,16 +44,10 @@ const menuItems = [
         title: "MENU",
         items: [
             {
-                icon: faHome,
-                label: "Home",
+                icon: faChartSimple,
+                label: "Overview",
                 href: "/",
                 visible: ["admin", "teacher", "student", "parent"],
-            },
-            {
-                icon: faChartSimple,
-                label: "Dashboard",
-                href: "/admin",
-                visible: ["admin", "teacher"],
             },
             {
                 icon: faTags,
@@ -103,12 +97,12 @@ const menuItems = [
                 href: "/list/results",
                 visible: ["admin", "teacher", "student", "parent"],
             },
-            {
-                icon: faFileWaveform,
-                label: "Chart of accounts",
-                href: "/list/attendance",
-                visible: ["admin", "teacher", "student", "parent"],
-            },
+            // {
+            //     icon: faFileWaveform,
+            //     label: "Chart of accounts",
+            //     href: "/list/attendance",
+            //     visible: ["admin", "teacher", "student", "parent"],
+            // },
         ],
     },
     {

@@ -1,3 +1,6 @@
+import { LineCharts } from "@/components/charts/LineChart";
+import { LongChart } from "@/components/charts/LongChart";
+import { PieCharts } from "@/components/charts/PieChart";
 import RevenueChart from "@/components/charts/RevenueChart";
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
@@ -18,11 +21,17 @@ const page = async () => {
           </h1>
         </div>
         <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4 items-start p-3'>
+          <div className="col-span-3">
+            <LongChart />
+          </div>
           <div>
+            <PieCharts />
+          </div>
+          <div className="col-span-2">
             <RevenueChart />
           </div>
           <div>
-            <RevenueChart />
+            <LineCharts />
           </div>
         </div>
       </div>
