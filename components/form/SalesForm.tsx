@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import {
     Form,
     FormControl,
@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Customer, Inventory } from '@prisma/client';
+import { OrderItem } from '../sales/OrderItem';
 
 const FormSchema = z.object({
     customerId: z.string().min(1, 'Customer is required'),
@@ -126,7 +127,7 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
         <div className='p-3'>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
-                    <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4 items-start'>
+                    <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
                         <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
                             <FormField
                                 control={form.control}
@@ -249,98 +250,18 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
                     <div className="mt-8">
                         <h3 className="text-lg font-medium mb-4">Order Items</h3>
                         {items.map((item, index) => (
-                            <div key={index} className="grid grid-cols-12 gap-4 mb-4 items-end">
-                                <FormField
-                                    control={form.control}
-                                    name={`items.${index}.productId`}
-                                    render={({ field }) => (
-                                        <FormItem className="col-span-3">
-                                            <FormLabel>Product</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                <FormControl className='w-full'>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select product" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {products.map((product) => (
-                                                        <SelectItem key={product.id} value={product.id}>
-                                                            {product.product} ({product.code})
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                {/* <FormField
-                                    control={form.control}
-                                    name='note'
-                                    render={({ field }) => (
-                                        <FormItem className="col-span-3">
-                                            <FormLabel>Description</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder='e.g. Urgent, Wholesale' {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                /> */}
-                                <FormField
-                                    control={form.control}
-                                    name={`items.${index}.price`}
-                                    render={({ field }) => (
-                                        <FormItem className="col-span-2">
-                                            <FormLabel>Unit Price</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.01" min="0.01" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name={`items.${index}.quantity`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Quantity</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" min="1" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                {/* <FormField
-                                    control={form.control}
-                                    name={`items.${index}.price`}
-                                    render={({ field }) => (
-                                        <FormItem className="col-span-2">
-                                            <FormLabel>Total</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.01" min="0.01" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                /> */}
-                                <div>
-                                    <Button
-                                        type="button"
-                                        variant="destructive"
-                                        onClick={() => {
-                                            const newItems = [...items];
-                                            newItems.splice(index, 1);
-                                            form.setValue('items', newItems);
-                                        }}
-                                        disabled={items.length <= 1}
-                                    >
-                                        Remove
-                                    </Button>
-                                </div>
-                            </div>
+                            <OrderItem
+                                key={index}
+                                form={form} // Oper seluruh objek form
+                                index={index}
+                                products={products}
+                                onRemove={() => {
+                                    const newItems = [...items];
+                                    newItems.splice(index, 1);
+                                    form.setValue('items', newItems);
+                                }}
+                                canRemove={items.length > 1}
+                            />
                         ))}
                         <Button
                             type="button"
