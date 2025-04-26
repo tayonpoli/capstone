@@ -275,7 +275,7 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
                         </Button>
                     </div>
 
-                    <div className='fixed bottom-16 right-14 space-x-4'>
+                    <div className='flex justify-end space-x-4'>
                         <Button asChild variant='outline'>
                             <Link href={isEditMode ? `/sales/${initialData?.id}` : '/sales'}>
                                 Cancel
