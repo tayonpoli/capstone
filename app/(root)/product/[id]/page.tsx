@@ -8,7 +8,7 @@ export default async function ProductDetailPage({
     params: { id: string }
 }) {
     const product = await prisma.inventory.findUnique({
-        where: { id: Number(params.id) }
+        where: { id: String(params.id) }
     })
 
     if (!product) return notFound()
