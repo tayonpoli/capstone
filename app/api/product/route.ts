@@ -78,7 +78,7 @@ export async function DELETE(request: Request) {
 
     try {
         await prisma.inventory.delete({
-            where: { id: Number(id) }
+            where: { id: id }
         })
         return NextResponse.json({ success: true })
     } catch (error) {

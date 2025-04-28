@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
     Form,
     FormControl,
@@ -39,9 +39,9 @@ const FormSchema = z.object({
     ).min(1, 'At least one item is required'),
 });
 
-type SalesFormProps = {
-    initialData?: {
-        id?: string;
+type EditSalesFormProps = {
+    initialData: {
+        id: string;
         customerId: string;
         address?: string;
         email?: string;
@@ -60,24 +60,14 @@ type SalesFormProps = {
     products: Inventory[];
 };
 
-export function SalesForm({ initialData, customers, products }: SalesFormProps) {
+export function EditSalesForm({ initialData, customers, products }: EditSalesFormProps) {
     const router = useRouter();
-    const isEditMode = Boolean(initialData?.id);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
-        defaultValues: initialData ? {
+        defaultValues: {
             ...initialData,
             orderDate: initialData.orderDate ? new Date(initialData.orderDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        } : {
-            customerId: '',
-            address: '',
-            email: '',
-            orderDate: new Date().toISOString().split('T')[0],
-            tag: '',
-            status: 'Completed',
-            memo: '',
-            items: [{ productId: '', note: '', quantity: 1, price: 0 }],
         },
     });
 
@@ -90,13 +80,8 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
-            const url = isEditMode
-                ? `/api/sales/${initialData?.id}`
-                : '/api/sales';
-            const method = isEditMode ? 'PUT' : 'POST';
-
-            const response = await fetch(url, {
-                method,
+            const response = await fetch(`/api/sales/${initialData.id}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -107,13 +92,11 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
             });
 
             if (response.ok) {
-                toast.success(
-                    isEditMode ? "Sales order updated successfully!" : "Sales order created successfully!"
-                );
+                toast.success("Sales order updated successfully!");
                 router.push('/sales');
                 router.refresh();
             } else {
-                throw new Error("Failed to save sales order");
+                throw new Error("Failed to update sales order");
             }
         } catch (error) {
             toast.error("Something went wrong");
@@ -179,30 +162,6 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
                                     </FormItem>
                                 )}
                             />
-                            {/* <FormField
-                                control={form.control}
-                                name='status'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Status</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select status" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {statusOptions.map((status) => (
-                                                    <SelectItem key={status.value} value={status.value}>
-                                                        {status.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            /> */}
                             <FormField
                                 control={form.control}
                                 name='tag'
@@ -252,7 +211,7 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
                         {items.map((item, index) => (
                             <OrderItem
                                 key={index}
-                                form={form} // Oper seluruh objek form
+                                form={form}
                                 index={index}
                                 products={products}
                                 onRemove={() => {
@@ -277,12 +236,12 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
 
                     <div className='flex justify-end space-x-4'>
                         <Button asChild variant='outline'>
-                            <Link href={isEditMode ? `/sales/${initialData?.id}` : '/sales'}>
+                            <Link href={`/sales/${initialData.id}`}>
                                 Cancel
                             </Link>
                         </Button>
                         <Button type='submit'>
-                            {isEditMode ? 'Update' : 'Create'}
+                            Update
                         </Button>
                     </div>
                 </form>
@@ -290,5 +249,3 @@ export function SalesForm({ initialData, customers, products }: SalesFormProps) 
         </div>
     );
 };
-
-export default SalesForm;

@@ -1,4 +1,4 @@
-import SalesForm from "@/components/form/SalesForm";
+import { CreateSalesForm } from "@/components/sales/SalesForm";
 import { prisma } from "@/lib/prisma";
 
 export default async function CreateSalesPage() {
@@ -26,7 +26,7 @@ export default async function CreateSalesPage() {
                     New Sales Order
                 </div>
             </div>
-            <SalesForm
+            <CreateSalesForm
                 customers={customers}
                 products={products}
             />

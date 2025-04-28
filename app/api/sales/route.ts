@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
@@ -91,5 +91,35 @@ export async function POST(req: Request) {
         return new NextResponse("Internal error", { status: 500 });
     } finally {
         await prisma.$disconnect();
+    }
+}
+
+export async function DELETE(request: Request) {
+    const { id } = await request.json()
+
+    if (!id) {
+        return NextResponse.json(
+            { error: 'Sales ID is required' },
+            { status: 400 }
+        )
+    }
+
+    try {
+        await prisma.salesItem.deleteMany({
+            where: { salesOrderId: id },
+          })
+
+        await prisma.salesOrder.delete({
+            where: { id: id }
+        })
+
+        return NextResponse.json({ success: true })
+    } catch (error) {
+        return NextResponse.json(
+            { error: 'Failed to delete the sales order' },
+            { status: 500 }
+        )
+    } finally {
+        await prisma.$disconnect()
     }
 }

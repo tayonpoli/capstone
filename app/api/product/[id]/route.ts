@@ -16,7 +16,7 @@ const updateProductSchema = z
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     try {
-        const id = Number(params.id);
+        const id = params.id;
         const body = await req.json();
         const { product, code, category, description, unit, buyprice, sellprice, limit } = updateProductSchema.parse(body);
 

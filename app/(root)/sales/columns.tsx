@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { formatIDR } from "@/lib/formatCurrency"
 import { format } from "date-fns"
+import { DeleteSales } from "@/components/sales/DeleteSales"
 
 export type Sales = {
   id: string
@@ -117,6 +118,31 @@ export const columns: ColumnDef<Sales>[] = [
       const sales = row.original
       const router = useRouter()
 
+      const handleDelete = async () => {
+        try {
+            const response = await fetch('/api/sales', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: sales.id }),
+            })
+
+            const result = await response.json()
+
+            if (response.ok) {
+                toast.success(result.message || "Sales order deleted successfully")
+                router.refresh()
+            } else {
+                throw new Error(result.error || "Failed to delete sales order")
+            }
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "An error occurred")
+            console.error('Delete error:', error)
+            throw error // Penting untuk ditangkap oleh DeleteProduct
+        }
+    }
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -134,6 +160,9 @@ export const columns: ColumnDef<Sales>[] = [
             <DropdownMenuItem asChild>
               <Link href={`/sales/${sales.id}/edit`}>Edit</Link>
             </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                        <DeleteSales salesId={sales.id} onConfirm={handleDelete} />
+                                    </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
