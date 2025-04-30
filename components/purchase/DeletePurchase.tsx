@@ -13,8 +13,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export function DeleteProduct({
-    productId,
+export function DeletePurchase({
+    purchaseId,
     onConfirm,
 }: {
     productId: number
@@ -29,7 +29,7 @@ export function DeleteProduct({
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the product.
+                        This action cannot be undone. This will permanently delete the purchase order.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

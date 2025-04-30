@@ -1,71 +1,84 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon } from "lucide-react"
-import { Product, columns } from "./columns"
+import { Purchase, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-async function getData(): Promise<Product[]> {
+async function getData(): Promise<any[]> {
     try {
-        const products = await prisma.inventory.findMany()
-        return products
+      const purchase = await prisma.purchaseOrder.findMany({
+        include: {
+          supplier: {
+            select: {
+              name: true
+            }
+          }
+        },
+        orderBy: {
+          purchaseDate: 'desc'
+        }
+      })
+
+      return purchase
+
     } catch (error) {
-        console.error('Error fetching data:', error)
-        return []
+      console.error('Error fetching data:', error)
+      return []
     } finally {
-        await prisma.$disconnect()
+      await prisma.$disconnect()
     }
-}
+  }
 
-async function getInventoryStats() {
-    try {
-        const totalProducts = await prisma.inventory.count();
+// async function getInventoryStats() {
+//     try {
+//         const totalProducts = await prisma.inventory.count();
 
-        const inStockProducts = await prisma.inventory.count({
-            where: {
-                stock: {
-                    gt: 0
-                },
-            }
-        });
+//         const inStockProducts = await prisma.inventory.count({
+//             where: {
+//                 stock: {
+//                     gt: 0
+//                 },
+//             }
+//         });
 
-        const outOfStockProducts = await prisma.inventory.count({
-            where: {
-                stock: 0
-            }
-        });
+//         const outOfStockProducts = await prisma.inventory.count({
+//             where: {
+//                 stock: 0
+//             }
+//         });
 
-        const belowLimitProducts = await prisma.inventory.count({
-            where: {
-                stock: {
-                    lt: prisma.inventory.fields.limit
-                },
-            }
-        });
+//         const belowLimitProducts = await prisma.inventory.count({
+//             where: {
+//                 stock: {
+//                     lt: prisma.inventory.fields.limit
+//                 },
+//             }
+//         });
 
-        return {
-            totalProducts,
-            outOfStockProducts,
-            belowLimitProducts,
-            inStockProducts
-        };
-    } catch (error) {
-        console.error('Error fetching inventory stats:', error);
-        return {
-            totalProducts: 0,
-            outOfStockProducts: 0,
-            belowLimitProducts: 0
-        };
-    } finally {
-        await prisma.$disconnect();
-    }
-}
+//         return {
+//             totalProducts,
+//             outOfStockProducts,
+//             belowLimitProducts,
+//             inStockProducts
+//         };
+//     } catch (error) {
+//         console.error('Error fetching inventory stats:', error);
+//         return {
+//             totalProducts: 0,
+//             outOfStockProducts: 0,
+//             belowLimitProducts: 0
+//         };
+//     } finally {
+//         await prisma.$disconnect();
+//     }
+// }
 
 export default async function page() {
     const data = await getData();
-    const stats = await getInventoryStats();
+    // const stats = await getInventoryStats();
 
     return (
         <div className="min-h-screen m-3 p-5 bg-white rounded-md">
@@ -85,7 +98,7 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Purchase
+                            Total Revenue
                         </CardTitle>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -193,23 +206,15 @@ export default async function page() {
                         <DataTable
                             columns={columns}
                             data={data}
-                            searchColumn="product"
-                            searchPlaceholder="Search by product ..."
+                            searchColumn="status"
+                            searchPlaceholder="Search order ..."
                             facetedFilters={[
                                 {
-                                    columnId: "category",
-                                    title: "Category",
+                                    columnId: "status",
+                                    title: "Status",
                                     options: [
-                                        { label: "Milk", value: "Milk" },
-                                        { label: "Coffee", value: "Coffee" },
-                                    ],
-                                },
-                                {
-                                    columnId: "product",
-                                    title: "Product",
-                                    options: [
-                                        { label: "Oat Milk", value: "Oat Milk" },
-                                        { label: "Almond Milk", value: "Almond Milk" },
+                                        { label: "Completed", value: "Completed" },
+                                        { label: "Pending", value: "Pending" },
                                     ],
                                 },
                             ]}

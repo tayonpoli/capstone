@@ -36,6 +36,60 @@ export default async function EditSalesPage({
     notFound()
   }
 
+  async function getSaleData(id: string): Promise<SalesData | null> {
+    try {
+      const sale = await prisma.salesOrder.findUnique({
+        where: { id },
+        include: { items: true },
+      })
+  
+      if (!sale) return null
+  
+      return {
+        id: sale.id,
+        customerId: sale.customerId,
+        address: sale.address || undefined,
+        email: sale.email || undefined,
+        orderDate: sale.orderDate.toISOString(),
+        tag: sale.tag || undefined,
+        status: sale.status,
+        memo: sale.memo || undefined,
+        items: sale.items.map(item => ({
+          productId: item.productId,
+          note: item.note || undefined,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      }
+    } catch (error) {
+      console.error('Failed to fetch sale:', error)
+      return null
+    }
+  }
+  
+  async function getCustomers(): Promise<Customer[]> {
+    try {
+      return await prisma.customer.findMany({
+        orderBy: { name: 'asc' },
+      })
+    } catch (error) {
+      console.error('Failed to fetch customers:', error)
+      return []
+    }
+  }
+  
+  async function getProducts(): Promise<Inventory[]> {
+    try {
+      return await prisma.inventory.findMany({
+        where: { stock: { gt: 0 } },
+        orderBy: { product: 'asc' },
+      })
+    } catch (error) {
+      console.error('Failed to fetch products:', error)
+      return []
+    }
+  }
+
   // async function updateSale(data: any) {
     
   //   try {
@@ -79,59 +133,4 @@ export default async function EditSalesPage({
       />
     </div>
   )
-}
-
-// Helper functions untuk data fetching
-async function getSaleData(id: string): Promise<SalesData | null> {
-  try {
-    const sale = await prisma.salesOrder.findUnique({
-      where: { id },
-      include: { items: true },
-    })
-
-    if (!sale) return null
-
-    return {
-      id: sale.id,
-      customerId: sale.customerId,
-      address: sale.address || undefined,
-      email: sale.email || undefined,
-      orderDate: sale.orderDate.toISOString(),
-      tag: sale.tag || undefined,
-      status: sale.status,
-      memo: sale.memo || undefined,
-      items: sale.items.map(item => ({
-        productId: item.productId,
-        note: item.note || undefined,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-    }
-  } catch (error) {
-    console.error('Failed to fetch sale:', error)
-    return null
-  }
-}
-
-async function getCustomers(): Promise<Customer[]> {
-  try {
-    return await prisma.customer.findMany({
-      orderBy: { name: 'asc' },
-    })
-  } catch (error) {
-    console.error('Failed to fetch customers:', error)
-    return []
-  }
-}
-
-async function getProducts(): Promise<Inventory[]> {
-  try {
-    return await prisma.inventory.findMany({
-      where: { stock: { gt: 0 } },
-      orderBy: { product: 'asc' },
-    })
-  } catch (error) {
-    console.error('Failed to fetch products:', error)
-    return []
-  }
 }

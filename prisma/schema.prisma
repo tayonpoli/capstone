@@ -119,10 +119,9 @@ model PurchaseOrder {
   purchaseDate DateTime
   dueDate      DateTime
   urgency      Urgency        @default(Medium) // Low, Medium, High
-  subtotal     Float          @default(0)
-  tax          Float          @default(0)
   total        Float          @default(0)
   status       Status         @default(Draft) // Draft, Approved, Completed, Cancelled
+  tag         String?
   memo         String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -150,13 +149,10 @@ model PurchaseItem {
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
   productId       String
   product         Inventory     @relation(fields: [productId], references: [id])
+  note     String?
   quantity        Int           @default(1)
-  unit            String // pcs, kg, box, etc
-  unitPrice       Float
-  totalPrice      Float         @default(0)
-  description     String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  price        Float
+  total        Float      @default(0)
 
   @@map("purchase_items")
 }
