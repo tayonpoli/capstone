@@ -70,7 +70,7 @@ export async function PUT(
             where: { id: item.productId },
             data: {
               stock: {
-                decrement: item.quantity,
+                increment: item.quantity,
               },
             },
           });

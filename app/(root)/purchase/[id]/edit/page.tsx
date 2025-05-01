@@ -1,20 +1,19 @@
 import { notFound, redirect } from 'next/navigation'
-import { Customer, Inventory, Staff, Supplier } from '@prisma/client'
-import { EditSalesForm } from '@/components/sales/EditSalesForm'
+import { Inventory, Staff, Supplier } from '@prisma/client'
 import { prisma } from "@/lib/prisma";
 import { EditPurchaseForm } from '@/components/purchase/EditPurchaseForm';
-import { EditPurchase } from '@/components/purchase/EditPurchase';
 
 interface PurchaseData {
   id: string
   staffId: string
   supplierId: string
-  // address?: string | null
-  // email?: string | null
+  address?: string | null
+  email?: string | null
   purchaseDate: string
   dueDate: string
   tag?: string | null
   status: string
+  urgency: string
   memo?: string | null
   items: {
     productId: string
@@ -60,6 +59,7 @@ export default async function EditPurchasePage({
         dueDate: purchase.dueDate.toISOString(),
         tag: purchase.tag || undefined,
         status: purchase.status,
+        urgency: purchase.urgency,
         memo: purchase.memo || undefined,
         items: purchase.items.map(item => ({
           productId: item.productId,
@@ -143,12 +143,11 @@ export default async function EditPurchasePage({
                    Edit Purchase Order
                 </div>
             </div>
-      <EditPurchase
+      <EditPurchaseForm
         initialData={purchaseData} 
         suppliers={suppliers} 
         staffs={staffs} 
         products={products}
-        // onUpdate={updateSale}
       />
     </div>
   )

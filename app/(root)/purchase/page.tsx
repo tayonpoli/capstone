@@ -206,8 +206,8 @@ export default async function page() {
                         <DataTable
                             columns={columns}
                             data={data}
-                            searchColumn="status"
-                            searchPlaceholder="Search order ..."
+                            searchColumn="supplierName"
+                            searchPlaceholder="Search supplier ..."
                             facetedFilters={[
                                 {
                                     columnId: "status",

@@ -68,8 +68,9 @@ export const columns: ColumnDef<Purchase>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "supplier.name",
+    accessorFn: (row) => row.supplier.name,
     header: "Supplier",
+    id: "supplierName",
   },
   {
     accessorKey: "purchaseDate",

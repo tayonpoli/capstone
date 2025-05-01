@@ -65,7 +65,7 @@ export async function POST(req: Request) {
                     where: { id: item.productId },
                     data: {
                         stock: {
-                            decrement: item.quantity
+                            increment: item.quantity
                         }
                     }
                 });

@@ -61,8 +61,9 @@ export const columns: ColumnDef<Sales>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "customer.name",
+    accessorFn: (row) => row.customer.name,
     header: "Customer",
+    id: "customerName", // Berikan ID yang lebih sederhana
   },
   {
     accessorKey: "orderDate",

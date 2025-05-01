@@ -14,11 +14,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { Checkbox } from "@/components/ui/checkbox"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { DeleteCustomer } from "@/components/customer/DeleteCustomer"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Customer = {
-    id: number
+    id: string
     name: string | null
     email: string
     phone: string
@@ -79,7 +83,33 @@ export const columns: ColumnDef<Customer>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const payment = row.original
+            const customer = row.original
+            const router = useRouter()
+
+            const handleDelete = async () => {
+                try {
+                    const response = await fetch('/api/customer', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: customer.id }),
+                    })
+
+                    const result = await response.json()
+
+                    if (response.ok) {
+                        toast.success(result.message || "Product deleted successfully")
+                        router.refresh()
+                    } else {
+                        throw new Error(result.error || "Failed to delete product")
+                    }
+                } catch (error) {
+                    toast.error(error instanceof Error ? error.message : "An error occurred")
+                    console.error('Delete error:', error)
+                    throw error // Penting untuk ditangkap oleh DeleteProduct
+                }
+            }
 
             return (
                 <DropdownMenu>
@@ -91,14 +121,16 @@ export const columns: ColumnDef<Customer>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        {/* <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
-                        >
-                            Copy payment ID
-                        </DropdownMenuItem> */}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/customer/${customer.id}`}>View Details</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/customer/${customer.id}/edit`}>Edit</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <DeleteCustomer customerId={customer.id} onConfirm={handleDelete} />
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

@@ -87,14 +87,14 @@ const menuItems = [
             },
             {
                 icon: faBookBookmark,
-                label: "Contacts",
-                href: "/list/assignments",
+                label: "Customers",
+                href: "/customer",
                 visible: ["admin", "teacher", "student", "parent"],
             },
             {
                 icon: faStore,
-                label: "Assets",
-                href: "/list/results",
+                label: "Vendors",
+                href: "/supplier",
                 visible: ["admin", "teacher", "student", "parent"],
             },
             // {

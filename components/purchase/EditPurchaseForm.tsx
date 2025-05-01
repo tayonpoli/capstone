@@ -18,39 +18,42 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Inventory, Staff, Supplier } from '@prisma/client';
-import { PurchaseItem } from './PurchaseItem';
+import { Customer, Inventory, Staff } from '@prisma/client';
+import { OrderItem } from '../sales/OrderItem';
 
 const FormSchema = z.object({
     staffId: z.string().min(1, 'Staff is required'),
-    supplierId: z.string().min(1, 'Customer is required'),
-    address: z.string().optional(),
-    email: z.string().optional(),
-    purchaseDate: z.string().min(1, 'Order date is required'),
-    dueDate: z.string().min(1, 'Order date is required'),
-    tag: z.string().optional(),
-    urgency: z.string().min(1, 'urgency is required'),
-    status: z.string().min(1, 'Status is required'),
-    memo: z.string().optional(),
-    items: z.array(
-        z.object({
-            productId: z.string().min(1, 'Product is required'),
-            note: z.string().optional(),
-            quantity: z.coerce.number().int().min(1, 'Quantity must be at least 1'),
-            price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
-        })
-    ).min(1, 'At least one item is required'),
-});
+        supplierId: z.string().min(1, 'Customer is required'),
+        address: z.string().optional(),
+        email: z.string().optional(),
+        purchaseDate: z.string().min(1, 'Order date is required'),
+        dueDate: z.string().min(1, 'Order date is required'),
+        tag: z.string().optional(),
+        urgency: z.string().min(1, 'urgency is required'),
+        status: z.string().min(1, 'Status is required'),
+        memo: z.string().optional(),
+        items: z.array(
+            z.object({
+                productId: z.string().min(1, 'Product is required'),
+                note: z.string().optional(),
+                quantity: z.coerce.number().int().min(1, 'Quantity must be at least 1'),
+                price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
+            })
+        ).min(1, 'At least one item is required'),
+    });
 
 type EditPurchaseFormProps = {
     initialData: {
         id: string;
-        staffId: string;
         supplierId: string;
+        staffId: string;
+        address?: string;
+        email?: string;
         purchaseDate: string;
         dueDate: string;
         tag?: string;
         status: string;
+        urgency: string;
         memo?: string;
         items: {
             productId: string;
@@ -59,12 +62,12 @@ type EditPurchaseFormProps = {
             price: number;
         }[];
     };
-     staffs: Staff[];
-        suppliers: Supplier[];
-        products: Inventory[];
+    staffs: Staff[];
+    suppliers: Customer[];
+    products: Inventory[];
 };
 
-export function EditPurchaseForm({ initialData, staffs, suppliers, products }: EditPurchaseFormProps) {
+export function EditPurchaseForm({ initialData, suppliers, staffs, products }: EditPurchaseFormProps) {
     const router = useRouter();
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -85,7 +88,7 @@ export function EditPurchaseForm({ initialData, staffs, suppliers, products }: E
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
-            const response = await fetch(`/api/sales/${initialData.id}`, {
+            const response = await fetch(`/api/purchase/${initialData.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -102,7 +105,7 @@ export function EditPurchaseForm({ initialData, staffs, suppliers, products }: E
                 router.push('/purchase');
                 router.refresh();
             } else {
-                throw new Error("Failed to update purchase order");
+                throw new Error("Failed to update sales order");
             }
         } catch (error) {
             toast.error("Something went wrong");
@@ -118,7 +121,7 @@ export function EditPurchaseForm({ initialData, staffs, suppliers, products }: E
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
                         <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
-                            <FormField
+                        <FormField
                                 control={form.control}
                                 name='staffId'
                                 render={({ field }) => (
@@ -127,7 +130,7 @@ export function EditPurchaseForm({ initialData, staffs, suppliers, products }: E
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl className='w-full'>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select Staff" />
+                                                    <SelectValue placeholder="Select customer" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
@@ -143,29 +146,29 @@ export function EditPurchaseForm({ initialData, staffs, suppliers, products }: E
                                 )}
                             />
                             <FormField
-                                                            control={form.control}
-                                                            name='supplierId'
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>Supplier</FormLabel>
-                                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                                        <FormControl className='w-full'>
-                                                                            <SelectTrigger>
-                                                                                <SelectValue placeholder="Select supplier" />
-                                                                            </SelectTrigger>
-                                                                        </FormControl>
-                                                                        <SelectContent>
-                                                                            {suppliers.map((supplier) => (
-                                                                                <SelectItem key={supplier.id} value={supplier.id}>
-                                                                                    {supplier.name}
-                                                                                </SelectItem>
-                                                                            ))}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
+                                control={form.control}
+                                name='supplierId'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Supplier</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl className='w-full'>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select customer" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {suppliers.map((supplier) => (
+                                                    <SelectItem key={supplier.id} value={supplier.id}>
+                                                        {supplier.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name='email'
@@ -252,7 +255,7 @@ export function EditPurchaseForm({ initialData, staffs, suppliers, products }: E
                     <div className="mt-8">
                         <h3 className="text-lg font-medium mb-4">Purchase Items</h3>
                         {items.map((item, index) => (
-                            <PurchaseItem
+                            <OrderItem
                                 key={index}
                                 form={form}
                                 index={index}
