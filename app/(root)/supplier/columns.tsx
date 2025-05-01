@@ -17,11 +17,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { DeleteCustomer } from "@/components/customer/DeleteCustomer"
+import { DeleteSupplier } from "@/components/supplier/DeleteSupplier"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Customer = {
+export type Supplier = {
     id: string
     name: string | null
     email: string
@@ -31,7 +31,7 @@ export type Customer = {
     // status: "pending" | "processing" | "success" | "failed"
 }
 
-export const columns: ColumnDef<Customer>[] = [
+export const columns: ColumnDef<Supplier>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -83,26 +83,26 @@ export const columns: ColumnDef<Customer>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const customer = row.original
+            const supplier = row.original
             const router = useRouter()
 
             const handleDelete = async () => {
                 try {
-                    const response = await fetch('/api/customer', {
+                    const response = await fetch('/api/supplier', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ id: customer.id }),
+                        body: JSON.stringify({ id: supplier.id }),
                     })
 
                     const result = await response.json()
 
                     if (response.ok) {
-                        toast.success(result.message || "Customer deleted successfully")
+                        toast.success(result.message || "Supplier deleted successfully")
                         router.refresh()
                     } else {
-                        throw new Error(result.error || "Failed to delete customer")
+                        throw new Error(result.error || "Failed to delete supplier")
                     }
                 } catch (error) {
                     toast.error(error instanceof Error ? error.message : "An error occurred")
@@ -123,13 +123,13 @@ export const columns: ColumnDef<Customer>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                            <Link href={`/customer/${customer.id}`}>View Details</Link>
+                            <Link href={`/supplier/${supplier.id}`}>View Details</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href={`/customer/${customer.id}/edit`}>Edit</Link>
+                            <Link href={`/supplier/${supplier.id}/edit`}>Edit</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <DeleteCustomer customerId={customer.id} onConfirm={handleDelete} />
+                            <DeleteSupplier supplierId={supplier.id} onConfirm={handleDelete} />
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

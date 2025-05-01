@@ -13,11 +13,11 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export function DeleteCustomer({
-    customerId,
+export function DeleteSupplier({
+    supplierId,
     onConfirm,
 }: {
-    customerId: string
+    supplierId: string
     onConfirm: () => void
 }) {
     return (
@@ -29,7 +29,7 @@ export function DeleteCustomer({
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the customer.
+                        This action cannot be undone. This will permanently delete the supplier.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
