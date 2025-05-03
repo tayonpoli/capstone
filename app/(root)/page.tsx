@@ -2,6 +2,7 @@ import { LineCharts } from "@/components/charts/LineChart";
 import { LongChart } from "@/components/charts/LongChart";
 import { PieCharts } from "@/components/charts/PieChart";
 import RevenueChart from "@/components/charts/RevenueChart";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation";
@@ -21,16 +22,20 @@ const page = async () => {
           </h1>
         </div>
         <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4 items-start p-3'>
-          <div className="col-span-3">
+          <div className="col-span-4">
             <LongChart />
           </div>
-          <div>
+
+          <Card className="md:col-span-2">
+            <CardContent className="h-96"> {/* Fixed height */}
+              <RevenueChart />
+            </CardContent>
+          </Card>
+          
+          <div className="h-96">
             <PieCharts />
           </div>
-          <div className="col-span-2">
-            <RevenueChart />
-          </div>
-          <div>
+          <div className="h-96">
             <LineCharts />
           </div>
         </div>

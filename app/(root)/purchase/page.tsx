@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon } from "lucide-react"
+import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon, Info } from "lucide-react"
 import { Purchase, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ReportGenerator } from "@/components/reports/ReportGenerator"
+import { formatIDR } from "@/lib/formatCurrency"
 
 async function getData(): Promise<any[]> {
     try {
@@ -32,53 +34,57 @@ async function getData(): Promise<any[]> {
     }
   }
 
-// async function getInventoryStats() {
-//     try {
-//         const totalProducts = await prisma.inventory.count();
+  async function getStats() {
+    try {
+        // Total jumlah transaksi sales
+        const totalTransactions = await prisma.purchaseOrder.count();
 
-//         const inStockProducts = await prisma.inventory.count({
-//             where: {
-//                 stock: {
-//                     gt: 0
-//                 },
-//             }
-//         });
+        // Total transaksi yang completed
+        const completedTransactions = await prisma.purchaseOrder.count({
+            where: {
+                status: "Completed"
+            }
+        });
 
-//         const outOfStockProducts = await prisma.inventory.count({
-//             where: {
-//                 stock: 0
-//             }
-//         });
+        // Menghitung total revenue dari sales order yang completed
+        const expenseResult = await prisma.purchaseOrder.aggregate({
+            where: {
+                status: "Completed"
+            },
+            _sum: {
+                total: true
+            }
+        });
 
-//         const belowLimitProducts = await prisma.inventory.count({
-//             where: {
-//                 stock: {
-//                     lt: prisma.inventory.fields.limit
-//                 },
-//             }
-//         });
+        const totalExpense = expenseResult._sum.total || 0;
 
-//         return {
-//             totalProducts,
-//             outOfStockProducts,
-//             belowLimitProducts,
-//             inStockProducts
-//         };
-//     } catch (error) {
-//         console.error('Error fetching inventory stats:', error);
-//         return {
-//             totalProducts: 0,
-//             outOfStockProducts: 0,
-//             belowLimitProducts: 0
-//         };
-//     } finally {
-//         await prisma.$disconnect();
-//     }
-// }
+        // Menghitung rata-rata nilai transaksi
+        const averageTransactionValue = completedTransactions > 0 
+            ? totalExpense / completedTransactions 
+            : 0;
+
+        return {
+            totalTransactions,
+            completedTransactions,
+            totalExpense,
+            averageTransactionValue
+        };
+    } catch (error) {
+        console.error('Error fetching sales stats:', error);
+        return {
+            totalTransactions: 0,
+            completedTransactions: 0,
+            totalRevenue: 0,
+            averageTransactionValue: 0
+        };
+    } finally {
+        await prisma.$disconnect();
+    }
+}
 
 export default async function page() {
     const data = await getData();
-    // const stats = await getInventoryStats();
+    const stats = await getStats();
 
     return (
         <div className="min-h-screen m-3 p-5 bg-white rounded-md">
@@ -87,122 +93,81 @@ export default async function page() {
                     Purchase
                 </div>
                 <div className="flex justify-end">
-                    <Link href='/purchase/create'>
+                <ReportGenerator reportType="purchasing" />
+                </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
+                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">
+                                            Sales Transaction
+                                        </CardTitle>
+                                        <Info />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{stats.totalTransactions}</div>
+                                        <p className="text-xs text-muted-foreground">
+                                            +20.1% from last month
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">
+                                            Total Expenses
+                                        </CardTitle>
+                                        <Info />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
+                                        <p className="text-xs text-muted-foreground">
+                                            +20.1% from last month
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Total Revenue
+                        </CardTitle>
+                        <Info />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">Rp 45,231.89</div>
+                        <p className="text-xs text-muted-foreground">
+                            +20.1% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Total Revenue
+                        </CardTitle>
+                        <Info />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">Rp 45,231.89</div>
+                        <p className="text-xs text-muted-foreground">
+                            +20.1% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+            <Tabs defaultValue="completed" className="py-8">
+            <div className="flex justify-between">
+                <TabsList className="grid w-[400px] grid-cols-2">
+                    <TabsTrigger value="completed">Completed</TabsTrigger>
+                    <TabsTrigger value="receivable">Receivable</TabsTrigger>
+                </TabsList>
+                <Link href='/purchase/create'>
                         <Button>
                             <PlusIcon /> Create New Purchase
                         </Button>
                     </Link>
                 </div>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total Revenue
-                        </CardTitle>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            className="h-4 w-4 text-muted-foreground"
-                        >
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                        </svg>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$45,231.89</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total Revenue
-                        </CardTitle>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            className="h-4 w-4 text-muted-foreground"
-                        >
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                        </svg>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$45,231.89</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total Revenue
-                        </CardTitle>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            className="h-4 w-4 text-muted-foreground"
-                        >
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                        </svg>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$45,231.89</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total Revenue
-                        </CardTitle>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            className="h-4 w-4 text-muted-foreground"
-                        >
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                        </svg>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$45,231.89</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-            <Tabs defaultValue="completed" className="py-10">
-                <TabsList className="grid w-[400px] grid-cols-2">
-                    <TabsTrigger value="completed">Completed</TabsTrigger>
-                    <TabsTrigger value="receivable">Receivable</TabsTrigger>
-                </TabsList>
-                <TabsContent value="completed" className="space-y-4">
-                    <div className="container mx-auto py-8">
+                <TabsContent value="completed" className="space-y-2">
+                    <div className="container mx-auto py-2">
                         <DataTable
                             columns={columns}
                             data={data}

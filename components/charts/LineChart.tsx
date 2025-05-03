@@ -28,7 +28,7 @@ const chartData = [
 
 const chartConfig = {
     desktop: {
-        label: "Desktop",
+        label: "Profit",
         color: "hsl(var(--chart-2))",
     },
 } satisfies ChartConfig
@@ -37,8 +37,8 @@ export function LineCharts() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Line Chart - Linear</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
+                <CardTitle>Profits</CardTitle>
+                <CardDescription>January - June 2025</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
@@ -77,7 +77,7 @@ export function LineCharts() {
                     Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
                 </div>
                 <div className="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
+                    Showing total profit for the last 6 months
                 </div>
             </CardFooter>
         </Card>

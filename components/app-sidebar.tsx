@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
-import { Blocks, Waypoints, Sparkles, LifeBuoy, Send, ShoppingBasket, SquareChartGantt, CreditCard, Boxes, PackageOpen, UsersRound } from "lucide-react"
+import { Blocks, Waypoints, Sparkles, LifeBuoy, Send, ShoppingBasket, SquareChartGantt, CreditCard, Boxes, PackageOpen, UsersRound, UserRoundCog } from "lucide-react"
 
 interface AppSidebarProps {
   session: Session | null
@@ -20,15 +20,15 @@ export function AppSidebar({ session }: AppSidebarProps) {
       avatar: "/avatars/shadcn.jpg",
     },
     navMain: [
-      { title: "Overview", url: "/", icon: Waypoints, isActive: true },
+      { title: "Overview", url: "/", icon: Waypoints },
       {
-        title: "Ask AI",
+        title: "AI",
         url: "#",
         icon: Sparkles,
       },
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
-      { title: "Expenses", url: "#", icon: CreditCard },
+      // { title: "Expenses", url: "#", icon: CreditCard },
       { title: "Production", url: "#", icon: Boxes },
       { title: "Inventory", url: "/product", icon: PackageOpen },
       { title: "Customers", url: "/customer", icon: UsersRound },
@@ -36,7 +36,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
     ],
     navSecondary: [
       { title: "Settings", url: "#", icon: LifeBuoy },
-      { title: "Feedback", url: "#", icon: Send },
+      { title: "Users", url: "#", icon: UserRoundCog },
     ],
   }
 

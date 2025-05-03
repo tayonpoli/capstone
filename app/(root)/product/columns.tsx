@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Product = {
-    id: number
+    id: string
     product: string
     code: string
     category: string

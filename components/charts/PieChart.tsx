@@ -35,13 +35,13 @@ const desktopData = [
 
 const chartConfig = {
     visitors: {
-        label: "Visitors",
+        label: "Customers",
     },
     desktop: {
-        label: "Desktop",
+        label: "Online",
     },
     mobile: {
-        label: "Mobile",
+        label: "On-Store",
     },
     january: {
         label: "January",
@@ -80,7 +80,7 @@ export function PieCharts() {
             <ChartStyle id={id} config={chartConfig} />
             <CardHeader className="flex-row items-start space-y-0 pb-0">
                 <div className="grid gap-1">
-                    <CardTitle>Pie Chart - Interactive</CardTitle>
+                    <CardTitle>Customers</CardTitle>
                     <CardDescription>January - June 2024</CardDescription>
                 </div>
                 <Select value={activeMonth} onValueChange={setActiveMonth}>
@@ -173,7 +173,7 @@ export function PieCharts() {
                                                     y={(viewBox.cy || 0) + 24}
                                                     className="fill-muted-foreground"
                                                 >
-                                                    Visitors
+                                                    Customers
                                                 </tspan>
                                             </text>
                                         )

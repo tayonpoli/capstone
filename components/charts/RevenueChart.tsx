@@ -28,11 +28,11 @@ const chartData = [
 
 const chartConfig = {
     desktop: {
-        label: "Desktop",
+        label: "Sales",
         color: "hsl(var(--chart-1))",
     },
     mobile: {
-        label: "Mobile",
+        label: "Purchase",
         color: "hsl(var(--chart-2))",
     },
 } satisfies ChartConfig
@@ -41,7 +41,7 @@ export function RevenueChart() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Bar Chart - Multiple</CardTitle>
+                <CardTitle>Sales & Purchase</CardTitle>
                 <CardDescription>January - June 2024</CardDescription>
             </CardHeader>
             <CardContent>
@@ -69,7 +69,7 @@ export function RevenueChart() {
                     Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
                 </div>
                 <div className="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
+                    Showing data for the last 6 months
                 </div>
             </CardFooter>
         </Card>

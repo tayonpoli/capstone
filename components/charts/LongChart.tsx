@@ -121,14 +121,14 @@ const chartData = [
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: "Total",
   },
   desktop: {
-    label: "Desktop",
+    label: "Revenue",
     color: "hsl(var(--chart-1))",
   },
   mobile: {
-    label: "Mobile",
+    label: "Expenses",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
@@ -154,9 +154,9 @@ export function LongChart() {
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Area Chart - Interactive</CardTitle>
+          <CardTitle>Revenue & Expenses</CardTitle>
           <CardDescription>
-            Showing total visitors for the last 3 months
+            Showing total revenue and expenses for the last 3 months
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>

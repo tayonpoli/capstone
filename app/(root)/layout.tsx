@@ -16,7 +16,7 @@ export default async function DashboardLayout({
     const session = await getServerSession(authOptions)
 
     return (
-        <div className="h-screen flex">
+        <div className="flex">
             {/* LEFT */}
             {/* <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4 border-r"> */}
                 {/* <Link
