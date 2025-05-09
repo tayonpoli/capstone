@@ -138,9 +138,14 @@ export const columns: ColumnDef<Product>[] = [
                 </div>
             )
         },
-        cell: ({ row }) => (
-            <div className="text-center">{row.getValue("stock")}</div>
-        ),
+        cell: ({ row }) => {
+            const stockValue = row.getValue("stock");
+            // Handle berbagai tipe data dan lakukan floor
+            const flooredStock = Math.floor(Number(stockValue));
+            return (
+                <div className="text-center">{flooredStock}</div>
+            )
+        },
     },
     {
         id: "actions",

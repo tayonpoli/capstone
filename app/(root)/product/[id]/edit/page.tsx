@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 
 export default async function EditProduct({ params }: { params: { id: string } }) {
     const product = await prisma.inventory.findUnique({
-        where: { id: Number(params.id) }
+        where: { id: params.id }
     })
 
     if (!product) return notFound()

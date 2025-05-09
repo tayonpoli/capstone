@@ -29,11 +29,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { NotificationBell } from "./NotificationBell"
 
 export function NavUser({
   user,
 }: {
   user: {
+    id: string
     name: string
     email: string
     avatar: string
@@ -97,7 +99,6 @@ export function NavUser({
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Bell />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>

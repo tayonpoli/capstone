@@ -1,19 +1,26 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon } from "lucide-react"
-import { Product, columns } from "./columns"
+import { Production, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 
-async function getData(): Promise<Product[]> {
+async function getData(): Promise<Production[]> {
     try {
-        const products = await prisma.inventory.findMany({
+        const production = await prisma.production.findMany({
+            include: {
+                product: {
+                    select: {
+                        product: true
+                    }
+                }
+            },
             orderBy: {
-                code: 'desc'
+                createdAt: 'desc'
             }
         })
-        return products
+        return production
     } catch (error) {
         console.error('Error fetching data:', error)
         return []
@@ -74,12 +81,12 @@ export default async function page() {
         <div className="min-h-screen m-3 p-5 bg-white rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="text-3xl font-semibold pl-1">
-                    Inventory
+                    Production
                 </div>
                 <div className="flex justify-end">
-                    <Link href='/product/create'>
+                    <Link href='/production/create'>
                         <Button>
-                            <PlusIcon /> Create New Product
+                            <PlusIcon /> Create New BOM
                         </Button>
                     </Link>
                 </div>
@@ -146,26 +153,26 @@ export default async function page() {
                 <DataTable
                     columns={columns}
                     data={data}
-                    searchColumn="product"
-                    searchPlaceholder="Search by product ..."
-                    facetedFilters={[
-                        {
-                            columnId: "category",
-                            title: "Category",
-                            options: [
-                                { label: "Milk", value: "Milk" },
-                                { label: "Coffee", value: "Coffee" },
-                            ],
-                        },
-                        {
-                            columnId: "product",
-                            title: "Product",
-                            options: [
-                                { label: "Oat Milk", value: "Oat Milk" },
-                                { label: "Almond Milk", value: "Almond Milk" },
-                            ],
-                        },
-                    ]}
+                    searchColumn="name"
+                    searchPlaceholder="Search BOM ..."
+                // facetedFilters={[
+                //     {
+                //         columnId: "category",
+                //         title: "Category",
+                //         options: [
+                //             { label: "Milk", value: "Milk" },
+                //             { label: "Coffee", value: "Coffee" },
+                //         ],
+                //     },
+                //     {
+                //         columnId: "product",
+                //         title: "Product",
+                //         options: [
+                //             { label: "Oat Milk", value: "Oat Milk" },
+                //             { label: "Almond Milk", value: "Almond Milk" },
+                //         ],
+                //     },
+                // ]}
                 />
             </div>
         </div>

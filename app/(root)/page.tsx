@@ -25,13 +25,9 @@ const page = async () => {
           <div className="col-span-4">
             <LongChart />
           </div>
-
-          <Card className="md:col-span-2">
-            <CardContent className="h-96"> {/* Fixed height */}
-              <RevenueChart />
-            </CardContent>
-          </Card>
-          
+          <div className="col-span-2">
+            <RevenueChart />
+          </div>
           <div className="h-96">
             <PieCharts />
           </div>

@@ -7,6 +7,7 @@ import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import { Blocks, Waypoints, Sparkles, LifeBuoy, Send, ShoppingBasket, SquareChartGantt, CreditCard, Boxes, PackageOpen, UsersRound, UserRoundCog } from "lucide-react"
+import { NotificationBell } from "./NotificationBell"
 
 interface AppSidebarProps {
   session: Session | null
@@ -15,6 +16,7 @@ interface AppSidebarProps {
 export function AppSidebar({ session }: AppSidebarProps) {
   const data = {
     user: {
+      id: session?.user?.id || "Guest",
       name: session?.user?.name || "Guest",
       email: session?.user?.email || "-",
       avatar: "/avatars/shadcn.jpg",
@@ -29,7 +31,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
       // { title: "Expenses", url: "#", icon: CreditCard },
-      { title: "Production", url: "#", icon: Boxes },
+      { title: "Production", url: "/production", icon: Boxes },
       { title: "Inventory", url: "/product", icon: PackageOpen },
       { title: "Customers", url: "/customer", icon: UsersRound },
       { title: "Suppliers", url: "/supplier", icon: UsersRound },
@@ -61,7 +63,10 @@ export function AppSidebar({ session }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <div className="mt-auto">
+          <NotificationBell userId={data.user.id} />
+          <NavSecondary items={data.navSecondary} className="mt-auto" />
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
