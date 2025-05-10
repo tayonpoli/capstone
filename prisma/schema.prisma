@@ -19,6 +19,22 @@ model User {
   email     String   @unique
   name      String?
   password  String
+  role      Role     @default(Staff)
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  Owner
+  Admin
+  Staff
+}
+
+model Invitation {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      Role     @default(Staff)
+  token     String   @unique
+  expiresAt DateTime
   createdAt DateTime @default(now())
 }
 

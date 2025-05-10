@@ -30,6 +30,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NotificationBell } from "./NotificationBell"
+import { signOut } from "next-auth/react"
 
 export function NavUser({
   user,
@@ -103,7 +104,10 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut({
+              redirect: true,
+              callbackUrl: window.location.origin + '/sign-in',
+            })}>
               <LogOut />
               Log out
             </DropdownMenuItem>

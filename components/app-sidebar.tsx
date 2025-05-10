@@ -38,7 +38,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
     ],
     navSecondary: [
       { title: "Settings", url: "#", icon: LifeBuoy },
-      { title: "Users", url: "#", icon: UserRoundCog },
+      { title: "Users", url: "/user", icon: UserRoundCog },
     ],
   }
 
