@@ -17,8 +17,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { DeleteProduct } from "@/components/products/DeleteProduct"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
