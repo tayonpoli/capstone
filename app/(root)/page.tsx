@@ -2,7 +2,6 @@ import { LineCharts } from "@/components/charts/LineChart";
 import { LongChart } from "@/components/charts/LongChart";
 import { PieCharts } from "@/components/charts/PieChart";
 import RevenueChart from "@/components/charts/RevenueChart";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation";
