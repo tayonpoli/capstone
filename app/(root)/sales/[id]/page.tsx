@@ -3,12 +3,13 @@ import { prisma } from "@/lib/prisma"
 import { SalesDetail } from "@/components/sales/SalesDetail";
 
 export default async function SalesDetailPage({
-    params
+    params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
+    const { id } = await params
     const sales = await prisma.salesOrder.findUnique({
-        where: { id: String(params.id) },
+        where: { id: id },
         include: {
             customer: true,
             items: {

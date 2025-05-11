@@ -4,12 +4,13 @@ import { SalesDetail } from "@/components/sales/SalesDetail";
 import { DetailPurchase } from "@/components/purchase/DetailPurchase";
 
 export default async function PurchaseDetailPage({
-    params
+    params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
+    const { id } = await params
     const purchase = await prisma.purchaseOrder.findUnique({
-        where: { id: String(params.id) },
+        where: { id: id },
         include: {
             staff: true,
             supplier: true,

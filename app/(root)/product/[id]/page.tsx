@@ -3,12 +3,13 @@ import { prisma } from "@/lib/prisma"
 import { ProductDetail } from "@/components/products/DetailProduct"
 
 export default async function ProductDetailPage({
-    params
+    params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
+    const { id } = await params
     const product = await prisma.inventory.findUnique({
-        where: { id: String(params.id) }
+        where: { id: id }
     })
 
     if (!product) return notFound()

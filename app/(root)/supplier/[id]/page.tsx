@@ -4,12 +4,13 @@ import { DetailCustomer } from "@/components/customer/DetailCustomer"
 import { DetailSupplier } from "@/components/supplier/DetailSupplier"
 
 export default async function SupplierDetailPage({
-    params
+    params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
+    const { id } = await params
     const supplier = await prisma.supplier.findUnique({
-        where: { id: params.id }
+        where: { id: id }
     })
 
     if (!supplier) return notFound()

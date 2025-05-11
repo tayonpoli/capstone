@@ -3,12 +3,13 @@ import { prisma } from "@/lib/prisma"
 import { ProductionDetail } from "@/components/production/ProductionDetail";
 
 export default async function ProductionDetailPage({
-    params
+    params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
+    const { id } = await params
     const production = await prisma.production.findUnique({
-        where: { id: String(params.id) },
+        where: { id: id },
         include: {
             product: true,
             materials: {

@@ -1,24 +1,18 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { DetailCustomer } from "@/components/customer/DetailCustomer";
+import { notFound } from "next/navigation"
+import { prisma } from "@/lib/prisma"
+import { DetailCustomer } from "@/components/customer/DetailCustomer"
 
-interface PageProps {
-    params: {
-        id: string;
-    };
-    searchParams?: {
-        [key: string]: string | string[] | undefined;
-    };
-}
-
-export default async function CustomerDetailPage({ params }: PageProps) {
+export default async function CustomerDetailPage({
+    params,
+}: {
+    params: Promise<{ id: string }>
+}) {
+    const { id } = await params
     const customer = await prisma.customer.findUnique({
-        where: { id: params.id }
-    });
+        where: { id: id }
+    })
 
-    if (!customer) {
-        notFound();
-    }
+    if (!customer) return notFound()
 
     return (
         <div className="h-full m-3 p-5 bg-white rounded-md">
