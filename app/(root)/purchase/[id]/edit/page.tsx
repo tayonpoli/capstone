@@ -24,13 +24,14 @@ interface PurchaseData {
 }
 
 export default async function EditPurchasePage({
-  params
+  params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   // Fetch data secara paralel di server component
   const [purchaseData, suppliers, staffs, products] = await Promise.all([
-    getPurchaseData(params.id),
+    getPurchaseData(id),
     getSupplier(),
     getStaff(),
     getProducts()
@@ -46,9 +47,9 @@ export default async function EditPurchasePage({
         where: { id },
         include: { items: true },
       })
-  
+
       if (!purchase) return null
-  
+
       return {
         id: purchase.id,
         staffId: purchase.staffId,
@@ -73,7 +74,7 @@ export default async function EditPurchasePage({
       return null
     }
   }
-  
+
   async function getSupplier(): Promise<Supplier[]> {
     try {
       return await prisma.supplier.findMany({
@@ -95,7 +96,7 @@ export default async function EditPurchasePage({
       return []
     }
   }
-  
+
   async function getProducts(): Promise<Inventory[]> {
     try {
       return await prisma.inventory.findMany({
@@ -109,7 +110,7 @@ export default async function EditPurchasePage({
   }
 
   // async function updateSale(data: any) {
-    
+
   //   try {
   //     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sales`, {
   //       method: 'PUT',
@@ -135,18 +136,18 @@ export default async function EditPurchasePage({
 
   return (
     <div className="h-min-full m-3 p-5 bg-white rounded-md">
-            <div className="p-3">
-                <div className='text-sm font-light text-gray-400'>
-                    Purchase
-                </div>
-                <div className='mb-10 text-3xl font-semibold'>
-                   Edit Purchase Order
-                </div>
-            </div>
+      <div className="p-3">
+        <div className='text-sm font-light text-gray-400'>
+          Purchase
+        </div>
+        <div className='mb-10 text-3xl font-semibold'>
+          Edit Purchase Order
+        </div>
+      </div>
       <EditPurchaseForm
-        initialData={purchaseData} 
-        suppliers={suppliers} 
-        staffs={staffs} 
+        initialData={purchaseData}
+        suppliers={suppliers}
+        staffs={staffs}
         products={products}
       />
     </div>

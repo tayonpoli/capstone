@@ -21,13 +21,14 @@ interface SalesData {
 }
 
 export default async function EditSalesPage({
-  params
+  params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   // Fetch data secara paralel di server component
   const [saleData, customers, products] = await Promise.all([
-    getSaleData(params.id),
+    getSaleData(id),
     getCustomers(),
     getProducts()
   ])
@@ -42,9 +43,9 @@ export default async function EditSalesPage({
         where: { id },
         include: { items: true },
       })
-  
+
       if (!sale) return null
-  
+
       return {
         id: sale.id,
         customerId: sale.customerId,
@@ -66,7 +67,7 @@ export default async function EditSalesPage({
       return null
     }
   }
-  
+
   async function getCustomers(): Promise<Customer[]> {
     try {
       return await prisma.customer.findMany({
@@ -77,7 +78,7 @@ export default async function EditSalesPage({
       return []
     }
   }
-  
+
   async function getProducts(): Promise<Inventory[]> {
     try {
       return await prisma.inventory.findMany({
@@ -91,7 +92,7 @@ export default async function EditSalesPage({
   }
 
   // async function updateSale(data: any) {
-    
+
   //   try {
   //     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sales`, {
   //       method: 'PUT',
@@ -117,19 +118,19 @@ export default async function EditSalesPage({
 
   return (
     <div className="h-min-full m-3 p-5 bg-white rounded-md">
-            <div className="p-3">
-                <div className='text-sm font-light text-gray-400'>
-                    Sales
-                </div>
-                <div className='mb-10 text-3xl font-semibold'>
-                   Edit Sales Order
-                </div>
-            </div>
-      <EditSalesForm 
-        initialData={saleData} 
-        customers={customers} 
+      <div className="p-3">
+        <div className='text-sm font-light text-gray-400'>
+          Sales
+        </div>
+        <div className='mb-10 text-3xl font-semibold'>
+          Edit Sales Order
+        </div>
+      </div>
+      <EditSalesForm
+        initialData={saleData}
+        customers={customers}
         products={products}
-        // onUpdate={updateSale}
+      // onUpdate={updateSale}
       />
     </div>
   )

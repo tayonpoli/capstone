@@ -17,13 +17,14 @@ interface ProductionData {
 }
 
 export default async function EditProductionPage({
-    params
+    params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
+    const { id } = await params
     // Fetch data secara paralel di server component
     const [productionData, products] = await Promise.all([
-        getProductionData(params.id),
+        getProductionData(id),
         // getCustomers(),
         getProducts()
     ])

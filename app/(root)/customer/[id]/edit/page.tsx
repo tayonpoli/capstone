@@ -2,9 +2,14 @@ import CustomerForm from "@/components/customer/CustomerForm"
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 
-export default async function EditCustomer({ params }: { params: { id: string } }) {
+export default async function EditCustomer({
+    params,
+}: {
+    params: Promise<{ id: string }>
+}) {
+    const { id } = await params
     const customer = await prisma.customer.findUnique({
-        where: { id: params.id }
+        where: { id: id }
     })
 
     if (!customer) return notFound()
