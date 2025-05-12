@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 
 const AdminDashboardPage = async () => {
   const session = await getServerSession(authOptions);
-  console.log('User role:', session?.user?.role);
 
   // Jika tidak ada session, redirect ke login
   if (!session?.user) {
