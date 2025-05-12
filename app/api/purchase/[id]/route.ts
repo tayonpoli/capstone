@@ -2,12 +2,15 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+  request: Request, {
+    params,
+  }: {
+    params: Promise<{ id: string }>
+  }) {
   try {
+    const { id } = await params
     const body = await request.json();
-    
+
     // Validasi data wajib
     if (!body.staffId || !body.supplierId || !body.purchaseDate || !body.dueDate || !body.items || body.items.length === 0) {
       return NextResponse.json(
@@ -26,16 +29,16 @@ export async function PUT(
     }
 
     const total = body.items.reduce((sum: number, item: any) => {
-        return sum + (item.price * item.quantity);
+      return sum + (item.price * item.quantity);
     }, 0);
 
     // Mulai database transaction
     const result = await prisma.$transaction(async (prisma) => {
       // 1. Update data utama sales
       const updatedPurchase = await prisma.purchaseOrder.update({
-        where: { id: params.id },
+        where: { id: id },
         data: {
-            staffId: body.staffId,
+          staffId: body.staffId,
           supplierId: body.supplierId,
           purchaseDate: new Date(body.purchaseDate),
           dueDate: new Date(body.dueDate),
@@ -48,13 +51,13 @@ export async function PUT(
 
       // 2. Hapus semua items yang lama
       await prisma.purchaseItem.deleteMany({
-        where: { purchaseOrderId: params.id },
+        where: { purchaseOrderId: id },
       });
 
       // 3. Buat items yang baru
       const createdItems = await prisma.purchaseItem.createMany({
         data: body.items.map((item: any) => ({
-          purchaseOrderId: params.id,
+          purchaseOrderId: id,
           productId: item.productId,
           note: item.note || null,
           quantity: item.quantity,
@@ -84,7 +87,7 @@ export async function PUT(
 
   } catch (error: any) {
     console.error('[SALES_UPDATE_ERROR]', error);
-    
+
     // Handle error khusus untuk constraint database
     if (error.code === 'P2002') {
       return NextResponse.json(

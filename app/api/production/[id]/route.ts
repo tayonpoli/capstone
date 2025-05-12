@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function PUT(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+    request: Request, {
+        params,
+    }: {
+        params: Promise<{ id: string }>
+    }) {
     try {
+        const { id } = await params
         const body = await request.json();
 
         // Validasi data wajib
@@ -20,7 +23,7 @@ export async function PUT(
         const result = await prisma.$transaction(async (prisma) => {
             // 1. Update data utama sales
             const updatedBom = await prisma.production.update({
-                where: { id: params.id },
+                where: { id: id },
                 data: {
                     name: body.name,
                     description: body.description,
@@ -30,13 +33,13 @@ export async function PUT(
 
             // 2. Hapus semua items yang lama
             await prisma.material.deleteMany({
-                where: { productionId: params.id },
+                where: { productionId: id },
             });
 
             // 3. Buat items yang baru
             const createdItems = await prisma.material.createMany({
                 data: body.materials.map((item: any) => ({
-                    productionId: params.id,
+                    productionId: id,
                     materialId: item.materialId,
                     qty: item.qty,
                     unit: item.unit,

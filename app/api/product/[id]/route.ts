@@ -14,9 +14,13 @@ const updateProductSchema = z
         limit: z.coerce.number().int().optional(),
     });
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, {
+    params,
+}: {
+    params: Promise<{ id: string }>
+}) {
     try {
-        const id = params.id;
+        const { id } = await params
         const body = await req.json();
         const { product, code, category, description, unit, buyprice, sellprice, limit } = updateProductSchema.parse(body);
 

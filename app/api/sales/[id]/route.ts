@@ -2,12 +2,15 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+  request: Request, {
+    params,
+  }: {
+    params: Promise<{ id: string }>
+  }) {
   try {
+    const { id } = await params
     const body = await request.json();
-    
+
     // Validasi data wajib
     if (!body.customerId || !body.orderDate || !body.items || body.items.length === 0) {
       return NextResponse.json(
@@ -26,14 +29,14 @@ export async function PUT(
     }
 
     const total = body.items.reduce((sum: number, item: any) => {
-        return sum + (item.price * item.quantity);
+      return sum + (item.price * item.quantity);
     }, 0);
 
     // Mulai database transaction
     const result = await prisma.$transaction(async (prisma) => {
       // 1. Update data utama sales
       const updatedSale = await prisma.salesOrder.update({
-        where: { id: params.id },
+        where: { id: id },
         data: {
           customerId: body.customerId,
           address: body.address,
@@ -48,13 +51,13 @@ export async function PUT(
 
       // 2. Hapus semua items yang lama
       await prisma.salesItem.deleteMany({
-        where: { salesOrderId: params.id },
+        where: { salesOrderId: id },
       });
 
       // 3. Buat items yang baru
       const createdItems = await prisma.salesItem.createMany({
         data: body.items.map((item: any) => ({
-          salesOrderId: params.id,
+          salesOrderId: id,
           productId: item.productId,
           note: item.note || null,
           quantity: item.quantity,
@@ -84,7 +87,7 @@ export async function PUT(
 
   } catch (error: any) {
     console.error('[SALES_UPDATE_ERROR]', error);
-    
+
     // Handle error khusus untuk constraint database
     if (error.code === 'P2002') {
       return NextResponse.json(

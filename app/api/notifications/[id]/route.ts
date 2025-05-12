@@ -3,18 +3,20 @@ import { prisma } from '@/lib/prisma';
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
-) {
+    { params,
+    }: {
+        params: Promise<{ id: string }>
+    }) {
     try {
-        const notificationId = params.id;
+        const { id } = await params
 
-        if (!notificationId) {
+        if (!id) {
             return new NextResponse("Notification ID required", { status: 400 });
         }
 
         // Update status notifikasi
         const updatedNotification = await prisma.notification.update({
-            where: { id: notificationId },
+            where: { id: id },
             data: { isRead: true },
         });
 
@@ -31,12 +33,15 @@ export async function PATCH(
 }
 
 export async function DELETE(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+    request: Request, {
+        params,
+    }: {
+        params: Promise<{ id: string }>
+    }) {
     try {
+        const { id } = await params
         await prisma.notification.delete({
-            where: { id: params.id }
+            where: { id: id }
         });
         return NextResponse.json({ success: true });
     } catch (error) {

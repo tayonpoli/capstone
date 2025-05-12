@@ -5,14 +5,18 @@ import * as z from 'zod';
 const updateCustomerSchema = z
     .object({
         name: z.string().min(1, 'Customer name is required').max(100),
-                email: z.string(),
-                phone: z.string(),
-                address: z.string(),
-            })
+        email: z.string(),
+        phone: z.string(),
+        address: z.string(),
+    })
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, {
+    params,
+}: {
+    params: Promise<{ id: string }>
+}) {
     try {
-        const id = params.id;
+        const { id } = await params
         const body = await req.json();
         const { name, email, phone, address } = updateCustomerSchema.parse(body);
 
