@@ -12,7 +12,6 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Inventory } from '@prisma/client';
-import { Trash2 } from 'lucide-react';
 
 type MaterialItemProps = {
     form: UseFormReturn<any>;
@@ -57,7 +56,7 @@ export function MaterialItem({
                                                     i !== index && m.materialId === material.id
                                                 )}
                                             >
-                                                {material.product} (Stock: {material.stock} {material.unit})
+                                                {material.product}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -69,26 +68,6 @@ export function MaterialItem({
                 />
             </div>
             <div className=' flex flex-center gap-4 col-span-2'>
-                <FormField
-                    control={form.control}
-                    name={`materials.${index}.qty`}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Quantity</FormLabel>
-                            <FormControl className='w-30'>
-                                <Input
-                                    type="number"
-                                    step="1"
-                                    min="1"
-                                    placeholder="Qty"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
                 <FormField
                     control={form.control}
                     name={`materials.${index}.unit`}
@@ -116,8 +95,44 @@ export function MaterialItem({
                         </FormItem>
                     )}
                 />
+                <FormField
+                    control={form.control}
+                    name={`materials.${index}.qty`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Quantity</FormLabel>
+                            <FormControl className='w-30'>
+                                <Input
+                                    type="number"
+                                    step="1"
+                                    min="1"
+                                    placeholder="Qty"
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
             </div>
-
+            <FormField
+                control={form.control}
+                name={`materials.${index}.price`}
+                render={({ field }) => (
+                    <FormItem className="col-span-2">
+                        <FormLabel>Price</FormLabel>
+                        <FormControl>
+                            <Input
+                                type="number"
+                                step="1"
+                                min="0"
+                                {...field}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
             {canRemove && (
                 <div>
                     <Button

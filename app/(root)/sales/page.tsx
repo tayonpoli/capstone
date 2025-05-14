@@ -11,29 +11,30 @@ import { ReportGenerator } from "@/components/reports/ReportGenerator"
 
 async function getData(): Promise<any[]> {
     try {
-      const sales = await prisma.salesOrder.findMany({
-        include: {
-          customer: {
-            select: {
-              name: true
+        const sales = await prisma.salesOrder.findMany({
+            include: {
+                customer: {
+                    select: {
+                        name: true
+                    }
+                }
+            },
+            orderBy: {
+                orderDate: 'desc'
             }
-          }
-        },
-        orderBy: {
-          orderDate: 'desc'
-        }
-      })
-      return sales
+        })
+        return sales
     } catch (error) {
-      console.error('Error fetching data:', error)
-      return []
+        console.error('Error fetching data:', error)
+        return []
     } finally {
-      await prisma.$disconnect()
+        await prisma.$disconnect()
     }
-  }
+}
 
-  async function getSalesStats() {
+async function getSalesStats() {
     try {
+        const customer = await prisma.customer.count();
         // Total jumlah transaksi sales
         const totalTransactions = await prisma.salesOrder.count();
 
@@ -57,11 +58,12 @@ async function getData(): Promise<any[]> {
         const totalRevenue = revenueResult._sum.total || 0;
 
         // Menghitung rata-rata nilai transaksi
-        const averageTransactionValue = completedTransactions > 0 
-            ? totalRevenue / completedTransactions 
+        const averageTransactionValue = completedTransactions > 0
+            ? totalRevenue / completedTransactions
             : 0;
 
         return {
+            customer,
             totalTransactions,
             completedTransactions,
             totalRevenue,
@@ -85,30 +87,16 @@ export default async function page() {
     const salesStats = await getSalesStats();
 
     return (
-        <div className="min-h-screen m-3 p-5 bg-white rounded-md">
+        <div className="h-full m-3 p-5 bg-white rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="text-3xl font-semibold pl-1">
                     Sales
                 </div>
                 <div className="flex justify-end">
-                <ReportGenerator reportType="sales" />
+                    <ReportGenerator reportType="sales" />
                 </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Sales Transaction
-                        </CardTitle>
-                        <Info />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{salesStats.totalTransactions}</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
-                    </CardContent>
-                </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
@@ -126,7 +114,7 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Revenue
+                            Total Profit
                         </CardTitle>
                         <Info />
                     </CardHeader>
@@ -140,12 +128,26 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Revenue
+                            Sales Transaction
                         </CardTitle>
                         <Info />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Rp 45,231.89</div>
+                        <div className="text-2xl font-bold">{salesStats.totalTransactions}</div>
+                        <p className="text-xs text-muted-foreground">
+                            +20.1% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Customers
+                        </CardTitle>
+                        <Info />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{salesStats.customer}</div>
                         <p className="text-xs text-muted-foreground">
                             +20.1% from last month
                         </p>
@@ -153,12 +155,12 @@ export default async function page() {
                 </Card>
             </div>
             <Tabs defaultValue="completed" className="py-10">
-            <div className="flex justify-between">
-                <TabsList className="grid w-[400px] grid-cols-2">
-                    <TabsTrigger value="completed">Completed</TabsTrigger>
-                    <TabsTrigger value="receivable">Receivable</TabsTrigger>
-                </TabsList>
-                <Link href='/sales/create'>
+                <div className="flex justify-between">
+                    <TabsList className="grid w-[400px] grid-cols-2">
+                        <TabsTrigger value="completed">Completed</TabsTrigger>
+                        <TabsTrigger value="receivable">Receivable</TabsTrigger>
+                    </TabsList>
+                    <Link href='/sales/create'>
                         <Button>
                             <PlusIcon /> Create New Sales
                         </Button>
@@ -173,18 +175,18 @@ export default async function page() {
                             searchPlaceholder="Search customer ..."
                             facetedFilters={[
                                 {
-                                    columnId: "status",
+                                    columnId: "paymentStatus",
                                     title: "Status",
                                     options: [
-                                        { label: "Completed", value: "Completed" },
-                                        { label: "Pending", value: "Pending" },
+                                        { label: "Unpaid", value: "Unpaid" },
+                                        { label: "Paid", value: "Paid" },
                                     ],
                                 },
                             ]}
                         />
                     </div>
-                    </TabsContent>
-                    </Tabs>
+                </TabsContent>
+            </Tabs>
         </div>
     )
 }

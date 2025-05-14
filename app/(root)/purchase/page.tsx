@@ -11,31 +11,33 @@ import { formatIDR } from "@/lib/formatCurrency"
 
 async function getData(): Promise<any[]> {
     try {
-      const purchase = await prisma.purchaseOrder.findMany({
-        include: {
-          supplier: {
-            select: {
-              name: true
+        const purchase = await prisma.purchaseOrder.findMany({
+            include: {
+                supplier: {
+                    select: {
+                        name: true
+                    }
+                }
+            },
+            orderBy: {
+                purchaseDate: 'desc'
             }
-          }
-        },
-        orderBy: {
-          purchaseDate: 'desc'
-        }
-      })
+        })
 
-      return purchase
+        return purchase
 
     } catch (error) {
-      console.error('Error fetching data:', error)
-      return []
+        console.error('Error fetching data:', error)
+        return []
     } finally {
-      await prisma.$disconnect()
+        await prisma.$disconnect()
     }
-  }
+}
 
-  async function getStats() {
+async function getStats() {
     try {
+
+        const supplier = await prisma.supplier.count();
         // Total jumlah transaksi sales
         const totalTransactions = await prisma.purchaseOrder.count();
 
@@ -59,11 +61,12 @@ async function getData(): Promise<any[]> {
         const totalExpense = expenseResult._sum.total || 0;
 
         // Menghitung rata-rata nilai transaksi
-        const averageTransactionValue = completedTransactions > 0 
-            ? totalExpense / completedTransactions 
+        const averageTransactionValue = completedTransactions > 0
+            ? totalExpense / completedTransactions
             : 0;
 
         return {
+            supplier,
             totalTransactions,
             completedTransactions,
             totalExpense,
@@ -93,47 +96,47 @@ export default async function page() {
                     Purchase
                 </div>
                 <div className="flex justify-end">
-                <ReportGenerator reportType="purchasing" />
+                    <ReportGenerator reportType="purchasing" />
                 </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
                 <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">
-                                            Sales Transaction
-                                        </CardTitle>
-                                        <Info />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">{stats.totalTransactions}</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            +20.1% from last month
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">
-                                            Total Expenses
-                                        </CardTitle>
-                                        <Info />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            +20.1% from last month
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Revenue
+                            Total Purchases
                         </CardTitle>
                         <Info />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Rp 45,231.89</div>
+                        <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
+                        <p className="text-xs text-muted-foreground">
+                            +20.1% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Purchase Transaction
+                        </CardTitle>
+                        <Info />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.totalTransactions}</div>
+                        <p className="text-xs text-muted-foreground">
+                            +20.1% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Suppliers
+                        </CardTitle>
+                        <Info />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.supplier}</div>
                         <p className="text-xs text-muted-foreground">
                             +20.1% from last month
                         </p>
@@ -155,12 +158,12 @@ export default async function page() {
                 </Card>
             </div>
             <Tabs defaultValue="completed" className="py-8">
-            <div className="flex justify-between">
-                <TabsList className="grid w-[400px] grid-cols-2">
-                    <TabsTrigger value="completed">Completed</TabsTrigger>
-                    <TabsTrigger value="receivable">Receivable</TabsTrigger>
-                </TabsList>
-                <Link href='/purchase/create'>
+                <div className="flex justify-between">
+                    <TabsList className="grid w-[400px] grid-cols-2">
+                        <TabsTrigger value="completed">Completed</TabsTrigger>
+                        <TabsTrigger value="receivable">Receivable</TabsTrigger>
+                    </TabsList>
+                    <Link href='/purchase/create'>
                         <Button>
                             <PlusIcon /> Create New Purchase
                         </Button>
@@ -175,11 +178,11 @@ export default async function page() {
                             searchPlaceholder="Search supplier ..."
                             facetedFilters={[
                                 {
-                                    columnId: "status",
+                                    columnId: "paymentStatus",
                                     title: "Status",
                                     options: [
-                                        { label: "Completed", value: "Completed" },
-                                        { label: "Pending", value: "Pending" },
+                                        { label: "Paid", value: "Paid" },
+                                        { label: "Unpaid", value: "Unpaid" },
                                     ],
                                 },
                             ]}

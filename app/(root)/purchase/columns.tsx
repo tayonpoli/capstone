@@ -26,7 +26,9 @@ export type Purchase = {
   total: number
   tag: string | null
   memo: string | null
+  contact: string | null
   status: string
+  paymentStatus: string
   urgency: string
   // address: string | null
   // email: string | null
@@ -73,6 +75,10 @@ export const columns: ColumnDef<Purchase>[] = [
     id: "supplierName",
   },
   {
+    accessorKey: "contact",
+    header: "Supplier Contact",
+  },
+  {
     accessorKey: "purchaseDate",
     header: "Purchase Date",
     cell: ({ row }) => {
@@ -81,15 +87,8 @@ export const columns: ColumnDef<Purchase>[] = [
     },
   },
   {
-    accessorKey: "tag",
-    header: "Tag",
-    cell: ({ row }) => (
-      <div className="w-32">
-        <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.tag || "No tag"}
-        </Badge>
-      </div>
-    ),
+    accessorKey: "memo",
+    header: "Memo",
   },
   {
     accessorKey: "total",
@@ -110,12 +109,12 @@ export const columns: ColumnDef<Purchase>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "paymentStatus",
     header: "Status",
     cell: ({ row }) => (
       <div className="w-32">
         <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.status}
+          {row.original.paymentStatus}
         </Badge>
       </div>
     ),
@@ -128,28 +127,28 @@ export const columns: ColumnDef<Purchase>[] = [
 
       const handleDelete = async () => {
         try {
-            const response = await fetch('/api/purchase', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: purchase.id }),
-            })
+          const response = await fetch('/api/purchase', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: purchase.id }),
+          })
 
-            const result = await response.json()
+          const result = await response.json()
 
-            if (response.ok) {
-                toast.success(result.message || "Sales order deleted successfully")
-                router.refresh()
-            } else {
-                throw new Error(result.error || "Failed to delete sales order")
-            }
+          if (response.ok) {
+            toast.success(result.message || "Sales order deleted successfully")
+            router.refresh()
+          } else {
+            throw new Error(result.error || "Failed to delete sales order")
+          }
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "An error occurred")
-            console.error('Delete error:', error)
-            throw error // Penting untuk ditangkap oleh DeleteProduct
+          toast.error(error instanceof Error ? error.message : "An error occurred")
+          console.error('Delete error:', error)
+          throw error // Penting untuk ditangkap oleh DeleteProduct
         }
-    }
+      }
 
       return (
         <DropdownMenu>
@@ -168,9 +167,9 @@ export const columns: ColumnDef<Purchase>[] = [
             <DropdownMenuItem asChild>
               <Link href={`/purchase/${purchase.id}/edit`}>Edit</Link>
             </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                        <DeletePurchase purchaseId={purchase.id} onConfirm={handleDelete} />
-                                    </DropdownMenuItem>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <DeletePurchase purchaseId={purchase.id} onConfirm={handleDelete} />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

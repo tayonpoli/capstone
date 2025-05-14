@@ -25,7 +25,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
       { title: "Overview", url: "/", icon: Waypoints },
       {
         title: "AI",
-        url: "#",
+        url: "/ai",
         icon: Sparkles,
       },
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
@@ -35,10 +35,11 @@ export function AppSidebar({ session }: AppSidebarProps) {
       { title: "Inventory", url: "/product", icon: PackageOpen },
       { title: "Customers", url: "/customer", icon: UsersRound },
       { title: "Suppliers", url: "/supplier", icon: UsersRound },
+      { title: "Staff", url: "/staff", icon: UsersRound },
     ],
     navSecondary: [
-      { title: "Settings", url: "#", icon: LifeBuoy },
-      { title: "Users", url: "/user", icon: UserRoundCog },
+      // { title: "Settings", url: "#", icon: LifeBuoy },
+      { title: "User Management", url: "/user", icon: UserRoundCog },
     ],
   }
 

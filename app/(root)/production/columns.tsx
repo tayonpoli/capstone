@@ -20,6 +20,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { DeleteProduction } from "@/components/production/DeleteProduction"
+import { formatIDR } from "@/lib/formatCurrency"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -31,6 +32,7 @@ export type Production = {
     product: {
         product: string
     }
+    total: number
     // status: "pending" | "processing" | "success" | "failed"
 }
 
@@ -67,8 +69,26 @@ export const columns: ColumnDef<Production>[] = [
     },
     {
         accessorFn: (row) => row.product.product,
-        header: "Output",
+        header: "Output Product",
         id: "productName", // Berikan ID yang lebih sederhana
+    },
+    {
+        accessorKey: "total",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Total Cost
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const amount = parseFloat(row.getValue("total"))
+            return <div className="font-medium">{formatIDR(amount)}</div>
+        },
     },
     {
         id: "actions",

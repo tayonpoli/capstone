@@ -58,7 +58,7 @@ export function OrderItem({
                             <SelectContent>
                                 {products.map((product) => (
                                     <SelectItem key={product.id} value={product.id}>
-                                        {product.product} ({product.code})
+                                        {product.product}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -73,7 +73,7 @@ export function OrderItem({
                 name={`items.${index}.note`}
                 render={({ field }) => (
                     <FormItem className="col-span-3">
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>Note</FormLabel>
                         <FormControl>
                             <Input placeholder='e.g. Less Sugar' {...field} />
                         </FormControl>

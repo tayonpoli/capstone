@@ -26,6 +26,7 @@ export type Sales = {
   tag: string | null
   memo: string | null
   status: string
+  paymentStatus: string
   address: string | null
   email: string | null
   customerId: string
@@ -102,13 +103,24 @@ export const columns: ColumnDef<Sales>[] = [
       return <div className="font-medium">{formatIDR(amount)}</div>
     },
   },
+  // {
+  //   accessorKey: "status",
+  //   header: "Status",
+  //   cell: ({ row }) => (
+  //     <div className="w-32">
+  //       <Badge variant="outline" className="px-1.5 text-muted-foreground">
+  //         {row.original.status}
+  //       </Badge>
+  //     </div>
+  //   ),
+  // },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "paymentStatus",
+    header: "Payment Status",
     cell: ({ row }) => (
       <div className="w-32">
         <Badge variant="outline" className="px-1.5 text-muted-foreground">
-          {row.original.status}
+          {row.original.paymentStatus}
         </Badge>
       </div>
     ),
@@ -121,28 +133,28 @@ export const columns: ColumnDef<Sales>[] = [
 
       const handleDelete = async () => {
         try {
-            const response = await fetch('/api/sales', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: sales.id }),
-            })
+          const response = await fetch('/api/sales', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: sales.id }),
+          })
 
-            const result = await response.json()
+          const result = await response.json()
 
-            if (response.ok) {
-                toast.success(result.message || "Sales order deleted successfully")
-                router.refresh()
-            } else {
-                throw new Error(result.error || "Failed to delete sales order")
-            }
+          if (response.ok) {
+            toast.success(result.message || "Sales order deleted successfully")
+            router.refresh()
+          } else {
+            throw new Error(result.error || "Failed to delete sales order")
+          }
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "An error occurred")
-            console.error('Delete error:', error)
-            throw error // Penting untuk ditangkap oleh DeleteProduct
+          toast.error(error instanceof Error ? error.message : "An error occurred")
+          console.error('Delete error:', error)
+          throw error // Penting untuk ditangkap oleh DeleteProduct
         }
-    }
+      }
 
       return (
         <DropdownMenu>
@@ -161,9 +173,9 @@ export const columns: ColumnDef<Sales>[] = [
             <DropdownMenuItem asChild>
               <Link href={`/sales/${sales.id}/edit`}>Edit</Link>
             </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                        <DeleteSales salesId={sales.id} onConfirm={handleDelete} />
-                                    </DropdownMenuItem>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <DeleteSales salesId={sales.id} onConfirm={handleDelete} />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

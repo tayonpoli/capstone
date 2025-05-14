@@ -17,7 +17,7 @@ export function DeletePurchase({
     purchaseId,
     onConfirm,
 }: {
-    productId: number
+    purchaseId: string
     onConfirm: () => void
 }) {
     return (

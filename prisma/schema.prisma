@@ -20,6 +20,7 @@ model User {
   name      String?
   password  String
   role      Role     @default(Staff)
+  status    String   @default("Active")
   createdAt DateTime @default(now())
 }
 
@@ -52,6 +53,8 @@ model Staff {
   id             String          @id @default(uuid())
   name           String
   email          String          @unique
+  phone          String?
+  address        String?
   position       String?
   purchaseOrders PurchaseOrder[]
   createdAt      DateTime        @default(now())
@@ -103,6 +106,7 @@ model Production {
   description String?
   productId   String
   product     Inventory  @relation("ProductBOM", fields: [productId], references: [id])
+  total       Float      @default(0)
   materials   Material[]
   createdAt   DateTime   @default(now())
 }
@@ -115,6 +119,7 @@ model Material {
   material     Inventory  @relation("MaterialBOM", fields: [materialId], references: [id])
   qty          Float
   unit         Unit
+  price        Float      @default(0)
 }
 
 model Supplier {
@@ -128,19 +133,21 @@ model Supplier {
 }
 
 model SalesOrder {
-  id         String      @id @default(uuid())
-  customerId String
-  customer   Customer    @relation(fields: [customerId], references: [id])
-  address    String?
-  email      String?
-  orderDate  DateTime
-  tag        String?
-  total      Float       @default(0)
-  status     Status      @default(Completed) // Draft, Approved, Completed, Cancelled
-  memo       String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  items      SalesItem[]
+  id            String         @id @default(uuid())
+  customerId    String
+  customer      Customer       @relation(fields: [customerId], references: [id])
+  address       String?
+  email         String?
+  orderDate     DateTime
+  tag           String?
+  total         Float          @default(0)
+  status        Status         @default(Completed) // Draft, Approved, Completed, Cancelled
+  paymentStatus Payment        @default(Unpaid)
+  memo          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  items         SalesItem[]
+  SalesInvoice  SalesInvoice[]
 
   @@map("sales_orders")
 }
@@ -160,21 +167,24 @@ model SalesItem {
 }
 
 model PurchaseOrder {
-  id           String         @id @default(uuid())
-  staffId      String
-  staff        Staff          @relation(fields: [staffId], references: [id])
-  supplierId   String
-  supplier     Supplier       @relation(fields: [supplierId], references: [id])
-  purchaseDate DateTime
-  dueDate      DateTime
-  urgency      Urgency        @default(Medium) // Low, Medium, High
-  total        Float          @default(0)
-  status       Status         @default(Draft) // Draft, Approved, Completed, Cancelled
-  tag          String?
-  memo         String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  items        PurchaseItem[]
+  id            String         @id @default(uuid())
+  staffId       String
+  staff         Staff          @relation(fields: [staffId], references: [id])
+  supplierId    String
+  supplier      Supplier       @relation(fields: [supplierId], references: [id])
+  contact       String?
+  purchaseDate  DateTime
+  dueDate       DateTime
+  urgency       Urgency        @default(Medium) // Low, Medium, High
+  total         Float          @default(0)
+  status        Status         @default(Draft) // Draft, Approved, Completed, Cancelled
+  paymentStatus Payment        @default(Unpaid)
+  tag           String?
+  memo          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  items         PurchaseItem[]
+  Invoice       Invoice[]
 
   @@map("purchase_orders")
 }
@@ -190,6 +200,11 @@ enum Status {
   Approved
   Completed
   Cancelled
+}
+
+enum Payment {
+  Unpaid
+  Paid
 }
 
 model PurchaseItem {
@@ -215,4 +230,30 @@ model Notification {
   relatedId String? // ID terkait (productId, orderId)
   createdAt DateTime @default(now())
   userId    String? // Target user (null untuk broadcast)
+}
+
+model Invoice {
+  id              String        @id @default(uuid())
+  amount          Float
+  paymentMethod   String?
+  bankName        String?
+  accountNumber   String?
+  paymentDate     DateTime?
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model SalesInvoice {
+  id            String     @id @default(uuid())
+  amount        Float
+  paymentMethod String?
+  bankName      String?
+  accountNumber String?
+  paymentDate   DateTime?
+  salesOrder    SalesOrder @relation(fields: [salesOrderId], references: [id])
+  salesOrderId  String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }

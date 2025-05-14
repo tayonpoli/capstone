@@ -33,13 +33,16 @@ export function DetailSupplier({ supplier }: SupplierDetailProps) {
                     </Button>
                 </div>
             </div>
-            <h1 className="text-2xl font-semibold mb-4">{supplier.name}</h1>
             <div>
-                <div className="lg:w-150 grid grid-cols-2 gap-8 mt-4">
+                <div className="lg:w-150 grid grid-cols-2 gap-8 mt-2">
                     <div className="mt-4 col-span-2 flex flex-center items-center text-lg font-semibold">
                         <InfoIcon />
                         <h2 className="ml-3">Supplier Information</h2>
                     </div>
+                    <div className="font-medium text-gray-500">
+                        Name
+                    </div>
+                    <div className="font-medium">{supplier.name}</div>
                     <div className="font-medium text-gray-500">
                         Email
                     </div>

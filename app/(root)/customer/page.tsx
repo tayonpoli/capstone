@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon } from "lucide-react"
+import { PlusIcon, BookUser } from "lucide-react"
 import { Customer, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
@@ -18,44 +18,24 @@ async function getData(): Promise<Customer[]> {
     }
 }
 
-async function getInventoryStats() {
+async function getContactStats() {
     try {
-        const totalProducts = await prisma.inventory.count();
+        const totalCustomer = await prisma.customer.count();
+        const totalSupplier = await prisma.supplier.count();
+        const totalStaff = await prisma.staff.count();
 
-        const inStockProducts = await prisma.inventory.count({
-            where: {
-                stock: {
-                    gt: 0
-                },
-            }
-        });
-
-        const outOfStockProducts = await prisma.inventory.count({
-            where: {
-                stock: 0
-            }
-        });
-
-        const belowLimitProducts = await prisma.inventory.count({
-            where: {
-                stock: {
-                    lt: prisma.inventory.fields.limit
-                },
-            }
-        });
 
         return {
-            totalProducts,
-            outOfStockProducts,
-            belowLimitProducts,
-            inStockProducts
+            totalCustomer,
+            totalSupplier,
+            totalStaff,
         };
     } catch (error) {
-        console.error('Error fetching inventory stats:', error);
+        console.error('Error fetching contact stats:', error);
         return {
-            totalProducts: 0,
-            outOfStockProducts: 0,
-            belowLimitProducts: 0
+            totalCustomer: 0,
+            totalSupplier: 0,
+            totalStaff: 0,
         };
     } finally {
         await prisma.$disconnect();
@@ -64,13 +44,18 @@ async function getInventoryStats() {
 
 export default async function page() {
     const data = await getData();
-    const stats = await getInventoryStats();
+    const stats = await getContactStats();
 
     return (
         <div className="min-h-screen m-3 p-5 bg-white rounded-md">
             <div className="grid grid-cols-2 mb-8">
-                <div className="text-3xl font-semibold pl-1">
-                    Customers
+                <div className="pl-1">
+                    <p className='text-sm font-light text-gray-400'>
+                        Contacts
+                    </p>
+                    <h1 className='text-3xl font-semibold'>
+                        Customers
+                    </h1>
                 </div>
                 <div className="flex justify-end">
                     <Link href='/customer/create'>
@@ -84,56 +69,56 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Total Products
+                            Customers
                         </CardTitle>
-                        <PackageIcon />
+                        <BookUser />
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="text-2xl font-bold pl-1">{stats.totalProducts}</div>
+                        <div className="text-2xl font-bold pl-1">{stats.totalCustomer}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Customer contact listed
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Low Stock
+                            Suppliers
                         </CardTitle>
-                        <PackageMinusIcon />
+                        <BookUser />
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="text-2xl font-bold pl-1">{stats.belowLimitProducts}</div>
+                        <div className="text-2xl font-bold pl-1">{stats.totalSupplier}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Supplier contact listed
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Out of Stock
+                            Staff
                         </CardTitle>
-                        <PackageXIcon />
+                        <BookUser />
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="text-2xl font-bold pl-1">{stats.outOfStockProducts}</div>
+                        <div className="text-2xl font-bold pl-1">{stats.totalStaff}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Staff contact listed
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            In Stock
+                            Staff
                         </CardTitle>
-                        <PackageCheckIcon />
+                        <BookUser />
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="text-2xl font-bold pl-1">{stats.inStockProducts}</div>
+                        <div className="text-2xl font-bold pl-1">{stats.totalStaff}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Customers contact listed
                         </p>
                     </CardContent>
                 </Card>

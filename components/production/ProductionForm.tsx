@@ -29,8 +29,9 @@ const BomFormSchema = z.object({
     materials: z.array(
         z.object({
             materialId: z.string().min(1, 'Material is required'),
-            quantity: z.coerce.number().min(0.01, 'Quantity must be greater than 0'),
+            qty: z.coerce.number().min(1, 'Quantity must be greater than 0'),
             unit: z.string().min(1, 'Unit is required'),
+            price: z.coerce.number().min(1, 'Price must be greater than 0'),
         })
     ).min(1, 'At least one material is required'),
 });
@@ -49,7 +50,7 @@ export function ProductionForm({ finishedProducts, rawMaterials }: CreateBomForm
             name: '',
             description: '',
             productId: '',
-            materials: [{ materialId: '', quantity: 0, unit: 'gram' }],
+            materials: [{ materialId: '', qty: 0, unit: 'gram', price: 0 }],
         },
     });
 
@@ -140,7 +141,7 @@ export function ProductionForm({ finishedProducts, rawMaterials }: CreateBomForm
                                             <SelectContent>
                                                 {finishedProducts.map((product) => (
                                                     <SelectItem key={product.id} value={product.id}>
-                                                        {product.product} ({product.code})
+                                                        {product.product}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -177,7 +178,7 @@ export function ProductionForm({ finishedProducts, rawMaterials }: CreateBomForm
                             onClick={() => {
                                 form.setValue('materials', [
                                     ...materials,
-                                    { materialId: '', quantity: 0, unit: 'gram' }
+                                    { materialId: '', qty: 0, unit: 'gram', price: 0 }
                                 ]);
                             }}
                         >
@@ -185,7 +186,7 @@ export function ProductionForm({ finishedProducts, rawMaterials }: CreateBomForm
                         </Button>
                     </div>
 
-                    <div className='flex justify-end space-x-4 mt-8'>
+                    <div className='fixed bottom-16 right-14 space-x-4'>
                         <Button asChild variant='outline'>
                             <Link href='/production'>
                                 Cancel

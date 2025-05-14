@@ -78,7 +78,7 @@ export default async function page() {
     const stats = await getInventoryStats();
 
     return (
-        <div className="min-h-screen m-3 p-5 bg-white rounded-md">
+        <div className="h-full m-3 p-5 bg-white rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="text-3xl font-semibold pl-1">
                     Production
@@ -95,7 +95,7 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Total Products
+                            Products
                         </CardTitle>
                         <PackageIcon />
                     </CardHeader>
@@ -109,7 +109,7 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Low Stock
+                            Raw material
                         </CardTitle>
                         <PackageMinusIcon />
                     </CardHeader>
@@ -123,7 +123,7 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Out of Stock
+                            BOM
                         </CardTitle>
                         <PackageXIcon />
                     </CardHeader>

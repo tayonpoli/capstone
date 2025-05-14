@@ -75,7 +75,7 @@ export function PurchaseItem({
                     <FormItem className="col-span-3">
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                            <Input placeholder='e.g. Less Sugar' {...field} />
+                            <Input placeholder='Product description or additional note' {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>

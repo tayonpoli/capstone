@@ -8,6 +8,7 @@ export async function POST(req: Request) {
         const {
             staffId,
             supplierId,
+            contact,
             purchaseDate,
             dueDate,
             urgency,
@@ -37,6 +38,7 @@ export async function POST(req: Request) {
                 data: {
                     staffId,
                     supplierId,
+                    contact,
                     purchaseDate: new Date(purchaseDate),
                     dueDate: new Date(dueDate),
                     urgency,
@@ -86,11 +88,11 @@ export async function POST(req: Request) {
         return NextResponse.json(result);
     } catch (error) {
         console.error('[SALES_POST]', error);
-        
+
         if (error instanceof Error && error.message.includes('Insufficient stock')) {
             return new NextResponse(error.message, { status: 400 });
         }
-        
+
         return new NextResponse("Internal error", { status: 500 });
     } finally {
         await prisma.$disconnect();
@@ -110,7 +112,7 @@ export async function DELETE(request: Request) {
     try {
         await prisma.purchaseItem.deleteMany({
             where: { purchaseOrderId: id },
-          })
+        })
 
         await prisma.purchaseOrder.delete({
             where: { id: id }

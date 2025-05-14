@@ -1,6 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
-import { Customer, Inventory, Material, Unit } from '@prisma/client'
-import { EditSalesForm } from '@/components/sales/EditSalesForm'
+import { Inventory, Unit } from '@prisma/client'
 import { prisma } from "@/lib/prisma";
 import { EditBomForm } from '@/components/production/EditProduction';
 

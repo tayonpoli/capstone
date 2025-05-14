@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge"
 // You can use a Zod schema here if you want.
 export type User = {
     id: string
-    name: string
+    name: string | null
     email: string
     role: string
     status: string
@@ -79,7 +79,7 @@ export const columns: ColumnDef<User>[] = [
         header: "Status",
         cell: ({ row }) => (
             <div className="w-32">
-                <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                <Badge variant="success" className="px-1.5 text-muted-foreground text-gray-50">
                     {row.original.status}
                 </Badge>
             </div>

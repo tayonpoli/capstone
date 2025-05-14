@@ -20,12 +20,19 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Customer, Inventory } from '@prisma/client';
 import { OrderItem } from './OrderItem';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '../ui/calendar';
 
 const FormSchema = z.object({
     customerId: z.string().min(1, 'Customer is required'),
     address: z.string().optional(),
     email: z.string().optional(),
-    orderDate: z.string().min(1, 'Order date is required'),
+    orderDate: z.date({
+        required_error: "An order date is required.",
+    }),
     tag: z.string().optional(),
     status: z.string().min(1, 'Status is required'),
     memo: z.string().optional(),
@@ -53,7 +60,7 @@ export function CreateSalesForm({ customers, products }: CreateSalesFormProps) {
             customerId: '',
             address: '',
             email: '',
-            orderDate: new Date().toISOString().split('T')[0],
+            orderDate: new Date(),
             tag: '',
             status: 'Completed',
             memo: '',
@@ -61,12 +68,12 @@ export function CreateSalesForm({ customers, products }: CreateSalesFormProps) {
         },
     });
 
-    const statusOptions = [
-        { value: 'Draft', label: 'Draft' },
-        { value: 'Approved', label: 'Approved' },
-        { value: 'Completed', label: 'Completed' },
-        { value: 'Cancelled', label: 'Cancelled' },
-    ] as const;
+    // const statusOptions = [
+    //     { value: 'Draft', label: 'Draft' },
+    //     { value: 'Approved', label: 'Approved' },
+    //     { value: 'Completed', label: 'Completed' },
+    //     { value: 'Cancelled', label: 'Cancelled' },
+    // ] as const;
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
@@ -141,53 +148,91 @@ export function CreateSalesForm({ customers, products }: CreateSalesFormProps) {
                             />
                             <FormField
                                 control={form.control}
-                                name='orderDate'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Order Date</FormLabel>
-                                        <FormControl>
-                                            <Input type="date" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name='tag'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Tag</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='e.g. Urgent, Wholesale' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className='ml-4 space-y-6'>
-                            <FormField
-                                control={form.control}
-                                name='memo'
-                                render={({ field }) => (
-                                    <FormItem className='col-span-2 max-w-lg'>
-                                        <FormLabel>Memo</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder='Additional notes' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
                                 name='address'
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Address</FormLabel>
                                         <FormControl>
                                             <Textarea placeholder='Shipping address' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name='orderDate'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Order Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-[240px] pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className='mx-8 space-y-6'>
+                            <FormField
+                                control={form.control}
+                                name='tag'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tag</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder="Select sales tag" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="Takeaway">Take away</SelectItem>
+                                                <SelectItem value="Gofood">GoFood</SelectItem>
+                                                <SelectItem value="Grab">GrabFood</SelectItem>
+                                                <SelectItem value="Shopee">ShopeeFood</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name='memo'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Memo</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder='Additional notes' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

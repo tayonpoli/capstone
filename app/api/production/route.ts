@@ -10,6 +10,10 @@ export async function POST(req: Request) {
             return new NextResponse("Product and materials are required", { status: 400 });
         }
 
+        const total = materials.reduce((sum: number, mat: any) => {
+            return sum + mat.price;
+        }, 0);
+
         const production = await prisma.$transaction(async (tx) => {
             // 1. Buat Production
             const production = await tx.production.create({
@@ -17,11 +21,13 @@ export async function POST(req: Request) {
                     name,
                     description,
                     productId,
+                    total,
                     materials: {
                         create: materials.map((mat: any) => ({
                             materialId: mat.materialId,
-                            qty: mat.quantity,
-                            unit: mat.unit
+                            qty: mat.qty,
+                            unit: mat.unit,
+                            price: mat.price
                         }))
                     }
                 },

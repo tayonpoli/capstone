@@ -19,6 +19,10 @@ export async function PUT(
             );
         }
 
+        const total = body.materials.reduce((sum: number, item: any) => {
+            return sum + item.price;
+        }, 0);
+
         // Mulai database transaction
         const result = await prisma.$transaction(async (prisma) => {
             // 1. Update data utama sales
@@ -28,6 +32,7 @@ export async function PUT(
                     name: body.name,
                     description: body.description,
                     productId: body.productId,
+                    total,
                 },
             });
 
@@ -43,6 +48,7 @@ export async function PUT(
                     materialId: item.materialId,
                     qty: item.qty,
                     unit: item.unit,
+                    price: item.price,
                 })),
             });
 

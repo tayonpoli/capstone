@@ -20,14 +20,24 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Customer, Inventory, Staff, Supplier } from '@prisma/client';
 import { PurchaseItem } from './PurchaseItem';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '../ui/calendar';
 
 const FormSchema = z.object({
     staffId: z.string().min(1, 'Staff is required'),
     supplierId: z.string().min(1, 'Customer is required'),
+    contact: z.string().min(1, 'Supplier contact is required'),
     address: z.string().optional(),
     email: z.string().optional(),
-    purchaseDate: z.string().min(1, 'Order date is required'),
-    dueDate: z.string().min(1, 'Order date is required'),
+    purchaseDate: z.date({
+        required_error: "Purchase date is required.",
+    }),
+    dueDate: z.date({
+        required_error: "due date is required.",
+    }),
     tag: z.string().optional(),
     urgency: z.string().min(1, 'urgency is required'),
     status: z.string().min(1, 'Status is required'),
@@ -56,10 +66,11 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
         defaultValues: {
             staffId: '',
             supplierId: '',
+            contact: '',
             address: '',
             email: '',
-            purchaseDate: new Date().toISOString().split('T')[0],
-            dueDate: new Date().toISOString().split('T')[0],
+            purchaseDate: new Date(),
+            dueDate: new Date(),
             urgency: 'Medium',
             tag: '',
             status: 'Completed',
@@ -110,7 +121,7 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
                         <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
-                        <FormField
+                            <FormField
                                 control={form.control}
                                 name='staffId'
                                 render={({ field }) => (
@@ -160,12 +171,25 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                             />
                             <FormField
                                 control={form.control}
+                                name='contact'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Contact</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder='Supplier Contact' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
                                 name='email'
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='Customer email' {...field} />
+                                            <Input placeholder='Supplier email' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -177,9 +201,37 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Purchase Date</FormLabel>
-                                        <FormControl>
-                                            <Input type="date" {...field} />
-                                        </FormControl>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-[240px] pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -190,8 +242,51 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Due Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-[240px] pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className='mx-8 space-y-6'>
+                            <FormField
+                                control={form.control}
+                                name='address'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Address</FormLabel>
                                         <FormControl>
-                                            <Input type="date" {...field} />
+                                            <Textarea placeholder='Supplier address' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -210,8 +305,6 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                     </FormItem>
                                 )}
                             />
-                        </div>
-                        <div className='ml-4 space-y-6'>
                             <FormField
                                 control={form.control}
                                 name='memo'
@@ -220,19 +313,6 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                         <FormLabel>Memo</FormLabel>
                                         <FormControl>
                                             <Textarea placeholder='Additional notes' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name='address'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Address</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder='Shipping address' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

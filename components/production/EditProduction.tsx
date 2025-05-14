@@ -30,6 +30,7 @@ const FormSchema = z.object({
             materialId: z.string().min(1, 'Material is required'),
             qty: z.coerce.number().min(0.01, 'Quantity must be at least 0.01'),
             unit: z.string().min(1, 'Unit is required'),
+            price: z.coerce.number().min(1, 'Price must be greater than 0'),
         })
     ).min(1, 'At least one material is required'),
 });
@@ -44,6 +45,7 @@ type EditBomFormProps = {
             materialId: string;
             qty: number;
             unit: Unit;
+            price: number;
         }[];
     };
     finishedProducts: Inventory[];
@@ -62,7 +64,8 @@ export function EditBomForm({ initialData, finishedProducts, rawMaterials }: Edi
             materials: initialData.materials.map(material => ({
                 materialId: material.materialId,
                 qty: material.qty,
-                unit: material.unit
+                unit: material.unit,
+                price: material.price,
             }))
         },
     });
@@ -158,7 +161,7 @@ export function EditBomForm({ initialData, finishedProducts, rawMaterials }: Edi
                                             <SelectContent>
                                                 {finishedProducts.map((product) => (
                                                     <SelectItem key={product.id} value={product.id}>
-                                                        {product.product} ({product.code})
+                                                        {product.product}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -195,7 +198,7 @@ export function EditBomForm({ initialData, finishedProducts, rawMaterials }: Edi
                             onClick={() => {
                                 form.setValue('materials', [
                                     ...materials,
-                                    { materialId: '', qty: 0, unit: 'gram' }
+                                    { materialId: '', qty: 0, unit: 'gram', price: 0 }
                                 ]);
                             }}
                         >
