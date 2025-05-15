@@ -79,7 +79,7 @@ export default async function page() {
                 <div className="flex justify-end">
                     <Link href='/product/create'>
                         <Button>
-                            <PlusIcon /> Create New Product
+                            <PlusIcon /> Create New Item
                         </Button>
                     </Link>
                 </div>
@@ -88,14 +88,14 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Total Products
+                            Listed Items
                         </CardTitle>
                         <PackageIcon />
                     </CardHeader>
                     <CardContent className="space-y-2">
                         <div className="text-2xl font-bold pl-1">{stats.totalProducts}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Items in inventory
                         </p>
                     </CardContent>
                 </Card>
@@ -109,7 +109,7 @@ export default async function page() {
                     <CardContent className="space-y-2">
                         <div className="text-2xl font-bold pl-1">{stats.belowLimitProducts}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Items in inventory
                         </p>
                     </CardContent>
                 </Card>
@@ -123,7 +123,7 @@ export default async function page() {
                     <CardContent className="space-y-2">
                         <div className="text-2xl font-bold pl-1">{stats.outOfStockProducts}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Items in inventory
                         </p>
                     </CardContent>
                 </Card>
@@ -137,7 +137,7 @@ export default async function page() {
                     <CardContent className="space-y-2">
                         <div className="text-2xl font-bold pl-1">{stats.inStockProducts}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Items in inventory
                         </p>
                     </CardContent>
                 </Card>

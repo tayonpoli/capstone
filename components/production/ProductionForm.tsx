@@ -25,6 +25,7 @@ import { MaterialItem } from './MaterialItem';
 const BomFormSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     description: z.string().optional(),
+    tag: z.string().optional(),
     productId: z.string().min(1, 'Product is required'),
     materials: z.array(
         z.object({
@@ -93,7 +94,6 @@ export function ProductionForm({ finishedProducts, rawMaterials }: CreateBomForm
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
-                        {/* Informasi Utama BOM */}
                         <div className='space-y-6'>
                             <FormField
                                 control={form.control}
@@ -102,13 +102,25 @@ export function ProductionForm({ finishedProducts, rawMaterials }: CreateBomForm
                                     <FormItem>
                                         <FormLabel>Title</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="e.g., BOM Kopi Latte V1" {...field} />
+                                            <Input placeholder="e.g., BOM Coffee Latte V1" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-
+                            <FormField
+                                control={form.control}
+                                name="tag"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tag</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="e.g., Coffee" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="description"
@@ -117,7 +129,7 @@ export function ProductionForm({ finishedProducts, rawMaterials }: CreateBomForm
                                         <FormLabel>Description</FormLabel>
                                         <FormControl>
                                             <Textarea
-                                                placeholder="e.g., Standar resep kopi latte dengan bahan premium"
+                                                placeholder="e.g., Standar resep kopi latte"
                                                 {...field}
                                             />
                                         </FormControl>

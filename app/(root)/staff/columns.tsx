@@ -19,6 +19,7 @@ import { toast } from "sonner"
 import { DeleteCustomer } from "@/components/customer/DeleteCustomer"
 import { useRouter } from "next/navigation"
 import { DeleteStaff } from "@/components/staff/DeleteStaff"
+import { Badge } from "@/components/ui/badge"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -65,6 +66,13 @@ export const columns: ColumnDef<Staff>[] = [
     {
         accessorKey: "position",
         header: "Position",
+        cell: ({ row }) => (
+            <div>
+                <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                    {row.original.position}
+                </Badge>
+            </div>
+        ),
     },
     {
         accessorKey: "phone",

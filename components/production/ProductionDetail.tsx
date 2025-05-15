@@ -63,6 +63,13 @@ export function ProductionDetail({ production }: ProductionDetailProps) {
                         <div className="flex items-center">
                             <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
                             <div>
+                                <p className="text-sm text-gray-500">Tag</p>
+                                <p className="capitalize">{production.tag}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center">
+                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
+                            <div>
                                 <p className="text-sm text-gray-500">Description</p>
                                 <p className="capitalize">{production.description}</p>
                             </div>
@@ -81,34 +88,38 @@ export function ProductionDetail({ production }: ProductionDetailProps) {
             {/* Right Column - Order Items */}
             <div>
                 <h2 className="text-xl font-semibold mb-4">Components</h2>
-                <div className="p-2 lg:w-120">
+                <div className="p-2 lg:w-full">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[250px]">Component</TableHead>
+                                <TableHead >Component</TableHead>
+                                <TableHead >Item Code/SKU</TableHead>
                                 <TableHead className="text-center w-[100px]">Qty</TableHead>
                                 <TableHead className="text-center">Unit</TableHead>
+                                <TableHead className="text-right">Cost</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {production.materials.map((item) => (
                                 <TableRow key={item.id}>
                                     <TableCell className="font-medium">{item.material.product}</TableCell>
+                                    <TableCell className="font-medium">{item.material.code}</TableCell>
                                     <TableCell className="text-center">{item.qty}</TableCell>
                                     <TableCell className="text-center">{item.unit}</TableCell>
+                                    <TableCell className="text-right">{formatIDR(item.price)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
-                        {/* <TableFooter>
-        <TableRow>
-          <TableCell colSpan={5} className="font-medium">
-            Grand Total
-          </TableCell>
-          <TableCell className="text-right font-medium">
-            {formatIDR(sales.total)}
-          </TableCell>
-        </TableRow>
-      </TableFooter> */}
+                        <TableFooter>
+                            <TableRow>
+                                <TableCell colSpan={4} className="font-medium">
+                                    Total Cost
+                                </TableCell>
+                                <TableCell className="text-right font-medium">
+                                    {formatIDR(production.total)}
+                                </TableCell>
+                            </TableRow>
+                        </TableFooter>
                     </Table>
                 </div>
             </div>

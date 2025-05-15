@@ -36,8 +36,8 @@ export default async function SalesDetailPage({
     const remainingAmount = sales.total - totalPaid;
 
     return (
-        <div className="h-min-full m-3 p-5 bg-white rounded-md">
-            <div className="flex flex-center items-start p-4">
+        <div className="h-min-screen m-3 p-5 bg-white rounded-md">
+            <div className="flex flex-center items-start p-4 pb-0">
                 <div>
                     <p className='text-sm font-light text-gray-400'>
                         Sales
@@ -55,9 +55,11 @@ export default async function SalesDetailPage({
                 </div>
             </div>
 
-            <SalesDetail sales={sales} />
+            <div className="mb-10">
+                <SalesDetail sales={sales} />
+            </div>
 
-            <div className='fixed bottom-16 right-14 space-x-4'>
+            <div className='flex justify-end mt-auto space-x-4'>
                 <Button asChild>
                     <Link href={`/sales/${id}/edit`}>
                         Edit

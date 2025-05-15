@@ -114,7 +114,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                                 name='product'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Product Name</FormLabel>
+                                        <FormLabel>Name</FormLabel>
                                         <FormControl>
                                             <Input placeholder='Milk' {...field} />
                                         </FormControl>
@@ -127,7 +127,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                                 name='code'
                                 render={({ field }) => (
                                     <FormItem className='w-50'>
-                                        <FormLabel>Product Code / SKU</FormLabel>
+                                        <FormLabel>Code / SKU</FormLabel>
                                         <FormControl>
                                             <Input placeholder='P001' {...field} />
                                         </FormControl>
@@ -141,9 +141,18 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Category</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='Coffee' {...field} />
-                                        </FormControl>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder="Select Item category" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="product">Product</SelectItem>
+                                                <SelectItem value="material">Raw Material</SelectItem>
+                                                <SelectItem value="packaging">Packaging</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -173,22 +182,24 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                                 )}
                             />
                         </div>
-                        <FormField
-                            control={form.control}
-                            name='description'
-                            render={({ field }) => (
-                                <FormItem
-                                    className='col-span-2 max-w-lg'
-                                >
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Textarea placeholder='Describe the product'
-                                            {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className='col-span-2'>
+                            <FormField
+                                control={form.control}
+                                name='description'
+                                render={({ field }) => (
+                                    <FormItem
+                                        className='max-w-80'
+                                    >
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder='Describe the product'
+                                                {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <div className='space-y-4'>
                             <FormField
                                 control={form.control}
@@ -202,7 +213,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                                             />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>I buy this product</FormLabel>
+                                            <FormLabel>I buy this item</FormLabel>
                                         </div>
                                     </FormItem>
                                 )}
@@ -236,7 +247,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                                             />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>I sell this product</FormLabel>
+                                            <FormLabel>I sell this item</FormLabel>
                                         </div>
                                     </FormItem>
                                 )}
@@ -270,7 +281,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                                             />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>Track stock for this product</FormLabel>
+                                            <FormLabel>Track stock for this item</FormLabel>
                                         </div>
                                     </FormItem>
                                 )}

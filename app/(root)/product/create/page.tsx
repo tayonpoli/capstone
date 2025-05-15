@@ -8,7 +8,7 @@ const page = () => {
                     Inventory
                 </div>
                 <div className='mb-10 text-3xl font-semibold'>
-                    Add New Product
+                    Add New Item
                 </div>
             </div>
             <ProductForm />

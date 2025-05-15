@@ -89,8 +89,8 @@ export async function POST(req: Request) {
 
                     if (isBelowLimit || isOutOfStock) {
                         notificationsToCreate.push({
-                            title: `Stok Bahan Baku ${updatedMaterial.product} ${isOutOfStock ? 'Habis' : 'Rendah'}`,
-                            message: `Stok ${updatedMaterial.product} tersisa ${updatedMaterial.stock} ${updatedMaterial.unit}. ${updatedMaterial.limit ? `(Limit: ${updatedMaterial.limit})` : ''}`,
+                            title: `The stock of ${updatedMaterial.product} ${isOutOfStock ? 'is out' : 'is low'}`,
+                            message: `Stock of ${updatedMaterial.product} is ${updatedMaterial.stock} left ${updatedMaterial.unit}. ${updatedMaterial.limit ? `(Limit: ${updatedMaterial.limit})` : ''}`,
                             type: 'stock',
                             relatedId: updatedMaterial.id
                         });

@@ -269,7 +269,6 @@ export function LongChart() {
                         `${formatIDR(Number(value))}`,
                         value === chartData[0]?.revenue
                       ]}
-                      indicator="dot"
                     />
                   }
                 />

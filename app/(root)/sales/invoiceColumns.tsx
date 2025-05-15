@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -12,31 +11,34 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import { DeleteProduction } from "@/components/production/DeleteProduction"
 import { formatIDR } from "@/lib/formatCurrency"
+import { format } from "date-fns"
+import { DeleteSales } from "@/components/sales/DeleteSales"
+import { DeletePurchase } from "@/components/purchase/DeletePurchase"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Production = {
+export type SalesInvoice = {
     id: string
-    name: string
-    description: string | null
-    tag: string | null
-    productId: string
-    product: {
-        product: string
+    amount: number
+    paymentMethod: string | null
+    bankName: string | null
+    accountNumber: string | null
+    paymentDate: string | null
+    salesOrderId: string
+    salesOrder: {
+        customerId: string
+        customer: {
+            name: string
+        }
     }
-    total: number
-    // status: "pending" | "processing" | "success" | "failed"
+    createdAt: Date
+    updatedAt: Date
 }
 
-export const columns: ColumnDef<Production>[] = [
+export const invoiceColumns: ColumnDef<SalesInvoice>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -60,76 +62,78 @@ export const columns: ColumnDef<Production>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "name",
-        header: "Title",
+        accessorKey: "createdAt",
+        header: "Invoice Number",
+        cell: ({ row }) => {
+            const date = row.getValue("createdAt") as Date
+            // Format tanggal ke dalam bentuk ddmmyy (140525 untuk 14 May 2025)
+            const invoiceNumber = `${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear().toString().slice(-2)}`;
+            return <div>Sales Invoice #{invoiceNumber}</div>;
+        },
     },
     {
-        accessorKey: "description",
-        header: "Description",
+        accessorFn: (row) => row.salesOrder.customer.name,
+        header: "Customer",
+        id: "customerName",
     },
     {
-        accessorKey: "tag",
-        header: "Tag",
-        cell: ({ row }) => (
-            <div>
-                <Badge variant="outline" className="px-1.5 text-muted-foreground">
-                    {row.original.tag}
-                </Badge>
-            </div>
-        ),
-
+        accessorKey: "paymentMethod",
+        header: "Payment Method",
     },
     {
-        accessorFn: (row) => row.product.product,
-        header: "Output Product",
-        id: "productName", // Berikan ID yang lebih sederhana
+        accessorKey: "paymentDate",
+        header: "Payment Date",
+        cell: ({ row }) => {
+            const date = row.getValue("paymentDate") as Date
+            return <div>{format(new Date(date), "dd MMM yyyy")}</div>
+        },
     },
     {
-        accessorKey: "total",
+        accessorKey: "amount",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Total Cost
+                    Total Amount
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("total"))
+            const amount = parseFloat(row.getValue("amount"))
             return <div className="font-medium">{formatIDR(amount)}</div>
         },
     },
     {
         id: "actions",
         cell: ({ row }) => {
-            const production = row.original
+            const sales = row.original
             const router = useRouter()
 
             const handleDelete = async () => {
                 try {
-                    const response = await fetch('/api/production', {
+                    const response = await fetch('/api/sales', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ id: production.id }),
+                        body: JSON.stringify({ id: sales.id }),
                     })
 
                     const result = await response.json()
 
                     if (response.ok) {
-                        toast.success(result.message || "BOM deleted successfully")
+                        toast.success(result.message || "Sales order deleted successfully")
                         router.refresh()
                     } else {
-                        throw new Error(result.error || "Failed to delete BOM")
+                        throw new Error(result.error || "Failed to delete sales order")
                     }
                 } catch (error) {
                     toast.error(error instanceof Error ? error.message : "An error occurred")
                     console.error('Delete error:', error)
-                    throw error
+                    throw error // Penting untuk ditangkap oleh DeleteProduct
                 }
             }
 
@@ -145,19 +149,17 @@ export const columns: ColumnDef<Production>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                            <Link href={`/production/${production.id}`}>View Details</Link>
+                            <Link href={`/sales/${sales.salesOrderId}`}>View Details</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href={`/production/${production.id}/edit`}>Edit</Link>
+                            <Link href={`/sales/${sales.salesOrderId}/edit`}>Edit</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <DeleteProduction productionId={production.id} onConfirm={handleDelete} />
+                            <DeleteSales salesId={sales.id} onConfirm={handleDelete} />
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
         },
-    }
+    },
 ]
-
-

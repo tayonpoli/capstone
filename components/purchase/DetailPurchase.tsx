@@ -1,6 +1,6 @@
 import { formatIDR } from "@/lib/formatCurrency"
-import { Inventory, PurchaseOrder, Staff, Supplier, PurchaseItem } from "@prisma/client"
-import { InfoIcon, Undo2Icon, CalendarIcon, TagIcon, FileTextIcon, MapPinIcon, MailIcon } from "lucide-react"
+import { Inventory, PurchaseOrder, Staff, Supplier, PurchaseItem, Invoice } from "@prisma/client"
+import { InfoIcon, Undo2Icon, CalendarIcon, TagIcon, FileTextIcon, MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import Link from "next/link"
 import { format } from "date-fns"
@@ -13,10 +13,14 @@ interface PurchaseDetailProps {
         items: (PurchaseItem & {
             product: Inventory
         })[]
+        Invoice?: Invoice[]
     }
 }
 
 export function DetailPurchase({ purchase }: PurchaseDetailProps) {
+
+    const totalPaid = purchase.Invoice?.reduce((sum, invoice) => sum + invoice.amount, 0) || 0
+
     return (
         <div className="px-4">
 
@@ -39,8 +43,8 @@ export function DetailPurchase({ purchase }: PurchaseDetailProps) {
                         <div className="flex items-center">
                             <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
                             <div>
-                                <p className="text-sm text-gray-500">Status</p>
-                                <p className="capitalize">{purchase.status}</p>
+                                <p className="text-sm text-gray-500">Payment Status</p>
+                                <p className="capitalize">{purchase.paymentStatus}</p>
                             </div>
                         </div>
                         <div className="flex items-center">
@@ -86,9 +90,9 @@ export function DetailPurchase({ purchase }: PurchaseDetailProps) {
             </div>
 
             {/* Right Column - Order Items */}
-            <div>
+            <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">Purchase Items</h2>
-                <div className="p-2">
+                <div className="p-2 border rounded-lg">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -129,6 +133,77 @@ export function DetailPurchase({ purchase }: PurchaseDetailProps) {
                     </Table>
                 </div>
             </div>
+
+            {purchase.Invoice && purchase.Invoice.length > 0 && (
+                <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
+                    <div className="p-2 border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Payment Method</TableHead>
+                                    <TableHead>Payment Date</TableHead>
+                                    {purchase.Invoice.some(inv => inv.paymentMethod === 'Transfer') && (
+                                        <>
+                                            <TableHead>Bank Name</TableHead>
+                                            <TableHead>Account Number</TableHead>
+                                        </>
+                                    )}
+                                    <TableHead className="text-right">Amount Paid</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {purchase.Invoice.map((invoice) => (
+                                    <TableRow key={invoice.id}>
+                                        <TableCell>
+                                            <div className="flex items-center">
+                                                <CreditCardIcon className="mr-2 h-4 w-4" />
+                                                {invoice.paymentMethod || "Unknown"}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            {invoice.paymentDate ?
+                                                format(new Date(invoice.paymentDate), "dd MMMM yyyy") :
+                                                "Not paid"}
+                                        </TableCell>
+                                        {invoice.paymentMethod === 'Transfer' && (
+                                            <>
+                                                <TableCell>
+                                                    {invoice.bankName || "-"}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {invoice.accountNumber || "-"}
+                                                </TableCell>
+                                            </>
+                                        )}
+                                        {invoice.paymentMethod !== 'Transfer' &&
+                                            purchase.Invoice.some(inv => inv.paymentMethod === 'Transfer') && (
+                                                <>
+                                                    <TableCell>-</TableCell>
+                                                    <TableCell>-</TableCell>
+                                                </>
+                                            )}
+                                        <TableCell className="text-right">
+                                            {formatIDR(invoice.amount)}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TableCell colSpan={purchase.Invoice.some(inv => inv.paymentMethod === 'Transfer') ? 4 : 2}
+                                        className="font-medium">
+                                        Remaining Balance
+                                    </TableCell>
+                                    <TableCell className="text-right font-medium">
+                                        {formatIDR(purchase.total - totalPaid)}
+                                    </TableCell>
+                                </TableRow>
+                            </TableFooter>
+                        </Table>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

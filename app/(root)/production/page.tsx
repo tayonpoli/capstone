@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon } from "lucide-react"
+import { PlusIcon, Boxes, PackageOpen } from "lucide-react"
 import { Production, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
@@ -29,44 +29,33 @@ async function getData(): Promise<Production[]> {
     }
 }
 
-async function getInventoryStats() {
+async function getProductionStats() {
     try {
-        const totalProducts = await prisma.inventory.count();
+        const totalBom = await prisma.production.count();
 
-        const inStockProducts = await prisma.inventory.count({
+        const totalProducts = await prisma.inventory.count({
             where: {
-                stock: {
-                    gt: 0
-                },
+                category: 'product'
             }
         });
 
-        const outOfStockProducts = await prisma.inventory.count({
+        const totalMaterials = await prisma.inventory.count({
             where: {
-                stock: 0
-            }
-        });
-
-        const belowLimitProducts = await prisma.inventory.count({
-            where: {
-                stock: {
-                    lt: prisma.inventory.fields.limit
-                },
+                category: 'material'
             }
         });
 
         return {
             totalProducts,
-            outOfStockProducts,
-            belowLimitProducts,
-            inStockProducts
+            totalBom,
+            totalMaterials,
         };
     } catch (error) {
-        console.error('Error fetching inventory stats:', error);
+        console.error('Error fetching production stats:', error);
         return {
             totalProducts: 0,
-            outOfStockProducts: 0,
-            belowLimitProducts: 0
+            totalBom: 0,
+            totalMaterials: 0,
         };
     } finally {
         await prisma.$disconnect();
@@ -75,7 +64,7 @@ async function getInventoryStats() {
 
 export default async function page() {
     const data = await getData();
-    const stats = await getInventoryStats();
+    const stats = await getProductionStats();
 
     return (
         <div className="h-full m-3 p-5 bg-white rounded-md">
@@ -95,42 +84,42 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
+                            Bills of Material
+                        </CardTitle>
+                        <Boxes />
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <div className="text-2xl font-bold pl-1">{stats.totalBom}</div>
+                        <p className="text-xs text-muted-foreground">
+                            Created in production
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                        <CardTitle className="text-sm font-medium">
                             Products
                         </CardTitle>
-                        <PackageIcon />
+                        <PackageOpen />
                     </CardHeader>
                     <CardContent className="space-y-2">
                         <div className="text-2xl font-bold pl-1">{stats.totalProducts}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Items in inventory
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Raw material
+                            Raw Materials
                         </CardTitle>
-                        <PackageMinusIcon />
+                        <PackageOpen />
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="text-2xl font-bold pl-1">{stats.belowLimitProducts}</div>
+                        <div className="text-2xl font-bold pl-1">{stats.totalMaterials}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-                        <CardTitle className="text-sm font-medium">
-                            BOM
-                        </CardTitle>
-                        <PackageXIcon />
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div className="text-2xl font-bold pl-1">{stats.outOfStockProducts}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Items in inventory
                         </p>
                     </CardContent>
                 </Card>
@@ -139,12 +128,12 @@ export default async function page() {
                         <CardTitle className="text-sm font-medium">
                             In Stock
                         </CardTitle>
-                        <PackageCheckIcon />
+                        <PackageOpen />
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="text-2xl font-bold pl-1">{stats.inStockProducts}</div>
+                        <div className="text-2xl font-bold pl-1">{stats.totalMaterials}</div>
                         <p className="text-xs text-muted-foreground">
-                            Products in inventory
+                            Items in inventory
                         </p>
                     </CardContent>
                 </Card>
@@ -155,24 +144,16 @@ export default async function page() {
                     data={data}
                     searchColumn="name"
                     searchPlaceholder="Search BOM ..."
-                // facetedFilters={[
-                //     {
-                //         columnId: "category",
-                //         title: "Category",
-                //         options: [
-                //             { label: "Milk", value: "Milk" },
-                //             { label: "Coffee", value: "Coffee" },
-                //         ],
-                //     },
-                //     {
-                //         columnId: "product",
-                //         title: "Product",
-                //         options: [
-                //             { label: "Oat Milk", value: "Oat Milk" },
-                //             { label: "Almond Milk", value: "Almond Milk" },
-                //         ],
-                //     },
-                // ]}
+                    facetedFilters={[
+                        {
+                            columnId: "tag",
+                            title: "Tag",
+                            options: [
+                                { label: "Milk", value: "Milk" },
+                                { label: "Coffee", value: "Coffee" },
+                            ],
+                        },
+                    ]}
                 />
             </div>
         </div>

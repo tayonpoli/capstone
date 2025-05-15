@@ -1,7 +1,8 @@
 import { LineCharts } from "@/components/charts/LineChart";
 import { LongChart } from "@/components/charts/LongChart";
 import { PieCharts } from "@/components/charts/PieChart";
-import RevenueChart from "@/components/charts/RevenueChart";
+import { RecentTransactions } from "@/components/charts/RecentPurchase";
+import { DailySalesChart } from "@/components/charts/RevenueChart";
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation";
@@ -22,7 +23,7 @@ const AdminDashboardPage = async () => {
   }
 
   return (
-    <div className="m-3 p-5 bg-white rounded-md">
+    <div className="m-3 mb-0 pb-0 p-5 bg-white rounded-md">
       <div className="p-3">
         <p className="text-sm text-gray-500">
           Dashboard
@@ -36,14 +37,17 @@ const AdminDashboardPage = async () => {
           <LongChart />
         </div>
         <div className="col-span-2">
-          <RevenueChart />
+          <DailySalesChart />
         </div>
-        <div className="h-96">
+        <div className="col-span-2">
+          <RecentTransactions />
+        </div>
+        {/* <div className="h-96">
           <PieCharts />
         </div>
         <div className="h-96">
           <LineCharts />
-        </div>
+        </div> */}
       </div>
     </div>
   )

@@ -31,6 +31,7 @@ export async function PUT(
                 data: {
                     name: body.name,
                     description: body.description,
+                    tag: body.tag,
                     productId: body.productId,
                     total,
                 },

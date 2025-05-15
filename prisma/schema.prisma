@@ -104,6 +104,7 @@ model Production {
   id          String     @id @default(uuid())
   name        String
   description String?
+  tag         String?
   productId   String
   product     Inventory  @relation("ProductBOM", fields: [productId], references: [id])
   total       Float      @default(0)

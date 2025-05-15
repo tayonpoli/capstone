@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 export default async function CreateBomPage() {
     // Fetch finished products data
     const finishedProducts = await prisma.inventory.findMany({
+        where: {
+            category: 'product'
+        },
         orderBy: {
             product: 'asc',
         },
@@ -11,6 +14,9 @@ export default async function CreateBomPage() {
 
     // Fetch raw materials data
     const rawMaterials = await prisma.inventory.findMany({
+        where: {
+            category: 'material'
+        },
         orderBy: {
             product: 'asc',
         },

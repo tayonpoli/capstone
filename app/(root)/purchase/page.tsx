@@ -8,6 +8,7 @@ import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
 import { formatIDR } from "@/lib/formatCurrency"
+import { invoiceColumns } from "./invoicecolumns"
 
 async function getData(): Promise<any[]> {
     try {
@@ -17,7 +18,7 @@ async function getData(): Promise<any[]> {
                     select: {
                         name: true
                     }
-                }
+                },
             },
             orderBy: {
                 purchaseDate: 'desc'
@@ -34,6 +35,28 @@ async function getData(): Promise<any[]> {
     }
 }
 
+async function getInvoiceData(): Promise<any[]> {
+    try {
+        const invoice = await prisma.invoice.findMany({
+            include: {
+                purchaseOrder: {
+                    select: {
+                        supplier: true
+                    }
+                },
+            },
+        })
+
+        return invoice
+
+    } catch (error) {
+        console.error('Error fetching data:', error)
+        return []
+    } finally {
+        await prisma.$disconnect()
+    }
+}
+
 async function getStats() {
     try {
 
@@ -41,17 +64,10 @@ async function getStats() {
         // Total jumlah transaksi sales
         const totalTransactions = await prisma.purchaseOrder.count();
 
-        // Total transaksi yang completed
-        const completedTransactions = await prisma.purchaseOrder.count({
-            where: {
-                status: "Completed"
-            }
-        });
-
         // Menghitung total revenue dari sales order yang completed
         const expenseResult = await prisma.purchaseOrder.aggregate({
             where: {
-                status: "Completed"
+                paymentStatus: "Paid"
             },
             _sum: {
                 total: true
@@ -60,25 +76,31 @@ async function getStats() {
 
         const totalExpense = expenseResult._sum.total || 0;
 
-        // Menghitung rata-rata nilai transaksi
-        const averageTransactionValue = completedTransactions > 0
-            ? totalExpense / completedTransactions
-            : 0;
+
+        const payable = await prisma.purchaseOrder.aggregate({
+            where: {
+                paymentStatus: "Unpaid"
+            },
+            _sum: {
+                total: true
+            }
+        });
+
+        const totalPayable = payable._sum.total || 0;
 
         return {
             supplier,
             totalTransactions,
-            completedTransactions,
             totalExpense,
-            averageTransactionValue
+            totalPayable,
         };
     } catch (error) {
         console.error('Error fetching sales stats:', error);
         return {
+            supplier: 0,
             totalTransactions: 0,
-            completedTransactions: 0,
-            totalRevenue: 0,
-            averageTransactionValue: 0
+            totalExpense: 0,
+            totalPayable: 0,
         };
     } finally {
         await prisma.$disconnect();
@@ -87,6 +109,7 @@ async function getStats() {
 
 export default async function page() {
     const data = await getData();
+    const invoiceData = await getInvoiceData();
     const stats = await getStats();
 
     return (
@@ -96,7 +119,11 @@ export default async function page() {
                     Purchase
                 </div>
                 <div className="flex justify-end">
-                    <ReportGenerator reportType="purchasing" />
+                    <Link href='/purchase/create'>
+                        <Button>
+                            <PlusIcon /> Create New Purchase
+                        </Button>
+                    </Link>
                 </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
@@ -109,6 +136,20 @@ export default async function page() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
+                        <p className="text-xs text-muted-foreground">
+                            +20.1% from last month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Account Payable
+                        </CardTitle>
+                        <Info />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{formatIDR(stats.totalPayable)}</div>
                         <p className="text-xs text-muted-foreground">
                             +20.1% from last month
                         </p>
@@ -142,34 +183,16 @@ export default async function page() {
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total Revenue
-                        </CardTitle>
-                        <Info />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">Rp 45,231.89</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
-                    </CardContent>
-                </Card>
             </div>
-            <Tabs defaultValue="completed" className="py-8">
+            <Tabs defaultValue="order" className="py-8">
                 <div className="flex justify-between">
                     <TabsList className="grid w-[400px] grid-cols-2">
-                        <TabsTrigger value="completed">Completed</TabsTrigger>
-                        <TabsTrigger value="receivable">Receivable</TabsTrigger>
+                        <TabsTrigger value="order">Purchase Order</TabsTrigger>
+                        <TabsTrigger value="invoice">Purchase Invoice</TabsTrigger>
                     </TabsList>
-                    <Link href='/purchase/create'>
-                        <Button>
-                            <PlusIcon /> Create New Purchase
-                        </Button>
-                    </Link>
+                    <ReportGenerator reportType="purchasing" />
                 </div>
-                <TabsContent value="completed" className="space-y-2">
+                <TabsContent value="order" className="space-y-2">
                     <div className="container mx-auto py-2">
                         <DataTable
                             columns={columns}
@@ -183,6 +206,26 @@ export default async function page() {
                                     options: [
                                         { label: "Paid", value: "Paid" },
                                         { label: "Unpaid", value: "Unpaid" },
+                                    ],
+                                },
+                            ]}
+                        />
+                    </div>
+                </TabsContent>
+                <TabsContent value="invoice" className="space-y-2">
+                    <div className="container mx-auto py-2">
+                        <DataTable
+                            columns={invoiceColumns}
+                            data={invoiceData}
+                            searchColumn="supplierName"
+                            searchPlaceholder="Search supplier ..."
+                            facetedFilters={[
+                                {
+                                    columnId: "paymentMethod",
+                                    title: "Method",
+                                    options: [
+                                        { label: "Transfer", value: "Transfer" },
+                                        { label: "Cash", value: "Cash" },
                                     ],
                                 },
                             ]}

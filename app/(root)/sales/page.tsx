@@ -8,6 +8,7 @@ import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatIDR } from "@/lib/formatCurrency"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
+import { invoiceColumns } from "./invoiceColumns"
 
 async function getData(): Promise<any[]> {
     try {
@@ -32,23 +33,36 @@ async function getData(): Promise<any[]> {
     }
 }
 
+async function getInvoiceData(): Promise<any[]> {
+    try {
+        const invoice = await prisma.salesInvoice.findMany({
+            include: {
+                salesOrder: {
+                    select: {
+                        customer: true
+                    }
+                },
+            },
+        })
+
+        return invoice
+
+    } catch (error) {
+        console.error('Error fetching data:', error)
+        return []
+    } finally {
+        await prisma.$disconnect()
+    }
+}
+
 async function getSalesStats() {
     try {
         const customer = await prisma.customer.count();
-        // Total jumlah transaksi sales
         const totalTransactions = await prisma.salesOrder.count();
 
-        // Total transaksi yang completed
-        const completedTransactions = await prisma.salesOrder.count({
-            where: {
-                status: "Completed"
-            }
-        });
-
-        // Menghitung total revenue dari sales order yang completed
         const revenueResult = await prisma.salesOrder.aggregate({
             where: {
-                status: "Completed"
+                paymentStatus: "Paid"
             },
             _sum: {
                 total: true
@@ -57,25 +71,30 @@ async function getSalesStats() {
 
         const totalRevenue = revenueResult._sum.total || 0;
 
-        // Menghitung rata-rata nilai transaksi
-        const averageTransactionValue = completedTransactions > 0
-            ? totalRevenue / completedTransactions
-            : 0;
+        const receivableResult = await prisma.salesOrder.aggregate({
+            where: {
+                paymentStatus: "Unpaid"
+            },
+            _sum: {
+                total: true
+            }
+        });
+
+        const totalReceivable = receivableResult._sum.total || 0;
 
         return {
             customer,
             totalTransactions,
-            completedTransactions,
             totalRevenue,
-            averageTransactionValue
+            totalReceivable,
         };
     } catch (error) {
         console.error('Error fetching sales stats:', error);
         return {
+            customer: 0,
             totalTransactions: 0,
-            completedTransactions: 0,
             totalRevenue: 0,
-            averageTransactionValue: 0
+            totalReceivable: 0,
         };
     } finally {
         await prisma.$disconnect();
@@ -84,6 +103,7 @@ async function getSalesStats() {
 
 export default async function page() {
     const data = await getData();
+    const invoiceData = await getInvoiceData();
     const salesStats = await getSalesStats();
 
     return (
@@ -93,7 +113,11 @@ export default async function page() {
                     Sales
                 </div>
                 <div className="flex justify-end">
-                    <ReportGenerator reportType="sales" />
+                    <Link href='/sales/create'>
+                        <Button>
+                            <PlusIcon /> Create New Sales
+                        </Button>
+                    </Link>
                 </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
@@ -114,12 +138,12 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Profit
+                            Account Receivable
                         </CardTitle>
                         <Info />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Rp 45,231.89</div>
+                        <div className="text-2xl font-bold">{formatIDR(salesStats.totalReceivable)}</div>
                         <p className="text-xs text-muted-foreground">
                             +20.1% from last month
                         </p>
@@ -154,19 +178,15 @@ export default async function page() {
                     </CardContent>
                 </Card>
             </div>
-            <Tabs defaultValue="completed" className="py-10">
+            <Tabs defaultValue="order" className="py-10">
                 <div className="flex justify-between">
                     <TabsList className="grid w-[400px] grid-cols-2">
-                        <TabsTrigger value="completed">Completed</TabsTrigger>
-                        <TabsTrigger value="receivable">Receivable</TabsTrigger>
+                        <TabsTrigger value="order">Sales Order</TabsTrigger>
+                        <TabsTrigger value="invoice">Sales Invoice</TabsTrigger>
                     </TabsList>
-                    <Link href='/sales/create'>
-                        <Button>
-                            <PlusIcon /> Create New Sales
-                        </Button>
-                    </Link>
+                    <ReportGenerator reportType="sales" />
                 </div>
-                <TabsContent value="completed" className="space-y-2">
+                <TabsContent value="order" className="space-y-2">
                     <div className="container mx-auto py-2">
                         <DataTable
                             columns={columns}
@@ -180,6 +200,27 @@ export default async function page() {
                                     options: [
                                         { label: "Unpaid", value: "Unpaid" },
                                         { label: "Paid", value: "Paid" },
+                                    ],
+                                },
+                            ]}
+                        />
+                    </div>
+                </TabsContent>
+                <TabsContent value="invoice" className="space-y-2">
+                    <div className="container mx-auto py-2">
+                        <DataTable
+                            columns={invoiceColumns}
+                            data={invoiceData}
+                            searchColumn="customerName"
+                            searchPlaceholder="Search customer ..."
+                            facetedFilters={[
+                                {
+                                    columnId: "paymentMethod",
+                                    title: "Method",
+                                    options: [
+                                        { label: "Transfer", value: "Transfer" },
+                                        { label: "Cash", value: "Cash" },
+                                        { label: "QRIS", value: "Qris" },
                                     ],
                                 },
                             ]}

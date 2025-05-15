@@ -7,11 +7,13 @@ interface ProductionData {
     id: string
     name: string
     description: string | null
+    tag: string | null
     productId: string
     materials: {
         materialId: string
         qty: number
         unit: Unit
+        price: number
     }[]
 }
 
@@ -22,9 +24,9 @@ export default async function EditProductionPage({
 }) {
     const { id } = await params
     // Fetch data secara paralel di server component
-    const [productionData, products] = await Promise.all([
+    const [productionData, materials, products] = await Promise.all([
         getProductionData(id),
-        // getCustomers(),
+        getMaterials(),
         getProducts()
     ])
 
@@ -45,11 +47,13 @@ export default async function EditProductionPage({
                 id: bom.id,
                 name: bom.name,
                 description: bom.description,
+                tag: bom.tag,
                 productId: bom.productId,
                 materials: bom.materials.map(item => ({
                     materialId: item.materialId,
                     qty: item.qty,
                     unit: item.unit,
+                    price: item.price,
                 })),
             }
         } catch (error) {
@@ -58,21 +62,24 @@ export default async function EditProductionPage({
         }
     }
 
-    //   async function getMaterials(): Promise<Material[]> {
-    //     try {
-    //       return await prisma.material.findMany({
-    //         orderBy: { name: 'asc' },
-    //       })
-    //     } catch (error) {
-    //       console.error('Failed to fetch customers:', error)
-    //       return []
-    //     }
-    //   }
+    async function getMaterials(): Promise<Inventory[]> {
+        try {
+            return await prisma.inventory.findMany({
+                where: {
+                    category: 'material'
+                },
+                orderBy: { product: 'asc' },
+            })
+        } catch (error) {
+            console.error('Failed to fetch raw materials:', error)
+            return []
+        }
+    }
 
     async function getProducts(): Promise<Inventory[]> {
         try {
             return await prisma.inventory.findMany({
-                where: { stock: { gt: 0 } },
+                where: { stock: { gt: 0 }, category: 'product' },
                 orderBy: { product: 'asc' },
             })
         } catch (error) {
@@ -119,7 +126,7 @@ export default async function EditProductionPage({
             <EditBomForm
                 initialData={productionData}
                 finishedProducts={products}
-                rawMaterials={products}
+                rawMaterials={materials}
             // onUpdate={updateSale}
             />
         </div>

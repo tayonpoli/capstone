@@ -16,17 +16,28 @@ import { toast } from 'sonner'
 import { PdfDocument } from './PdfDocument'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 
+// Mock company info - replace with your actual company data
+const COMPANY_INFO = {
+  name: 'MauNgopi',
+  address: 'Jalan Mustikasari, Kota Bekasi, Indonesia',
+  phone: '+1 (123) 456-7890',
+  email: 'maungopiofficial@gmail.com',
+  logo: '/path/to/your/logo.png' // Replace with actual logo path
+}
+
 export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchasing' }) {
   const [dateRange, setDateRange] = useState<DateRange>({
     from: subDays(new Date(), 30),
     to: new Date(),
   })
   const [reportData, setReportData] = useState<any[]>([])
+  const [summaryData, setSummaryData] = useState<any>({})
   const [isGenerating, setIsGenerating] = useState(false)
 
-  // Reset report data ketika date range berubah
+  // Reset report data when date range changes
   useEffect(() => {
     setReportData([])
+    setSummaryData({})
   }, [dateRange])
 
   const fetchReportData = async () => {
@@ -35,7 +46,7 @@ export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchas
       return
     }
 
-    // Pastikan end date mencakup seluruh hari
+    // Ensure end date covers the entire day
     const adjustedEndDate = new Date(dateRange.to)
     adjustedEndDate.setHours(23, 59, 59, 999)
 
@@ -50,17 +61,20 @@ export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchas
           reportType,
           startDate: dateRange.from.toISOString(),
           endDate: adjustedEndDate.toISOString(),
+          includeSummary: true // Request summary data from the API
         }),
       })
 
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Failed to generate report')
 
-      setReportData(data)
+      setReportData(data.records || [])
+      setSummaryData(data.summary || {})
       toast.success('Report data ready to download')
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to generate report')
       setReportData([])
+      setSummaryData({})
     } finally {
       setIsGenerating(false)
     }
@@ -109,9 +123,17 @@ export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchas
               data={reportData}
               reportType={reportType}
               dateRange={{ from: dateRange.from!, to: dateRange.to! }}
+              companyInfo={COMPANY_INFO}
+              summaryData={{
+                totalAmount: summaryData.totalAmount || 0,
+                totalOrders: summaryData.totalOrders || 0,
+                averageOrder: summaryData.averageOrder || 0,
+                paidOrders: summaryData.paidOrders || 0,
+                unpaidOrders: summaryData.unpaidOrders || 0
+              }}
             />
           }
-          fileName={`${reportType}_report_${format(new Date(), 'yyyyMMdd')}.pdf`}
+          fileName={`${reportType}_report_${format(dateRange.from!, 'yyyyMMdd')}_to_${format(dateRange.to!, 'yyyyMMdd')}.pdf`}
         >
           {({ loading }) => (
             <Button disabled={loading}>
@@ -127,8 +149,8 @@ export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchas
           )}
         </PDFDownloadLink>
       ) : (
-        <Button 
-          onClick={fetchReportData} 
+        <Button
+          onClick={fetchReportData}
           disabled={isGenerating || !dateRange?.from || !dateRange?.to}
         >
           {isGenerating ? (

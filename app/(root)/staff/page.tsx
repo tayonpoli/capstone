@@ -129,6 +129,18 @@ export default async function page() {
                     data={data}
                     searchColumn="name"
                     searchPlaceholder="Search staff ..."
+                    facetedFilters={[
+                        {
+                            columnId: "position",
+                            title: "Position",
+                            options: [
+                                { label: "Cashier", value: "Cashier" },
+                                { label: "Barista", value: "Barista" },
+                                { label: "Head Bar", value: "Headbar" },
+                                { label: "Admin", value: "Admin" },
+                            ],
+                        },
+                    ]}
                 />
             </div>
         </div>

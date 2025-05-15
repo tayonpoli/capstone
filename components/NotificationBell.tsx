@@ -72,13 +72,13 @@ export function NotificationBell({ userId }: { userId: string }) {
                                 {unreadCount}
                             </span>
                         )}
-                        Notification
+                        Notifications
                     </Button>
                 </div>
             </SheetTrigger>
             <SheetContent side="right" className="w-[350px] sm:w-[400px]">
                 <SheetHeader>
-                    <SheetTitle>Notifikasi</SheetTitle>
+                    <SheetTitle>Notifications</SheetTitle>
                 </SheetHeader>
                 <div className="mt-4 max-h-[80vh] overflow-y-auto">
                     {notifications.length === 0 ? (

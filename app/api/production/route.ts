@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
     try {
-        const { name, description, productId, materials } = await req.json();
+        const { name, description, tag, productId, materials } = await req.json();
 
         // Validasi
         if (!productId || !materials?.length) {
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
                 data: {
                     name,
                     description,
+                    tag,
                     productId,
                     total,
                     materials: {

@@ -44,8 +44,8 @@ export default async function PurchaseDetailPage({
     const remainingAmount = purchase.total - totalPaid;
 
     return (
-        <div className="h-min-full m-3 p-5 bg-white rounded-md">
-            <div className="flex flex-center items-start p-4">
+        <div className="h-min-screen m-3 p-5 bg-white rounded-md">
+            <div className="flex flex-center items-start p-4 pb-0">
                 <div>
                     <p className='text-sm font-light text-gray-400'>
                         Purchase
@@ -63,9 +63,11 @@ export default async function PurchaseDetailPage({
                 </div>
             </div>
 
-            <DetailPurchase purchase={purchase} />
+            <div className="mb-10">
+                <DetailPurchase purchase={purchase} />
+            </div>
 
-            <div className='fixed bottom-16 right-14 space-x-4'>
+            <div className='flex justify-end mt-auto space-x-4'>
                 <Button asChild>
                     <Link href={`/purchase/${id}/edit`}>
                         Edit

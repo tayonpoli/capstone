@@ -24,6 +24,7 @@ import { MaterialItem } from './MaterialItem';
 const FormSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     description: z.string().optional(),
+    tag: z.string().optional(),
     productId: z.string().min(1, 'Product is required'),
     materials: z.array(
         z.object({
@@ -40,6 +41,7 @@ type EditBomFormProps = {
         id: string;
         name: string;
         description: string | null;
+        tag: string | null;
         productId: string;
         materials: {
             materialId: string;
@@ -60,6 +62,7 @@ export function EditBomForm({ initialData, finishedProducts, rawMaterials }: Edi
         defaultValues: {
             name: initialData.name,
             description: initialData.description || '',
+            tag: initialData.tag || '',
             productId: initialData.productId,
             materials: initialData.materials.map(material => ({
                 materialId: material.materialId,
@@ -124,7 +127,19 @@ export function EditBomForm({ initialData, finishedProducts, rawMaterials }: Edi
                                     </FormItem>
                                 )}
                             />
-
+                            <FormField
+                                control={form.control}
+                                name="tag"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tag</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="e.g., Coffee" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="description"
