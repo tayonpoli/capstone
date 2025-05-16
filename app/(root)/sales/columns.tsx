@@ -38,6 +38,59 @@ export type Sales = {
   updatedAt: Date
 }
 
+const SalesActions = ({ sales }: { sales: Sales }) => {
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch('/api/sales', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: sales.id }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        toast.success(result.message || "Sales order deleted successfully")
+        router.refresh()
+      } else {
+        throw new Error(result.error || "Failed to delete sales order")
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "An error occurred")
+      console.error('Delete error:', error)
+      throw error // Penting untuk ditangkap oleh DeleteProduct
+    }
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href={`/sales/${sales.id}`}>View Details</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`/sales/${sales.id}/edit`}>Edit</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <DeleteSales onConfirm={handleDelete} />
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+};
+
 export const columns: ColumnDef<Sales>[] = [
   {
     id: "select",
@@ -127,58 +180,6 @@ export const columns: ColumnDef<Sales>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const sales = row.original
-      const router = useRouter()
-
-      const handleDelete = async () => {
-        try {
-          const response = await fetch('/api/sales', {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: sales.id }),
-          })
-
-          const result = await response.json()
-
-          if (response.ok) {
-            toast.success(result.message || "Sales order deleted successfully")
-            router.refresh()
-          } else {
-            throw new Error(result.error || "Failed to delete sales order")
-          }
-        } catch (error) {
-          toast.error(error instanceof Error ? error.message : "An error occurred")
-          console.error('Delete error:', error)
-          throw error // Penting untuk ditangkap oleh DeleteProduct
-        }
-      }
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href={`/sales/${sales.id}`}>View Details</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/sales/${sales.id}/edit`}>Edit</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <DeleteSales salesId={sales.id} onConfirm={handleDelete} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    cell: ({ row }) => <SalesActions sales={row.original} />,
   },
 ]

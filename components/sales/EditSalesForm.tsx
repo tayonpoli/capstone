@@ -71,13 +71,6 @@ export function EditSalesForm({ initialData, customers, products }: EditSalesFor
         },
     });
 
-    const statusOptions = [
-        { value: 'Draft', label: 'Draft' },
-        { value: 'Approved', label: 'Approved' },
-        { value: 'Completed', label: 'Completed' },
-        { value: 'Cancelled', label: 'Cancelled' },
-    ] as const;
-
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
             const response = await fetch(`/api/sales/${initialData.id}`, {

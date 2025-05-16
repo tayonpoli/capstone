@@ -40,6 +40,7 @@ export async function PUT(req: Request, {
 
         return NextResponse.json({ product: updated, message: "Product updated successfully" });
     } catch (err) {
+        console.error('[PRODUCT_PUT]', err);
         return NextResponse.json({ message: "Update failed" }, { status: 500 });
     }
 }

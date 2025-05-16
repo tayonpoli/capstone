@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import { SalesDetail } from "@/components/sales/SalesDetail";
 import { DetailPurchase } from "@/components/purchase/DetailPurchase";
 import { ReportButton } from "@/components/reports/ReportButton";
 import { Button } from "@/components/ui/button";

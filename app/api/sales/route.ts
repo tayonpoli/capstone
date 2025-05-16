@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Unit } from '@prisma/client';
 import { convertUnit } from '@/lib/units';
 
 export async function POST(req: Request) {
@@ -241,6 +240,7 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true })
     } catch (error) {
+        console.error('[SALES_DELETE]', error);
         return NextResponse.json(
             { error: 'Failed to delete the sales order' },
             { status: 500 }

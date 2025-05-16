@@ -139,6 +139,7 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true })
     } catch (error) {
+        console.error('[PRODUCTION_DELETE_ERROR]', error);
         return NextResponse.json(
             { error: 'Failed to delete the Bills of Material' },
             { status: 500 }

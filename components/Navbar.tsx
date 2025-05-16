@@ -1,9 +1,6 @@
-import Image from "next/image";
 import Link from 'next/link';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faMagnifyingGlass,
     faClockRotateLeft,
     // Import other icons as needed
 } from '@fortawesome/free-solid-svg-icons';
@@ -54,8 +51,8 @@ const Navbar = async () => {
                 </div>
                 {/* <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full" /> */}
                 <Button variant="outline" size="icon">
-                        <FontAwesomeIcon icon={faUser} />
-                    </Button>
+                    <FontAwesomeIcon icon={faUser} />
+                </Button>
                 {session?.user ? (
                     <UserAccountNav />
                 ) : (

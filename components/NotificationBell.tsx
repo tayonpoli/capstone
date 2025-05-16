@@ -1,7 +1,7 @@
 'use client';
 
-import { Bell, BellDot, Check, CheckCircle2, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Bell, BellDot, Check, CheckCircle2 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { Notification } from '@prisma/client';
 import { Button } from './ui/button';
 import {
@@ -16,18 +16,18 @@ export function NotificationBell({ userId }: { userId: string }) {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
-    useEffect(() => {
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 60000);
-        return () => clearInterval(interval);
-    }, [userId]);
-
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         const res = await fetch(`/api/notifications?userId=${userId}`);
         const data = await res.json();
         setNotifications(data);
         setUnreadCount(data.filter((n: Notification) => !n.isRead).length);
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        fetchNotifications();
+        const interval = setInterval(fetchNotifications, 60000);
+        return () => clearInterval(interval);
+    }, [fetchNotifications]);
 
     const markAsReadAndDelete = async (id: string) => {
         try {

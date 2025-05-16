@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Customer, Inventory, Staff, Supplier } from '@prisma/client';
+import { Inventory, Staff, Supplier } from '@prisma/client';
 import { PurchaseItem } from './PurchaseItem';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { cn } from '@/lib/utils';
@@ -79,13 +79,6 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
         },
     });
 
-    const statusOptions = [
-        { value: 'Draft', label: 'Draft' },
-        { value: 'Approved', label: 'Approved' },
-        { value: 'Completed', label: 'Completed' },
-        { value: 'Cancelled', label: 'Cancelled' },
-    ] as const;
-
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
             const response = await fetch('/api/purchase', {
@@ -100,9 +93,11 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                 }),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
                 toast.success("Purchase order created successfully!");
-                router.push('/purchase');
+                router.push(`/purchase/${data.id}`)
                 router.refresh();
             } else {
                 throw new Error("Failed to create Purchase order");

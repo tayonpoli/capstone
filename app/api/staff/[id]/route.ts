@@ -32,6 +32,7 @@ export async function PUT(req: Request, {
 
         return NextResponse.json({ staff: updated, message: "Staff updated successfully" });
     } catch (err) {
+        console.error('[STAFF_PUT]', err);
         return NextResponse.json({ message: "Update failed" }, { status: 500 });
     }
 }

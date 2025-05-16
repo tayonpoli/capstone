@@ -1,8 +1,6 @@
 import { formatIDR } from "@/lib/formatCurrency"
 import { Inventory, PurchaseOrder, Staff, Supplier, PurchaseItem, Invoice } from "@prisma/client"
-import { InfoIcon, Undo2Icon, CalendarIcon, TagIcon, FileTextIcon, MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
-import { Button } from "../ui/button"
-import Link from "next/link"
+import { CalendarIcon, TagIcon, FileTextIcon, MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
 import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
 

@@ -27,6 +27,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ supplier: newSupplier, message: "Supplier created successfully" }, { status: 201 });
     } catch (error) {
+        console.error('[SUPPLIER_POST]', error);
         return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
     }
 }
@@ -44,6 +45,7 @@ export async function GET() {
         })
         return NextResponse.json(supplier)
     } catch (error) {
+        console.error('[SUPPLIER_GET]', error);
         return NextResponse.json(
             { error: 'Failed to fetch supplier' },
             { status: 500 }
@@ -67,6 +69,7 @@ export async function DELETE(request: Request) {
         })
         return NextResponse.json({ success: true })
     } catch (error) {
+        console.error('[SUPPLIER_DELETE]', error);
         return NextResponse.json(
             { error: 'Failed to delete supplier' },
             { status: 500 }

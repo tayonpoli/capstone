@@ -45,6 +45,7 @@ export async function DELETE(
         });
         return NextResponse.json({ success: true });
     } catch (error) {
+        console.error('[NOTIFICATION_DELETE]', error);
         return new NextResponse("Internal error", { status: 500 });
     } finally {
         await prisma.$disconnect();

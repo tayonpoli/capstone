@@ -21,8 +21,6 @@ import { Badge } from "@/components/ui/badge"
 import { DeleteProduction } from "@/components/production/DeleteProduction"
 import { formatIDR } from "@/lib/formatCurrency"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Production = {
     id: string
     name: string
@@ -33,8 +31,60 @@ export type Production = {
         product: string
     }
     total: number
-    // status: "pending" | "processing" | "success" | "failed"
 }
+
+const ProductionActions = ({ production }: { production: Production }) => {
+    const router = useRouter();
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch('/api/production', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: production.id }),
+            })
+
+            const result = await response.json()
+
+            if (response.ok) {
+                toast.success(result.message || "BOM deleted successfully")
+                router.refresh()
+            } else {
+                throw new Error(result.error || "Failed to delete BOM")
+            }
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "An error occurred")
+            console.error('Delete error:', error)
+            throw error
+        }
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href={`/production/${production.id}`}>View Details</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href={`/production/${production.id}/edit`}>Edit</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <DeleteProduction onConfirm={handleDelete} />
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
+};
 
 export const columns: ColumnDef<Production>[] = [
     {
@@ -104,60 +154,8 @@ export const columns: ColumnDef<Production>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => {
-            const production = row.original
-            const router = useRouter()
-
-            const handleDelete = async () => {
-                try {
-                    const response = await fetch('/api/production', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ id: production.id }),
-                    })
-
-                    const result = await response.json()
-
-                    if (response.ok) {
-                        toast.success(result.message || "BOM deleted successfully")
-                        router.refresh()
-                    } else {
-                        throw new Error(result.error || "Failed to delete BOM")
-                    }
-                } catch (error) {
-                    toast.error(error instanceof Error ? error.message : "An error occurred")
-                    console.error('Delete error:', error)
-                    throw error
-                }
-            }
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href={`/production/${production.id}`}>View Details</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/production/${production.id}/edit`}>Edit</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <DeleteProduction productionId={production.id} onConfirm={handleDelete} />
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
-    }
+        cell: ({ row }) => <ProductionActions production={row.original} />,
+    },
 ]
 
 

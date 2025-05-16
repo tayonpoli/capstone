@@ -1,43 +1,23 @@
 "use client"
 
-// import { role } from "@/lib/data";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faHome,
     faChartSimple,
-    faReceipt,
     faBoxOpen,
     faDolly,
     faUser,
     faGear,
     faRightFromBracket,
-    faBoxesStacked,
-    faSchool,
     faCoins,
     faSquarePollHorizontal,
     faBookBookmark,
     faStore,
     faCubes,
-    faFileWaveform,
     faTags
     // Import other icons as needed
 } from '@fortawesome/free-solid-svg-icons';
-
-interface MenuItem {
-    icon: IconDefinition;  // Changed from any to IconDefinition
-    label: string;
-    href: string;
-    //   visible: string[];
-}
-
-interface MenuSection {
-    title: string;
-    items: MenuItem[];
-}
 
 const menuItems = [
     {

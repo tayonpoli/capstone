@@ -68,6 +68,7 @@ export function SalesPayment({
 
             router.refresh();
         } catch (error) {
+            console.error('Payment error', error);
             toast.error("Payment failed");
         }
     }

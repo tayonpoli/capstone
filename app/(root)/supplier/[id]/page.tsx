@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import { DetailCustomer } from "@/components/customer/DetailCustomer"
 import { DetailSupplier } from "@/components/supplier/DetailSupplier"
 
 export default async function SupplierDetailPage({

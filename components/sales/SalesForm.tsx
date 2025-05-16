@@ -88,9 +88,12 @@ export function CreateSalesForm({ customers, products }: CreateSalesFormProps) {
                 }),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
+
                 toast.success("Sales order created successfully!");
-                router.push('/sales');
+                router.push(`/sales/${data.id}`);
                 router.refresh();
             } else {
                 throw new Error("Failed to create sales order");

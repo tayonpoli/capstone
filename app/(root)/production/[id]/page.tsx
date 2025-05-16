@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { ProductionDetail } from "@/components/production/ProductionDetail";
+import { notFound } from "next/navigation";
 
 export default async function ProductionDetailPage({
     params,
@@ -19,6 +19,10 @@ export default async function ProductionDetailPage({
             }
         }
     });
+
+    if (!production) {
+        notFound()
+    }
 
     return (
         <div className="h-min-full m-3 p-5 bg-white rounded-md">

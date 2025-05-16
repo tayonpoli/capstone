@@ -60,7 +60,7 @@ export default async function SalesDetailPage({
             </div>
 
             <div className='flex justify-end mt-auto space-x-4'>
-                <Button asChild>
+                <Button asChild variant='outline'>
                     <Link href={`/sales/${id}/edit`}>
                         Edit
                     </Link>

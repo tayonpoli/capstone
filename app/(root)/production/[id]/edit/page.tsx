@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { Inventory, Unit } from '@prisma/client'
 import { prisma } from "@/lib/prisma";
 import { EditBomForm } from '@/components/production/EditProduction';

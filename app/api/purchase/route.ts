@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Urgency } from '@prisma/client';
 
 export async function POST(req: Request) {
     try {
@@ -87,7 +86,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json(result);
     } catch (error) {
-        console.error('[SALES_POST]', error);
+        console.error('[PURCHASE_POST]', error);
 
         if (error instanceof Error && error.message.includes('Insufficient stock')) {
             return new NextResponse(error.message, { status: 400 });
@@ -120,6 +119,7 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true })
     } catch (error) {
+        console.error('[PURCHASE_DELETE]', error);
         return NextResponse.json(
             { error: 'Failed to delete the purchase order' },
             { status: 500 }

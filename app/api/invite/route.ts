@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         await sendInvitationEmail(email, token);
 
         return NextResponse.json(
-            { message: "Invitation sent successfully" },
+            { invitation: invitation, message: "Invitation sent successfully" },
             { status: 200 }
         );
     } catch (error) {

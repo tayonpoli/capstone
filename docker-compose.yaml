@@ -1,13 +1,12 @@
 services:
-  app:
+  web:
     build:
       context: .
-    image: capstone-app-express
-    stdin_open: true
+      dockerfile: Dockerfile
     ports:
       - '3000:3000'
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
     environment:
-      - NODE_ENV=development
+      DATABASE_URL: "postgresql://postgres.qlbrgrxqvmxtikuoxlpp:IlJXUs8qO81QK06m@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+      NEXTAUTH_SECRET: "capstone"
+      NEXTAUTH_URL: http://localhost:3000
+    restart: always

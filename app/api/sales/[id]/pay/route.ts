@@ -41,6 +41,7 @@ export async function POST(
 
         return NextResponse.json(payment);
     } catch (error) {
+        console.error('[PAY_POST]', error);
         return NextResponse.json(
             { error: "Payment processing failed" },
             { status: 500 }

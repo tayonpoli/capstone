@@ -28,8 +28,60 @@ export type Supplier = {
     phone: string
     address: string
     createdAt: Date
-    // status: "pending" | "processing" | "success" | "failed"
 }
+
+const SupplierActions = ({ supplier }: { supplier: Supplier }) => {
+    const router = useRouter();
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch('/api/supplier', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: supplier.id }),
+            })
+
+            const result = await response.json()
+
+            if (response.ok) {
+                toast.success(result.message || "Supplier deleted successfully")
+                router.refresh()
+            } else {
+                throw new Error(result.error || "Failed to delete supplier")
+            }
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "An error occurred")
+            console.error('Delete error:', error)
+            throw error // Penting untuk ditangkap oleh DeleteProduct
+        }
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href={`/supplier/${supplier.id}`}>View Details</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href={`/supplier/${supplier.id}/edit`}>Edit</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <DeleteSupplier onConfirm={handleDelete} />
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
+};
 
 export const columns: ColumnDef<Supplier>[] = [
     {
@@ -82,59 +134,7 @@ export const columns: ColumnDef<Supplier>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => {
-            const supplier = row.original
-            const router = useRouter()
-
-            const handleDelete = async () => {
-                try {
-                    const response = await fetch('/api/supplier', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ id: supplier.id }),
-                    })
-
-                    const result = await response.json()
-
-                    if (response.ok) {
-                        toast.success(result.message || "Supplier deleted successfully")
-                        router.refresh()
-                    } else {
-                        throw new Error(result.error || "Failed to delete supplier")
-                    }
-                } catch (error) {
-                    toast.error(error instanceof Error ? error.message : "An error occurred")
-                    console.error('Delete error:', error)
-                    throw error // Penting untuk ditangkap oleh DeleteProduct
-                }
-            }
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href={`/supplier/${supplier.id}`}>View Details</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/supplier/${supplier.id}/edit`}>Edit</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <DeleteSupplier supplierId={supplier.id} onConfirm={handleDelete} />
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        cell: ({ row }) => <SupplierActions supplier={row.original} />,
     },
 ]
 

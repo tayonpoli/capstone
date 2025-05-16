@@ -23,24 +23,24 @@ import { OrderItem } from '../sales/OrderItem';
 
 const FormSchema = z.object({
     staffId: z.string().min(1, 'Staff is required'),
-        supplierId: z.string().min(1, 'Customer is required'),
-        address: z.string().optional(),
-        email: z.string().optional(),
-        purchaseDate: z.string().min(1, 'Order date is required'),
-        dueDate: z.string().min(1, 'Order date is required'),
-        tag: z.string().optional(),
-        urgency: z.string().min(1, 'urgency is required'),
-        status: z.string().min(1, 'Status is required'),
-        memo: z.string().optional(),
-        items: z.array(
-            z.object({
-                productId: z.string().min(1, 'Product is required'),
-                note: z.string().optional(),
-                quantity: z.coerce.number().int().min(1, 'Quantity must be at least 1'),
-                price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
-            })
-        ).min(1, 'At least one item is required'),
-    });
+    supplierId: z.string().min(1, 'Customer is required'),
+    address: z.string().optional(),
+    email: z.string().optional(),
+    purchaseDate: z.string().min(1, 'Order date is required'),
+    dueDate: z.string().min(1, 'Order date is required'),
+    tag: z.string().optional(),
+    urgency: z.string().min(1, 'urgency is required'),
+    status: z.string().min(1, 'Status is required'),
+    memo: z.string().optional(),
+    items: z.array(
+        z.object({
+            productId: z.string().min(1, 'Product is required'),
+            note: z.string().optional(),
+            quantity: z.coerce.number().int().min(1, 'Quantity must be at least 1'),
+            price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
+        })
+    ).min(1, 'At least one item is required'),
+});
 
 type EditPurchaseFormProps = {
     initialData: {
@@ -79,12 +79,12 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: E
         },
     });
 
-    const statusOptions = [
-        { value: 'Draft', label: 'Draft' },
-        { value: 'Approved', label: 'Approved' },
-        { value: 'Completed', label: 'Completed' },
-        { value: 'Cancelled', label: 'Cancelled' },
-    ] as const;
+    // const statusOptions = [
+    //     { value: 'Draft', label: 'Draft' },
+    //     { value: 'Approved', label: 'Approved' },
+    //     { value: 'Completed', label: 'Completed' },
+    //     { value: 'Cancelled', label: 'Cancelled' },
+    // ] as const;
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
@@ -121,7 +121,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: E
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
                         <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
-                        <FormField
+                            <FormField
                                 control={form.control}
                                 name='staffId'
                                 render={({ field }) => (

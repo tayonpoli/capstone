@@ -1,4 +1,3 @@
-import { formatIDR } from "@/lib/formatCurrency"
 import { Staff } from "@prisma/client"
 import { InfoIcon, Undo2Icon } from "lucide-react"
 import { Button } from "../ui/button"

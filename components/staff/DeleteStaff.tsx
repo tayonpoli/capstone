@@ -13,10 +13,8 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function DeleteStaff({
-    staffId,
     onConfirm,
 }: {
-    staffId: string
     onConfirm: () => void
 }) {
     return (

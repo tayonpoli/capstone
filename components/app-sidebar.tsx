@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
-import { Blocks, Waypoints, Sparkles, LifeBuoy, Send, ShoppingBasket, SquareChartGantt, CreditCard, Boxes, PackageOpen, UsersRound, UserRoundCog } from "lucide-react"
+import { Blocks, Waypoints, Sparkles, ShoppingBasket, SquareChartGantt, Boxes, PackageOpen, UsersRound, UserRoundCog } from "lucide-react"
 import { NotificationBell } from "./NotificationBell"
 
 interface AppSidebarProps {

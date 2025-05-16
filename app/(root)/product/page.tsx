@@ -153,8 +153,8 @@ export default async function page() {
                             columnId: "category",
                             title: "Category",
                             options: [
-                                { label: "Milk", value: "Milk" },
-                                { label: "Coffee", value: "Coffee" },
+                                { label: "Raw Material", value: "material" },
+                                { label: "Product", value: "product" },
                             ],
                         },
                         {

@@ -27,6 +27,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ customer: newCustomer, message: "Customer created successfully" }, { status: 201 });
     } catch (error) {
+        console.error('Error:', error)
         return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
     }
 }
@@ -44,6 +45,7 @@ export async function GET() {
         })
         return NextResponse.json(customer)
     } catch (error) {
+        console.error('Error:', error)
         return NextResponse.json(
             { error: 'Failed to fetch customer' },
             { status: 500 }
@@ -67,6 +69,7 @@ export async function DELETE(request: Request) {
         })
         return NextResponse.json({ success: true })
     } catch (error) {
+        console.error('Error:', error)
         return NextResponse.json(
             { error: 'Failed to delete customer' },
             { status: 500 }

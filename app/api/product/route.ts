@@ -42,6 +42,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ product: newProduct, message: "Product created successfully" }, { status: 201 });
     } catch (error) {
+        console.error('[PRODUCT_POST]', error);
         return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
     }
 }
@@ -59,6 +60,7 @@ export async function GET() {
         })
         return NextResponse.json(inventory)
     } catch (error) {
+        console.error('[PRODUCT_GET]', error);
         return NextResponse.json(
             { error: 'Failed to fetch inventory' },
             { status: 500 }
@@ -82,6 +84,7 @@ export async function DELETE(request: Request) {
         })
         return NextResponse.json({ success: true })
     } catch (error) {
+        console.error('[PRODUCT_DELETE]', error);
         return NextResponse.json(
             { error: 'Failed to delete product' },
             { status: 500 }

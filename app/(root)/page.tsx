@@ -1,6 +1,4 @@
-import { LineCharts } from "@/components/charts/LineChart";
 import { LongChart } from "@/components/charts/LongChart";
-import { PieCharts } from "@/components/charts/PieChart";
 import { RecentTransactions } from "@/components/charts/RecentPurchase";
 import { DailySalesChart } from "@/components/charts/RevenueChart";
 import { authOptions } from "@/lib/auth"
@@ -42,12 +40,6 @@ const AdminDashboardPage = async () => {
         <div className="col-span-2">
           <RecentTransactions />
         </div>
-        {/* <div className="h-96">
-          <PieCharts />
-        </div>
-        <div className="h-96">
-          <LineCharts />
-        </div> */}
       </div>
     </div>
   )

@@ -29,6 +29,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ staff: newStaff, message: "Staff created successfully" }, { status: 201 });
     } catch (error) {
+        console.error('[STAFF_POST]', error);
         return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
     }
 }
@@ -63,6 +64,7 @@ export async function DELETE(request: Request) {
         })
         return NextResponse.json({ success: true })
     } catch (error) {
+        console.error('[STAFF_DELETE]', error);
         return NextResponse.json(
             { error: 'Failed to delete staff' },
             { status: 500 }

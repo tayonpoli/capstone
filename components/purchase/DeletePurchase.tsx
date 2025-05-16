@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,10 +13,8 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function DeletePurchase({
-    purchaseId,
     onConfirm,
 }: {
-    purchaseId: string
     onConfirm: () => void
 }) {
     return (

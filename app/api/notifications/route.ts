@@ -14,6 +14,7 @@ export async function GET(req: Request) {
     const notifications = await getUserNotifications(userId);
     return NextResponse.json(notifications);
   } catch (error) {
+    console.error('[NOTIFICATION_GET]', error);
     return NextResponse.json(
       { error: 'Failed to fetch notifications' },
       { status: 500 }
@@ -31,6 +32,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('[NOTIFICATION_DELETE]', error);
     return new NextResponse("Internal error", { status: 500 });
   } finally {
     await prisma.$disconnect();

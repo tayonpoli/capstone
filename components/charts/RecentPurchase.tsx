@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { prisma } from "@/lib/prisma"
 import { formatIDR } from "@/lib/formatCurrency"
 import { format } from "date-fns"
+import { Badge } from "../ui/badge"
 
 async function getData(): Promise<any[]> {
     try {
@@ -63,7 +64,11 @@ export async function RecentTransactions() {
                                 <TableRow key={transaction.id} className="lg:h-[56px]">
                                     <TableCell>{format(new Date(transaction.purchaseDate), "dd MMMM yyyy")}</TableCell>
                                     <TableCell>{transaction.supplier.name}</TableCell>
-                                    <TableCell>{transaction.paymentStatus}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                                            {transaction.paymentStatus}
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell className="text-right">{formatIDR(transaction.total)}</TableCell>
                                 </TableRow>
                             ))}

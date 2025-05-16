@@ -15,13 +15,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
 import { formatIDR } from "@/lib/formatCurrency"
 import { format } from "date-fns"
-import { DeleteSales } from "@/components/sales/DeleteSales"
 import { DeletePurchase } from "@/components/purchase/DeletePurchase"
 
-export type Invoice = {
+export type PurchaseInvoice = {
     id: string
     amount: number
     paymentMethod: string | null
@@ -40,7 +38,60 @@ export type Invoice = {
     updatedAt: Date
 }
 
-export const invoiceColumns: ColumnDef<Invoice>[] = [
+const InvoiceActions = ({ purchase }: { purchase: PurchaseInvoice }) => {
+    const router = useRouter();
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch('/api/purchase', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: purchase.id }),
+            })
+
+            const result = await response.json()
+
+            if (response.ok) {
+                toast.success(result.message || "Sales order deleted successfully")
+                router.refresh()
+            } else {
+                throw new Error(result.error || "Failed to delete sales order")
+            }
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "An error occurred")
+            console.error('Delete error:', error)
+            throw error // Penting untuk ditangkap oleh DeleteProduct
+        }
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href={`/purchase/${purchase.id}`}>View Details</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href={`/purchase/${purchase.id}/edit`}>Edit</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <DeletePurchase onConfirm={handleDelete} />
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
+};
+
+export const invoiceColumns: ColumnDef<PurchaseInvoice>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -110,58 +161,6 @@ export const invoiceColumns: ColumnDef<Invoice>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => {
-            const purchase = row.original
-            const router = useRouter()
-
-            const handleDelete = async () => {
-                try {
-                    const response = await fetch('/api/purchase', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ id: purchase.id }),
-                    })
-
-                    const result = await response.json()
-
-                    if (response.ok) {
-                        toast.success(result.message || "Sales order deleted successfully")
-                        router.refresh()
-                    } else {
-                        throw new Error(result.error || "Failed to delete sales order")
-                    }
-                } catch (error) {
-                    toast.error(error instanceof Error ? error.message : "An error occurred")
-                    console.error('Delete error:', error)
-                    throw error // Penting untuk ditangkap oleh DeleteProduct
-                }
-            }
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href={`/purchase/${purchase.id}`}>View Details</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/purchase/${purchase.id}/edit`}>Edit</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <DeletePurchase purchaseId={purchase.id} onConfirm={handleDelete} />
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        cell: ({ row }) => <InvoiceActions purchase={row.original} />,
     },
 ]

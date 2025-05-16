@@ -38,13 +38,14 @@ export function DailySalesChart() {
                     date: format(new Date(item.date), 'EEE'), // tampilkan nama hari
                     sales: item.sales
                 })))
+
+                console.log('Chart data:', data)
             } finally {
                 setLoading(false)
             }
         }
 
         fetchData()
-        console.log('Chart data:', chartData)
     }, [])
 
     return (

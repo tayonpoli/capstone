@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlusIcon, PackageCheckIcon, PackageIcon, PackageMinusIcon, PackageXIcon, Info } from "lucide-react"
-import { Purchase, columns } from "./columns"
+import { PlusIcon, Info } from "lucide-react"
+import { columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
 import { formatIDR } from "@/lib/formatCurrency"
 import { invoiceColumns } from "./invoicecolumns"
+import { Invoice, PurchaseOrder } from "@prisma/client"
 
 async function getData(): Promise<any[]> {
     try {
