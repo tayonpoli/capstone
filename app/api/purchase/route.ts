@@ -110,6 +110,10 @@ export async function DELETE(request: Request) {
     }
 
     try {
+        await prisma.invoice.deleteMany({
+            where: { purchaseOrderId: id }
+        })
+
         await prisma.purchaseItem.deleteMany({
             where: { purchaseOrderId: id },
         })
