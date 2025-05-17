@@ -1,7 +1,9 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { Customer, Inventory } from '@prisma/client'
 import { EditSalesForm } from '@/components/sales/EditSalesForm'
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 interface SalesData {
   id: string
@@ -25,6 +27,19 @@ export default async function EditSalesPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  const session = await getServerSession(authOptions);
+
+  const allowedRoles = ['Admin', 'Owner'];
+
+  // Jika tidak ada session, redirect ke login
+  if (!session?.user) {
+    redirect("/api/auth/signin");
+  }
+
+  if (!allowedRoles.includes(session.user.role)) {
+    redirect("/unauthorized")
+  }
+
   const { id } = await params
   // Fetch data secara paralel di server component
   const [saleData, customers, products] = await Promise.all([

@@ -5,19 +5,12 @@ import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation";
 
-const AdminDashboardPage = async () => {
+const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
-
-  const allowedRoles = ['Admin', 'Owner'];
 
   // Jika tidak ada session, redirect ke login
   if (!session?.user) {
     redirect("/api/auth/signin");
-  }
-
-  // Jika user tidak memiliki role admin, redirect ke unauthorized atau home
-  if (!allowedRoles.includes(session.user.role)) {
-    redirect("/unauthorized"); // atau redirect("/");
   }
 
   return (
@@ -45,4 +38,4 @@ const AdminDashboardPage = async () => {
   )
 }
 
-export default AdminDashboardPage
+export default DashboardPage

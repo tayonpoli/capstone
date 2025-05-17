@@ -5,6 +5,9 @@ import { Staff, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
 async function getData(): Promise<Staff[]> {
     try {
@@ -43,6 +46,19 @@ async function getContactStats() {
 }
 
 export default async function page() {
+    const session = await getServerSession(authOptions);
+
+    const allowedRoles = ['Admin', 'Owner'];
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (!allowedRoles.includes(session.user.role)) {
+        redirect("/unauthorized")
+    }
+
     const data = await getData();
     const stats = await getContactStats();
 

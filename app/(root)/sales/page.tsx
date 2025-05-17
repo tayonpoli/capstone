@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatIDR } from "@/lib/formatCurrency"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
 import { invoiceColumns, SalesInvoice } from "./invoiceColumns"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
 async function getData(): Promise<Sales[]> {
     try {
@@ -106,6 +109,14 @@ async function getSalesStats() {
 }
 
 export default async function page() {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    const isStaff = session.user.role === 'Staff'
+
     const data = await getData();
     const invoiceData = await getInvoiceData();
     const salesStats = await getSalesStats();
@@ -188,7 +199,9 @@ export default async function page() {
                         <TabsTrigger value="order">Sales Order</TabsTrigger>
                         <TabsTrigger value="invoice">Sales Invoice</TabsTrigger>
                     </TabsList>
-                    <ReportGenerator reportType="sales" />
+                    {!isStaff && (
+                        <ReportGenerator reportType="sales" />
+                    )}
                 </div>
                 <TabsContent value="order" className="space-y-2">
                     <div className="container mx-auto py-2">

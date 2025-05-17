@@ -4,6 +4,9 @@ import { User, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { getServerSession } from "next-auth"
+import { redirect } from "next/navigation"
+import { authOptions } from "@/lib/auth"
 
 async function getData(): Promise<User[]> {
     try {
@@ -18,6 +21,19 @@ async function getData(): Promise<User[]> {
 }
 
 export default async function page() {
+    const session = await getServerSession(authOptions);
+
+    const allowedRoles = ['Owner'];
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (!allowedRoles.includes(session.user.role)) {
+        redirect("/unauthorized")
+    }
+
     const data = await getData();
 
     return (

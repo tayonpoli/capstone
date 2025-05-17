@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { DetailPurchase } from "@/components/purchase/DetailPurchase";
 import { ReportButton } from "@/components/reports/ReportButton";
@@ -13,12 +13,22 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { PaymentForm } from "@/components/purchase/PaymentForm";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export default async function PurchaseDetailPage({
     params,
 }: {
     params: Promise<{ id: string }>
 }) {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    const isStaff = session.user.role === 'Staff'
+
     const { id } = await params
     const purchase = await prisma.purchaseOrder.findUnique({
         where: { id: id },
@@ -67,32 +77,36 @@ export default async function PurchaseDetailPage({
             </div>
 
             <div className='flex justify-end mt-auto space-x-4'>
-                <Button asChild>
-                    <Link href={`/purchase/${id}/edit`}>
-                        Edit
-                    </Link>
-                </Button>
+                {!isStaff && (
+                    <>
+                        <Button asChild>
+                            <Link href={`/purchase/${id}/edit`}>
+                                Edit
+                            </Link>
+                        </Button>
 
-                {!isPaid && (
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button>
-                                Set Payment
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle>Payment Details</DialogTitle>
-                            </DialogHeader>
-                            <PaymentForm
-                                purchaseId={id}
-                                remainingAmount={remainingAmount}
-                            />
-                        </DialogContent>
-                    </Dialog>
+                        {!isPaid && (
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button>
+                                        Set Payment
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Payment Details</DialogTitle>
+                                    </DialogHeader>
+                                    <PaymentForm
+                                        purchaseId={id}
+                                        remainingAmount={remainingAmount}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        )}
+
+                        <ReportButton order={purchase} type="purchase" />
+                    </>
                 )}
-
-                <ReportButton order={purchase} type="purchase" />
             </div>
         </div>
     );

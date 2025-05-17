@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { SalesDetail } from "@/components/sales/SalesDetail";
 import { Button } from "@/components/ui/button";
@@ -7,12 +7,22 @@ import { Undo2Icon } from "lucide-react";
 import { ReportButton } from "@/components/reports/ReportButton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SalesPayment } from "@/components/sales/SalesPayment";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export default async function SalesDetailPage({
     params,
 }: {
     params: Promise<{ id: string }>
 }) {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    const isStaff = session.user.role === 'Staff'
+
     const { id } = await params
     const sales = await prisma.salesOrder.findUnique({
         where: { id: id },
@@ -60,12 +70,14 @@ export default async function SalesDetailPage({
             </div>
 
             <div className='flex justify-end mt-auto space-x-4'>
-                <Button asChild variant='outline'>
-                    <Link href={`/sales/${id}/edit`}>
-                        Edit
-                    </Link>
-                </Button>
                 <ReportButton order={sales} type="sales" />
+                {!isStaff && (
+                    <Button asChild variant='outline'>
+                        <Link href={`/sales/${id}/edit`}>
+                            Edit
+                        </Link>
+                    </Button>
+                )}
 
                 {!isPaid && (
                     <Dialog>

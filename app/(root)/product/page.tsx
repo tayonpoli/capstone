@@ -5,6 +5,9 @@ import { Product, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
 async function getData(): Promise<Product[]> {
     try {
@@ -67,6 +70,14 @@ async function getInventoryStats() {
 }
 
 export default async function page() {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    const isStaff = session.user.role === 'Staff'
+
     const data = await getData();
     const stats = await getInventoryStats();
 
@@ -76,13 +87,15 @@ export default async function page() {
                 <div className="text-3xl font-semibold pl-1">
                     Inventory
                 </div>
-                <div className="flex justify-end">
-                    <Link href='/product/create'>
-                        <Button>
-                            <PlusIcon /> Create New Item
-                        </Button>
-                    </Link>
-                </div>
+                {!isStaff && (
+                    <div className="flex justify-end">
+                        <Link href='/product/create'>
+                            <Button>
+                                <PlusIcon /> Create New Item
+                            </Button>
+                        </Link>
+                    </div>
+                )}
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
                 <Card>

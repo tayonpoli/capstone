@@ -1,7 +1,23 @@
 import { CreatePurchaseForm } from "@/components/purchase/CreatePurchaseForm";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 export default async function CreatePurchasePage() {
+    const session = await getServerSession(authOptions);
+
+    const allowedRoles = ['Admin', 'Owner'];
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (!allowedRoles.includes(session.user.role)) {
+        redirect("/unauthorized")
+    }
+
     const suppliers = await prisma.supplier.findMany({
         orderBy: {
             name: 'asc',
@@ -32,7 +48,7 @@ export default async function CreatePurchasePage() {
                 </div>
             </div>
             <CreatePurchaseForm
-            staffs={staffs}
+                staffs={staffs}
                 suppliers={suppliers}
                 products={products}
             />

@@ -2,7 +2,6 @@ import { CreateSalesForm } from "@/components/sales/SalesForm";
 import { prisma } from "@/lib/prisma";
 
 export default async function CreateSalesPage() {
-    // Fetch customers data
     const customers = await prisma.customer.findMany({
         orderBy: {
             name: 'asc',

@@ -18,29 +18,6 @@ interface ProductionDetailProps {
 export function ProductionDetail({ production }: ProductionDetailProps) {
     return (
         <div className="p-4">
-            <div className="flex flex-center items-start">
-                <div>
-                    <p className='text-sm font-light text-gray-400'>
-                        Production
-                    </p>
-                    <h1 className='mb-10 text-2xl font-semibold'>
-                        Bills of Material Details
-                    </h1>
-                </div>
-                <div className="flex flex-center ml-auto space-x-4">
-                    <Button asChild variant='outline'>
-                        <Link href={`/production`}>
-                            <Undo2Icon className="mr-2 h-4 w-4" /> Back
-                        </Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href={`/production/${production.id}/edit`}>
-                            Edit
-                        </Link>
-                    </Button>
-                </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Column - Order Information */}
                 <div className="mb-6">

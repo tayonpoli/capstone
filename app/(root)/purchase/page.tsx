@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
 import { formatIDR } from "@/lib/formatCurrency"
 import { invoiceColumns, PurchaseInvoice } from "./invoicecolumns"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
 async function getData(): Promise<Purchase[]> {
     try {
@@ -113,6 +116,14 @@ async function getStats() {
 }
 
 export default async function page() {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    const isStaff = session.user.role === 'Staff'
+
     const data = await getData();
     const invoiceData = await getInvoiceData();
     const stats = await getStats();
@@ -123,13 +134,15 @@ export default async function page() {
                 <div className="text-3xl font-semibold pl-1">
                     Purchase
                 </div>
-                <div className="flex justify-end">
-                    <Link href='/purchase/create'>
-                        <Button>
-                            <PlusIcon /> Create New Purchase
-                        </Button>
-                    </Link>
-                </div>
+                {!isStaff && (
+                    <div className="flex justify-end">
+                        <Link href='/purchase/create'>
+                            <Button>
+                                <PlusIcon /> Create New Purchase
+                            </Button>
+                        </Link>
+                    </div>
+                )}
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
                 <Card>
@@ -195,7 +208,9 @@ export default async function page() {
                         <TabsTrigger value="order">Purchase Order</TabsTrigger>
                         <TabsTrigger value="invoice">Purchase Invoice</TabsTrigger>
                     </TabsList>
-                    <ReportGenerator reportType="purchasing" />
+                    {!isStaff && (
+                        <ReportGenerator reportType="purchasing" />
+                    )}
                 </div>
                 <TabsContent value="order" className="space-y-2">
                     <div className="container mx-auto py-2">
