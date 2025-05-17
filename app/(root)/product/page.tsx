@@ -157,14 +157,6 @@ export default async function page() {
                                 { label: "Product", value: "product" },
                             ],
                         },
-                        {
-                            columnId: "product",
-                            title: "Product",
-                            options: [
-                                { label: "Oat Milk", value: "Oat Milk" },
-                                { label: "Almond Milk", value: "Almond Milk" },
-                            ],
-                        },
                     ]}
                 />
             </div>

@@ -69,7 +69,7 @@ model Inventory {
   code          String         @unique
   category      String
   description   String?
-  unit          String         @default("Pcs")
+  unit          Unit           @default(Pcs)
   buyprice      Int?
   sellprice     Int?
   stock         Float          @default(0)

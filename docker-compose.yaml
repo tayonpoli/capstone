@@ -6,6 +6,7 @@ services:
     ports:
       - '3000:3000'
     environment:
+      DIRECT_URL: "postgresql://postgres.qlbrgrxqvmxtikuoxlpp:IlJXUs8qO81QK06m@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
       DATABASE_URL: "postgresql://postgres.qlbrgrxqvmxtikuoxlpp:IlJXUs8qO81QK06m@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
       NEXTAUTH_SECRET: "capstone"
       NEXTAUTH_URL: http://localhost:3000
