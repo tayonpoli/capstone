@@ -175,7 +175,7 @@ export function DetailPurchase({ purchase }: PurchaseDetailProps) {
                                             </>
                                         )}
                                         {invoice.paymentMethod !== 'Transfer' &&
-                                            purchase.Invoice.some(inv => inv.paymentMethod === 'Transfer') && (
+                                            purchase.Invoice?.some(inv => inv.paymentMethod === 'Transfer') && (
                                                 <>
                                                     <TableCell>-</TableCell>
                                                     <TableCell>-</TableCell>

@@ -251,12 +251,12 @@ export const PdfDocument = ({
         {/* Header with company info */}
         <View style={styles.header}>
           <View style={styles.companyHeader}>
-            {companyInfo.logo && (
+            {/* {companyInfo.logo && (
               <Image
                 src={companyInfo.logo}
                 style={styles.logo}
               />
-            )}
+            )} */}
             <View style={styles.companyInfo}>
               <Text>{companyInfo.name || 'Your Company Name'}</Text>
               <Text>{companyInfo.address || 'Company Address'}</Text>

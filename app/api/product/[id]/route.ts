@@ -2,13 +2,15 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import * as z from 'zod';
 
+const UnitEnum = z.enum(["Pcs", "Box", "Kg", "gram", "Litre", "ml"]);
+
 const updateProductSchema = z
     .object({
         product: z.string().optional(),
         code: z.string().optional(),
         category: z.string().optional(),
         description: z.string().optional(),
-        unit: z.string().optional(),
+        unit: UnitEnum,
         buyprice: z.number().int().optional(),
         sellprice: z.number().int().optional(),
         limit: z.coerce.number().int().optional(),
@@ -42,5 +44,33 @@ export async function PUT(req: Request, {
     } catch (err) {
         console.error('[PRODUCT_PUT]', err);
         return NextResponse.json({ message: "Update failed" }, { status: 500 });
+    }
+}
+
+export async function PATCH(request: Request, {
+    params
+}: {
+    params: Promise<{ id: string }>
+}) {
+    try {
+
+        const { id } = await params
+        const { stock } = await request.json(); // Langsung menggunakan field 'stock'
+
+        // Validasi
+        if (typeof stock !== "number" || stock < 0) {
+            return new NextResponse("Stock must be a positive number", { status: 400 });
+        }
+
+        // Partial update hanya field stock
+        const updatedProduct = await prisma.inventory.update({
+            where: { id: id },
+            data: { stock },
+        });
+
+        return NextResponse.json(updatedProduct);
+    } catch (error) {
+        console.error("[PRODUCT_UPDATE_STOCK]", error);
+        return new NextResponse("Internal Error", { status: 500 });
     }
 }

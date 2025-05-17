@@ -25,12 +25,12 @@ export type SalesInvoice = {
     paymentMethod: string | null
     bankName: string | null
     accountNumber: string | null
-    paymentDate: string | null
+    paymentDate: Date | null
     salesOrderId: string
     salesOrder: {
         customerId: string
         customer: {
-            name: string
+            name: string | null
         }
     }
     createdAt: Date
@@ -83,7 +83,7 @@ const InvoiceActions = ({ sales }: { sales: SalesInvoice }) => {
                     <Link href={`/sales/${sales.salesOrderId}/edit`}>Edit</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <DeleteSales salesId={sales.id} onConfirm={handleDelete} />
+                    <DeleteSales onConfirm={handleDelete} />
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

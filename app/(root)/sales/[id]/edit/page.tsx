@@ -82,7 +82,7 @@ export default async function EditSalesPage({
   async function getProducts(): Promise<Inventory[]> {
     try {
       return await prisma.inventory.findMany({
-        where: { stock: { gt: 0 } },
+        where: { category: 'product' },
         orderBy: { product: 'asc' },
       })
     } catch (error) {

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Material } from '@prisma/client';
 
 export async function POST(req: Request) {
     try {
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
             return new NextResponse("Product and materials are required", { status: 400 });
         }
 
-        const total = materials.reduce((sum: number, mat: any) => {
+        const total = materials.reduce((sum: number, mat: Material) => {
             return sum + mat.price;
         }, 0);
 
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
                     productId,
                     total,
                     materials: {
-                        create: materials.map((mat: any) => ({
+                        create: materials.map((mat: Material) => ({
                             materialId: mat.materialId,
                             qty: mat.qty,
                             unit: mat.unit,

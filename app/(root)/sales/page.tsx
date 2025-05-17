@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PlusIcon, Info } from "lucide-react"
-import { columns } from "./columns"
+import { columns, Sales } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatIDR } from "@/lib/formatCurrency"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
-import { invoiceColumns } from "./invoiceColumns"
+import { invoiceColumns, SalesInvoice } from "./invoiceColumns"
 
-async function getData(): Promise<any[]> {
+async function getData(): Promise<Sales[]> {
     try {
         const sales = await prisma.salesOrder.findMany({
             include: {
@@ -33,13 +33,17 @@ async function getData(): Promise<any[]> {
     }
 }
 
-async function getInvoiceData(): Promise<any[]> {
+async function getInvoiceData(): Promise<SalesInvoice[]> {
     try {
         const invoice = await prisma.salesInvoice.findMany({
             include: {
                 salesOrder: {
-                    select: {
-                        customer: true
+                    include: {
+                        customer: {
+                            select: {
+                                name: true
+                            }
+                        }
                     }
                 },
             },

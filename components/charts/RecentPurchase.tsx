@@ -12,7 +12,18 @@ import { formatIDR } from "@/lib/formatCurrency"
 import { format } from "date-fns"
 import { Badge } from "../ui/badge"
 
-async function getData(): Promise<any[]> {
+type RecentPurchase = {
+    id: string
+    total: number
+    paymentStatus: string
+    supplierId: string
+    supplier: {
+        name: string | null
+    }
+    purchaseDate: Date
+}
+
+async function getData(): Promise<RecentPurchase[]> {
     try {
         const purchase = await prisma.purchaseOrder.findMany({
             include: {

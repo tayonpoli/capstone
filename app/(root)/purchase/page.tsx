@@ -1,22 +1,22 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PlusIcon, Info } from "lucide-react"
-import { columns } from "./columns"
+import { columns, Purchase } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
 import { formatIDR } from "@/lib/formatCurrency"
-import { invoiceColumns } from "./invoicecolumns"
-import { Invoice, PurchaseOrder } from "@prisma/client"
+import { invoiceColumns, PurchaseInvoice } from "./invoicecolumns"
 
-async function getData(): Promise<any[]> {
+async function getData(): Promise<Purchase[]> {
     try {
         const purchase = await prisma.purchaseOrder.findMany({
             include: {
                 supplier: {
                     select: {
+                        id: true,
                         name: true
                     }
                 },
@@ -36,13 +36,17 @@ async function getData(): Promise<any[]> {
     }
 }
 
-async function getInvoiceData(): Promise<any[]> {
+async function getInvoiceData(): Promise<PurchaseInvoice[]> {
     try {
         const invoice = await prisma.invoice.findMany({
             include: {
                 purchaseOrder: {
-                    select: {
-                        supplier: true
+                    include: {
+                        supplier: {
+                            select: {
+                                name: true
+                            }
+                        }
                     }
                 },
             },

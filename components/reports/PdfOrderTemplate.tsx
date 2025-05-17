@@ -142,7 +142,10 @@ export const PdfOrderTemplate = ({
                 <View style={styles.header}>
                     <View>
                         {/* Ganti dengan logo perusahaan jika ada */}
-                        <Image src="/logo.png" style={styles.logo} />
+                        {/* <Image
+                            src="/logo.png"
+                            style={styles.logo}
+                        /> */}
                         <Text style={styles.title}>{orderLabel}</Text>
                         <Text style={styles.orderInfo}>Order #: {order.tag || order.id}</Text>
                         <Text style={styles.orderInfo}>Date: {new Date(orderDate).toLocaleDateString()}</Text>

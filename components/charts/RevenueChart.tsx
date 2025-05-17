@@ -34,7 +34,7 @@ export function DailySalesChart() {
             try {
                 const response = await fetch('/api/livechart/sales')
                 const data = await response.json()
-                setChartData(data.map(item => ({
+                setChartData(data.map((item: any) => ({
                     date: format(new Date(item.date), 'EEE'), // tampilkan nama hari
                     sales: item.sales
                 })))

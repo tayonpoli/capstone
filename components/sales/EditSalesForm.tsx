@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Customer, Inventory } from '@prisma/client';
+import { Customer } from '@prisma/client';
 import { OrderItem } from '../sales/OrderItem';
 
 const FormSchema = z.object({
@@ -39,28 +39,7 @@ const FormSchema = z.object({
     ).min(1, 'At least one item is required'),
 });
 
-type EditSalesFormProps = {
-    initialData: {
-        id: string;
-        customerId: string;
-        address?: string;
-        email?: string;
-        orderDate: string;
-        tag?: string;
-        status: string;
-        memo?: string;
-        items: {
-            productId: string;
-            note: string;
-            quantity: number;
-            price: number;
-        }[];
-    };
-    customers: Customer[];
-    products: Inventory[];
-};
-
-export function EditSalesForm({ initialData, customers, products }: EditSalesFormProps) {
+export function EditSalesForm({ initialData, customers, products }: any) {
     const router = useRouter();
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -118,7 +97,7 @@ export function EditSalesForm({ initialData, customers, products }: EditSalesFor
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {customers.map((customer) => (
+                                                {customers.map((customer: Customer) => (
                                                     <SelectItem key={customer.id} value={customer.id}>
                                                         {customer.name}
                                                     </SelectItem>
@@ -161,9 +140,20 @@ export function EditSalesForm({ initialData, customers, products }: EditSalesFor
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Tag</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='e.g. Urgent, Wholesale' {...field} />
-                                        </FormControl>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder="Select sales tag" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="other">Others</SelectItem>
+                                                <SelectItem value="Takeaway">Take away</SelectItem>
+                                                <SelectItem value="Gofood">GoFood</SelectItem>
+                                                <SelectItem value="Grab">GrabFood</SelectItem>
+                                                <SelectItem value="Shopee">ShopeeFood</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}

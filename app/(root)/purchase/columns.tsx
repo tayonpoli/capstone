@@ -31,13 +31,13 @@ export type Purchase = {
   urgency: string
   // address: string | null
   // email: string | null
-  staffId: string
-  staff: {
-    name: string
-  }
+  // staffId: string
+  // staff: {
+  //   name: string
+  // }
   supplierId: string
   supplier: {
-    name: string
+    name: string | null
   }
   purchaseDate: Date
   dueDate: Date

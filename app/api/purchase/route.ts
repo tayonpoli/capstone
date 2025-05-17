@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { PurchaseItem } from '@prisma/client';
 
 export async function POST(req: Request) {
     try {
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
         }
 
         // Calculate total
-        const total = items.reduce((sum: number, item: any) => {
+        const total = items.reduce((sum: number, item: PurchaseItem) => {
             return sum + (item.price * item.quantity);
         }, 0);
 
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
                     memo,
                     total,
                     items: {
-                        create: items.map((item: any) => ({
+                        create: items.map((item: PurchaseItem) => ({
                             productId: item.productId,
                             note: item.note,
                             quantity: item.quantity,

@@ -25,14 +25,13 @@ export type PurchaseInvoice = {
     paymentMethod: string | null
     bankName: string | null
     accountNumber: string | null
-    paymentDate: string | null
+    paymentDate: Date | null
     purchaseOrderId: string
     purchaseOrder: {
         supplierId: string
         supplier: {
-            name: string
+            name: string | null
         }
-        paymentStatus: string
     }
     createdAt: Date
     updatedAt: Date

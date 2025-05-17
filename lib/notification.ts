@@ -4,18 +4,24 @@ export async function checkStockNotifications() {
     // Cek produk yang stoknya di bawah limit atau habis
     const lowStockProducts = await prisma.inventory.findMany({
         where: {
-            OR: [
-                { stock: { lte: 0 } }, // Out of stock
+            AND: [
                 {
-                    AND: [
-                        { limit: { not: null } },
-                        { stock: { lte: prisma.inventory.fields.limit } }
+                    OR: [
+                        { stock: { lte: 0 } }, // Out of stock
+                        {
+                            AND: [
+                                { limit: { not: null } },
+                                { stock: { lte: prisma.inventory.fields.limit } }
+                            ]
+                        } // Di bawah limit
                     ]
-                } // Di bawah limit
-            ],
-            OR: [
-                { lastNotified: null },
-                { lastNotified: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) } } // Hanya notif 1x per hari
+                },
+                {
+                    OR: [
+                        { lastNotified: null },
+                        { lastNotified: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
+                    ]
+                }
             ]
         }
     });

@@ -160,7 +160,7 @@ export function StaffForm({ initialData }: { initialData?: any }) {
                     </div>
                     <div className='fixed bottom-16 right-14 space-x-4'>
                         <Button asChild variant='outline'>
-                            <Link href={isEditMode ? `/staff/${initialData.id}` : '/staff'}>
+                            <Link href={'/staff'}>
                                 Cancel
                             </Link>
                         </Button>

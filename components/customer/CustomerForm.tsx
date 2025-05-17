@@ -136,7 +136,7 @@ export function CustomerForm({ initialData }: { initialData?: any }) {
                     </div>
                     <div className='fixed bottom-16 right-14 space-x-4'>
                         <Button asChild variant='outline'>
-                            <Link href={isEditMode ? `/customer/${initialData.id}` : '/customer'}>
+                            <Link href={'/customer'}>
                                 Cancel
                             </Link>
                         </Button>

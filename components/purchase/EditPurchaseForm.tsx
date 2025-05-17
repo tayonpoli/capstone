@@ -42,32 +42,7 @@ const FormSchema = z.object({
     ).min(1, 'At least one item is required'),
 });
 
-type EditPurchaseFormProps = {
-    initialData: {
-        id: string;
-        supplierId: string;
-        staffId: string;
-        address?: string;
-        email?: string;
-        purchaseDate: string;
-        dueDate: string;
-        tag?: string;
-        status: string;
-        urgency: string;
-        memo?: string;
-        items: {
-            productId: string;
-            note: string;
-            quantity: number;
-            price: number;
-        }[];
-    };
-    staffs: Staff[];
-    suppliers: Customer[];
-    products: Inventory[];
-};
-
-export function EditPurchaseForm({ initialData, suppliers, staffs, products }: EditPurchaseFormProps) {
+export function EditPurchaseForm({ initialData, suppliers, staffs, products }: any) {
     const router = useRouter();
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -134,7 +109,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: E
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {staffs.map((staff) => (
+                                                {staffs.map((staff: any) => (
                                                     <SelectItem key={staff.id} value={staff.id}>
                                                         {staff.name}
                                                     </SelectItem>
@@ -158,7 +133,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: E
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {suppliers.map((supplier) => (
+                                                {suppliers.map((supplier: any) => (
                                                     <SelectItem key={supplier.id} value={supplier.id}>
                                                         {supplier.name}
                                                     </SelectItem>

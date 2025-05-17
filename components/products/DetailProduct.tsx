@@ -26,11 +26,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                             <Undo2Icon />  Back
                         </Link>
                     </Button>
-                    <Button asChild>
-                        <Link href={`/product/${product.id}/edit`}>
-                            Edit
-                        </Link>
-                    </Button>
                 </div>
             </div>
             <h1 className="text-2xl font-semibold mb-4">{product.product}</h1>

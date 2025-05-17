@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 
@@ -31,10 +31,12 @@ const FormSchema = z.object({
     message: 'Passwords do not match',
 });
 
-const SignUpForm = () => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const token = searchParams.get('token');
+interface SignUpFormProps {
+    token?: string | null
+}
+
+export const SignUpForm = ({ token }: SignUpFormProps) => {
+    const router = useRouter()
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),

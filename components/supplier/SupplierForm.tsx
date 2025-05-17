@@ -136,7 +136,7 @@ export function SupplierForm({ initialData }: { initialData?: any }) {
                     </div>
                     <div className='fixed bottom-16 right-14 space-x-4'>
                         <Button asChild variant='outline'>
-                            <Link href={isEditMode ? `/supplier/${initialData.id}` : '/supplier'}>
+                            <Link href={'/supplier'}>
                                 Cancel
                             </Link>
                         </Button>

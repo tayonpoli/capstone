@@ -11,7 +11,7 @@ import {
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Inventory } from '@prisma/client';
+import { Inventory, Material } from '@prisma/client';
 
 type MaterialItemProps = {
     form: UseFormReturn<any>;
@@ -52,7 +52,7 @@ export function MaterialItem({
                                             <SelectItem
                                                 key={material.id}
                                                 value={material.id}
-                                                disabled={form.watch('materials').some((m: any, i: number) =>
+                                                disabled={form.watch('materials').some((m: Material, i: number) =>
                                                     i !== index && m.materialId === material.id
                                                 )}
                                             >

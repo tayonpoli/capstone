@@ -1,11 +1,14 @@
 import SignUpForm from '@/components/form/SignUpForm';
 
-const page = () => {
+export default function SignUpPage({
+    searchParams,
+}: {
+    searchParams: { token?: string }
+}) {
     return (
         <div className='w-full'>
-            <SignUpForm />
+            <SignUpForm token={searchParams.token || null} />
         </div>
+
     );
 };
-
-export default page;

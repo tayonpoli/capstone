@@ -2,13 +2,15 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import * as z from 'zod';
 
+const UnitEnum = z.enum(["Pcs", "Box", "Kg", "gram", "Litre", "ml"]);
+
 const productSchema = z
     .object({
         product: z.string().min(1, 'Product name is required').max(100),
         code: z.string().min(1, 'SKU is required'),
         category: z.string().min(1, 'Category is required'),
         description: z.string(),
-        unit: z.string().min(1, 'Unit is required'),
+        unit: UnitEnum,
         buyprice: z.number().int(),
         sellprice: z.number().int(),
         limit: z.coerce.number().int(),

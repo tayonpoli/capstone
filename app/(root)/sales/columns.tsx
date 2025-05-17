@@ -25,13 +25,13 @@ export type Sales = {
   total: number
   tag: string | null
   memo: string | null
-  status: string
+  // status: string
   paymentStatus: string
-  address: string | null
-  email: string | null
+  // address: string | null
+  // email: string | null
   customerId: string
   customer: {
-    name: string
+    name: string | null
   }
   orderDate: Date
   createdAt: Date

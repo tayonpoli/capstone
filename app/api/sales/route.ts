@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { convertUnit } from '@/lib/units';
+import { SalesItem, Unit } from '@prisma/client';
 
 export async function POST(req: Request) {
     try {
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
         if (!items?.length) return new NextResponse("Items required", { status: 400 });
 
         // Hitung total sales
-        const total = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+        const total = items.reduce((sum: number, item: SalesItem) => sum + (item.price * item.quantity), 0);
 
         const result = await prisma.$transaction(async (prisma) => {
             // 1. Buat sales order
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
                     customerId,
                     total,
                     items: {
-                        create: items.map((item: any) => ({
+                        create: items.map((item: SalesItem) => ({
                             productId: item.productId,
                             quantity: item.quantity,
                             price: item.price,
@@ -37,66 +38,80 @@ export async function POST(req: Request) {
 
             // 2. Proses setiap item dalam sales order
             for (const item of items) {
-                // 2a. Dapatkan produk dan kurangi stok
+                // 2a. Dapatkan produk
                 const product = await prisma.inventory.findUniqueOrThrow({
                     where: { id: item.productId }
                 });
 
-                // const updatedProduct = await prisma.inventory.update({
-                //     where: { id: item.productId },
-                //     data: { stock: { decrement: item.quantity } },
-                // });
-
-                // // Validasi stok produk
-                // if (updatedProduct.stock < 0) {
-                //     throw new Error(`Stok ${product.product} tidak mencukupi`);
-                // }
-
-                // 2b. Dapatkan semua BOM untuk produk ini
                 const production = await prisma.production.findFirst({
                     where: { productId: item.productId },
                     include: { materials: { include: { material: true } } }
                 });
 
-                if (!production) {
-                    throw new Error(`No BOM found for product: ${product.product}`);
-                }
+                if (production) {
+                    // Jika ada BOM, kurangi stok bahan baku saja
+                    for (const material of production.materials) {
+                        const qtyNeeded = convertUnit(
+                            material.qty * item.quantity,
+                            material.unit as Unit,
+                            material.material.unit as Unit
+                        );
 
-                // 2c. Kurangi stok bahan baku
-                for (const material of production.materials) {
-                    const qtyNeeded = convertUnit(
-                        material.qty * item.quantity,
-                        material.unit,
-                        material.material.unit
-                    );
+                        // Update stok bahan baku
+                        const updatedMaterial = await prisma.inventory.update({
+                            where: { id: material.materialId },
+                            data: { stock: { decrement: qtyNeeded } },
+                        });
 
-                    // Update stok bahan baku
-                    const updatedMaterial = await prisma.inventory.update({
-                        where: { id: material.materialId },
-                        data: { stock: { decrement: qtyNeeded } },
-                        // select: { id: true, product: true, stock: true, unit: true }
+                        // Validasi stok bahan baku
+                        if (updatedMaterial.stock < 0) {
+                            throw new Error(`Insufficient ${material.material.product} stock`);
+                        }
+
+                        // Cek notifikasi bahan baku
+                        const isBelowLimit = updatedMaterial.limit && updatedMaterial.stock <= updatedMaterial.limit;
+                        const isOutOfStock = updatedMaterial.stock <= 0;
+
+                        if (isBelowLimit || isOutOfStock) {
+                            notificationsToCreate.push({
+                                title: `The stock of ${updatedMaterial.product} ${isOutOfStock ? 'is out' : 'is low'}`,
+                                message: `Stock of ${updatedMaterial.product} is ${updatedMaterial.stock} left ${updatedMaterial.unit}. ${updatedMaterial.limit ? `(Limit: ${updatedMaterial.limit})` : ''}`,
+                                type: 'stock',
+                                relatedId: updatedMaterial.id
+                            });
+
+                            await prisma.inventory.update({
+                                where: { id: updatedMaterial.id },
+                                data: { lastNotified: new Date() }
+                            });
+                        }
+                    }
+                } else {
+                    // Jika tidak ada BOM, kurangi stok produk utama
+                    const updatedProduct = await prisma.inventory.update({
+                        where: { id: item.productId },
+                        data: { stock: { decrement: item.quantity } }
                     });
 
-                    // Validasi stok bahan baku
-                    if (updatedMaterial.stock < 0) {
-                        throw new Error(`Insufficient ${material.material.product} stock`);
+                    // Validasi stok produk
+                    if (updatedProduct.stock < 0) {
+                        throw new Error(`Insufficient ${product.product} stock`);
                     }
 
-                    // Cek jika stok bahan baku di bawah limit atau habis
-                    const isBelowLimit = updatedMaterial.limit && updatedMaterial.stock <= updatedMaterial.limit;
-                    const isOutOfStock = updatedMaterial.stock <= 0;
+                    // Cek notifikasi produk utama
+                    const isBelowLimit = updatedProduct.limit && updatedProduct.stock <= updatedProduct.limit;
+                    const isOutOfStock = updatedProduct.stock <= 0;
 
                     if (isBelowLimit || isOutOfStock) {
                         notificationsToCreate.push({
-                            title: `The stock of ${updatedMaterial.product} ${isOutOfStock ? 'is out' : 'is low'}`,
-                            message: `Stock of ${updatedMaterial.product} is ${updatedMaterial.stock} left ${updatedMaterial.unit}. ${updatedMaterial.limit ? `(Limit: ${updatedMaterial.limit})` : ''}`,
+                            title: `The stock of ${updatedProduct.product} ${isOutOfStock ? 'is out' : 'is low'}`,
+                            message: `Stock of ${updatedProduct.product} is ${updatedProduct.stock} left ${updatedProduct.unit}. ${updatedProduct.limit ? `(Limit: ${updatedProduct.limit})` : ''}`,
                             type: 'stock',
-                            relatedId: updatedMaterial.id
+                            relatedId: updatedProduct.id
                         });
 
-                        // Update lastNotified untuk bahan baku
                         await prisma.inventory.update({
-                            where: { id: updatedMaterial.id },
+                            where: { id: updatedProduct.id },
                             data: { lastNotified: new Date() }
                         });
                     }
@@ -109,7 +124,6 @@ export async function POST(req: Request) {
                     data: notificationsToCreate
                 });
             }
-
 
             return salesOrder;
         });

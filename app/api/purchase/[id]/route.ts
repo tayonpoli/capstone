@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { PurchaseItem } from '@prisma/client';
 
 export async function PUT(
   request: Request, {
@@ -28,7 +29,7 @@ export async function PUT(
       );
     }
 
-    const total = body.items.reduce((sum: number, item: any) => {
+    const total = body.items.reduce((sum: number, item: PurchaseItem) => {
       return sum + (item.price * item.quantity);
     }, 0);
 
@@ -56,7 +57,7 @@ export async function PUT(
 
       // 3. Buat items yang baru
       const createdItems = await prisma.purchaseItem.createMany({
-        data: body.items.map((item: any) => ({
+        data: body.items.map((item: PurchaseItem) => ({
           purchaseOrderId: id,
           productId: item.productId,
           note: item.note || null,
@@ -85,26 +86,11 @@ export async function PUT(
 
     return NextResponse.json(result);
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('[SALES_UPDATE_ERROR]', error);
 
-    // Handle error khusus untuk constraint database
-    if (error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Duplicate entry detected' },
-        { status: 409 }
-      );
-    }
-
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Purchase not found' },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

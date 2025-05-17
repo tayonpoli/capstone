@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { DateRange } from 'react-day-picker'
+import { DateRange, SelectRangeEventHandler } from 'react-day-picker'
 import { format, subDays } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -110,7 +110,7 @@ export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchas
             mode="range"
             defaultMonth={dateRange?.from}
             selected={dateRange}
-            onSelect={setDateRange}
+            onSelect={setDateRange as SelectRangeEventHandler}
             numberOfMonths={2}
           />
         </PopoverContent>

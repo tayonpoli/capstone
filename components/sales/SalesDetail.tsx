@@ -172,7 +172,7 @@ export function SalesDetail({ sales }: SalesDetailProps) {
                                             </>
                                         )}
                                         {invoice.paymentMethod !== 'Transfer' &&
-                                            sales.SalesInvoice.some(inv => inv.paymentMethod === 'Transfer') && (
+                                            sales.SalesInvoice?.some(inv => inv.paymentMethod === 'Transfer') && (
                                                 <>
                                                     <TableCell>-</TableCell>
                                                     <TableCell>-</TableCell>
