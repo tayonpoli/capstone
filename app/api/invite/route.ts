@@ -5,9 +5,8 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import InvitationEmail from '@/components/emails/invitation';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: Request) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { email, role } = await req.json();
 
     if (!email || !role) {
