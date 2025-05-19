@@ -1,40 +1,42 @@
-// app/api/auth/forgot-password/route.ts
 import { NextResponse } from 'next/server'
 import { generatePasswordResetToken } from '@/lib/tokens'
 import { prisma } from '@/lib/prisma'
-import { sendPasswordResetEmail } from '@/lib/email';
+import { Resend } from 'resend'
+import { ResetPasswordEmail } from '@/components/emails/reset-password';
 
-export async function POST(request: Request) {
-    const { email } = await request.json()
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-    try {
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
-        });
+export async function POST(req: Request, res: Response) {
+    const { email } = await req.json()
 
-        if (!existingUser) {
-            return NextResponse.json(
-                { error: "Email tidak ditemukan" },
-                { status: 404 }
-            )
-        }
+    const existingUser = await prisma.user.findUnique({
+        where: { email },
+    });
 
-        const passwordResetToken = await generatePasswordResetToken(email)
-        await sendPasswordResetEmail(
-            email,
-            passwordResetToken.token,
-            existingUser.name
-        )
-
+    if (!existingUser) {
         return NextResponse.json(
-            { success: true, message: "Email reset password telah dikirim" },
-            { status: 200 }
-        )
-    } catch (error) {
-        console.error('Error in forgot password:', error)
-        return NextResponse.json(
-            { error: "Terjadi kesalahan. Silakan coba lagi." },
-            { status: 500 }
+            { error: "Email tidak ditemukan" },
+            { status: 404 }
         )
     }
+
+    const passwordResetToken = await generatePasswordResetToken(email)
+
+    const resetLink = `${process.env.NEXTAUTH_URL}/new-password?token=${passwordResetToken.token}`;
+
+    const { data, error } = await resend.emails.send({
+        from: 'Acme <onboarding@resend.dev>',
+        to: [email],
+        subject: 'Reset Password Verification',
+        react: ResetPasswordEmail({ userFirstName: existingUser.name || "", resetPasswordLink: resetLink }),
+    });
+
+    if (error) {
+        return NextResponse.json(error)
+    }
+
+    return NextResponse.json(
+        { success: true, message: "Email sent successfully" },
+        { status: 200 }
+    )
 }

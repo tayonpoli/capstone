@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
+import { CardHeader, CardTitle } from '../ui/card';
 
 const FormSchema = z.object({
     name: z.string().min(1, 'Username is required').max(100),
@@ -100,6 +101,9 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
 
     return (
         <Form {...form}>
+            <CardHeader>
+                <CardTitle className='text-center mb-6'>Sign Up</CardTitle>
+            </CardHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                 <div className='space-y-6'>
                     <FormField

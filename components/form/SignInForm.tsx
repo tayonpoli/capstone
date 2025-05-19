@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { CardHeader, CardTitle } from '../ui/card';
 
 const FormSchema = z.object({
     email: z.string().min(1, 'Email is required').email('Invalid email'),
@@ -55,6 +56,9 @@ const SignInForm = () => {
 
     return (
         <Form {...form}>
+            <CardHeader>
+                <CardTitle className='text-center mb-6'>Sign In</CardTitle>
+            </CardHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                 <div className='space-y-10'>
                     <FormField

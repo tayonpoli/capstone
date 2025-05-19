@@ -92,6 +92,9 @@ export default function NewPasswordPage() {
 
     return (
         <div className="w-full">
+            <CardHeader>
+                <CardTitle className='text-center mb-6'>Reset Password</CardTitle>
+            </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <FormField

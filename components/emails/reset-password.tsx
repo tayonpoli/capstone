@@ -1,4 +1,3 @@
-// components/emails/reset-password.tsx
 import {
     Body,
     Button,
@@ -10,18 +9,18 @@ import {
     Preview,
     Section,
     Text,
-} from '@react-email/components'
+} from '@react-email/components';
 import * as React from 'react'
 
 interface ResetPasswordEmailProps {
-    userName?: string
+    userFirstName?: string
     resetPasswordLink: string
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
 
 export const ResetPasswordEmail = ({
-    userName,
+    userFirstName = "test",
     resetPasswordLink,
 }: ResetPasswordEmailProps) => {
     return (
@@ -32,33 +31,34 @@ export const ResetPasswordEmail = ({
                 <Container style={container}>
                     <Img
                         src={`${baseUrl}/images/logo.png`}
-                        width="120"
-                        height="auto"
+                        width="40"
+                        height="33"
                         alt="MauManage"
-                        style={logo}
                     />
                     <Section>
-                        <Text style={text}>Halo {userName},</Text>
+                        <Text style={text}>Hi {userFirstName},</Text>
                         <Text style={text}>
-                            Kami menerima permintaan untuk mengatur ulang password akun MauManage Anda.
-                            Jika Anda yang membuat permintaan ini, silakan klik tombol di bawah:
+                            Someone recently requested a password change for your MauManage
+                            account. If this was you, you can set a new password here:
                         </Text>
                         <Button style={button} href={resetPasswordLink}>
-                            Atur Ulang Password
+                            Reset password
                         </Button>
                         <Text style={text}>
-                            Jika Anda tidak meminta pengaturan ulang password, abaikan email ini.
+                            This link will expire for 1 hours for the security reason.
                         </Text>
                         <Text style={text}>
-                            Link ini akan kadaluarsa dalam 1 jam untuk alasan keamanan.
+                            If you don&apos;t want to change your password or didn&apos;t
+                            request this, just ignore and delete this message.
                         </Text>
                         <Text style={text}>
-                            Butuh bantuan? Hubungi tim support kami di{' '}
-                            <Link href="mailto:support@maumanage.com" style={link}>
+                            To keep your account secure, please don&apos;t forward this email
+                            to anyone. See our Help Center for{' '}
+                            <Link href="mailto:support@maumanage.com" style={anchor}>
                                 support@maumanage.com
                             </Link>
                         </Text>
-                        <Text style={footer}>Tim MauManage</Text>
+                        <Text style={text}>MauManage Team</Text>
                     </Section>
                 </Container>
             </Body>
@@ -68,52 +68,41 @@ export const ResetPasswordEmail = ({
 
 const main = {
     backgroundColor: '#f6f9fc',
-    padding: '20px 0',
-    fontFamily: "'Inter', sans-serif",
-}
+    padding: '10px 0',
+};
 
 const container = {
     backgroundColor: '#ffffff',
     border: '1px solid #f0f0f0',
-    borderRadius: '8px',
     padding: '45px',
-    maxWidth: '600px',
-    margin: '0 auto',
-}
-
-const logo = {
-    margin: '0 auto 20px',
-    display: 'block',
-}
+};
 
 const text = {
     fontSize: '16px',
-    color: '#525f7f',
-    lineHeight: '1.5',
-    margin: '0 0 20px',
-}
+    fontFamily:
+        "'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif",
+    fontWeight: '300',
+    color: '#404040',
+    lineHeight: '26px',
+};
 
 const button = {
-    backgroundColor: '#6366f1',
-    borderRadius: '6px',
+    backgroundColor: '#007ee6',
+    borderRadius: '4px',
     color: '#fff',
-    fontSize: '16px',
-    fontWeight: '500',
+    fontFamily: "'Open Sans', 'Helvetica Neue', Arial",
+    fontSize: '15px',
     textDecoration: 'none',
     textAlign: 'center' as const,
     display: 'block',
-    width: '100%',
-    padding: '12px 24px',
-    margin: '0 auto 20px',
-}
+    width: '210px',
+    padding: '14px 7px',
+};
 
-const link = {
-    color: '#6366f1',
+const anchor = {
     textDecoration: 'underline',
-}
+};
 
-const footer = {
-    fontSize: '14px',
-    color: '#8898aa',
-    margin: '20px 0 0',
-}
+export default ResetPasswordEmail;
+
+
