@@ -2,7 +2,7 @@ import ProductForm from "@/components/form/ProductForm";
 
 const page = () => {
     return (
-        <div className="h-full m-3 p-5 bg-white rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <div className="p-3">
                 <div className='text-sm font-light text-gray-400'>
                     Inventory

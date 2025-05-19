@@ -134,10 +134,20 @@ export const invoiceColumns: ColumnDef<SalesInvoice>[] = [
     },
     {
         accessorKey: "paymentDate",
-        header: "Payment Date",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Payment Date
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({ row }) => {
             const date = row.getValue("paymentDate") as Date
-            return <div>{format(new Date(date), "dd MMM yyyy")}</div>
+            return <div className="ml-4">{format(new Date(date), "dd MMM yyyy")}</div>
         },
     },
     {

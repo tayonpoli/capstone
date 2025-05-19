@@ -15,7 +15,7 @@ export default async function CustomerDetailPage({
     if (!staff) return notFound()
 
     return (
-        <div className="h-full m-3 p-5 bg-white rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <DetailStaff staff={staff} />
         </div>
     );

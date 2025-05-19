@@ -18,7 +18,7 @@ export default async function AnalysisPage() {
     }
 
     return (
-        <div className="h-full m-3 p-5 bg-white rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <SalesAnalysis />
         </div>
     );

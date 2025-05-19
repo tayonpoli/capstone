@@ -121,10 +121,20 @@ export const columns: ColumnDef<Sales>[] = [
   },
   {
     accessorKey: "orderDate",
-    header: "Order Date",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Order Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const date = row.getValue("orderDate") as Date
-      return <div>{format(new Date(date), "dd MMM yyyy")}</div>
+      return <div className="ml-4">{format(new Date(date), "dd MMM yyyy")}</div>
     },
   },
   {

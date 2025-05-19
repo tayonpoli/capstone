@@ -45,7 +45,7 @@ const SignInForm = () => {
 
         if (signInData?.error) {
             toast.error("Error", {
-                description: "Oops! Something went wrong!",
+                description: "Wrong email or password!",
             })
         } else {
             console.log('Sign-in successful, redirecting');
@@ -56,7 +56,7 @@ const SignInForm = () => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
-                <div className='space-y-6'>
+                <div className='space-y-10'>
                     <FormField
                         control={form.control}
                         name='email'
@@ -75,7 +75,14 @@ const SignInForm = () => {
                         name='password'
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Password</FormLabel>
+                                <FormLabel className='justify-between'>
+                                    <div>
+                                        Password
+                                    </div>
+                                    <Link href="/forgot-password" className='text-sm text-blue-500'>
+                                        Forgot password?
+                                    </Link>
+                                </FormLabel>
                                 <FormControl>
                                     <Input
                                         type='password'
@@ -92,7 +99,7 @@ const SignInForm = () => {
                     Sign in
                 </Button>
             </form>
-            <div className='mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400'>
+            {/* <div className='mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400'>
                 or
             </div>
             <p className='text-center text-sm text-gray-600 mt-2'>
@@ -100,7 +107,7 @@ const SignInForm = () => {
                 <Link className='text-blue-500 hover:underline' href='/sign-up'>
                     Sign up
                 </Link>
-            </p>
+            </p> */}
         </Form>
     );
 };

@@ -14,7 +14,7 @@ const DashboardPage = async () => {
   }
 
   return (
-    <div className="m-3 mb-0 pb-0 p-5 bg-white rounded-md">
+    <div className="m-3 mb-0 pb-0 p-5 rounded-md">
       <div className="p-3">
         <p className="text-sm text-gray-500">
           Dashboard

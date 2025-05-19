@@ -50,6 +50,9 @@ async function getInvoiceData(): Promise<SalesInvoice[]> {
                     }
                 },
             },
+            orderBy: {
+                paymentDate: 'desc'
+            }
         })
 
         return invoice
@@ -122,7 +125,7 @@ export default async function page() {
     const salesStats = await getSalesStats();
 
     return (
-        <div className="h-full m-3 p-5 bg-white rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="text-3xl font-semibold pl-1">
                     Sales
@@ -135,7 +138,7 @@ export default async function page() {
                     </Link>
                 </div>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 my-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
@@ -211,6 +214,17 @@ export default async function page() {
                             searchColumn="customerName"
                             searchPlaceholder="Search customer ..."
                             facetedFilters={[
+                                {
+                                    columnId: "tag",
+                                    title: "Tag",
+                                    options: [
+                                        { label: "Other", value: "other" },
+                                        { label: "Shopee", value: "Shopee" },
+                                        { label: "Grab", value: "Grab" },
+                                        { label: "Gofood", value: "Gofood" },
+                                        { label: "Takeaway", value: "Takeaway" },
+                                    ],
+                                },
                                 {
                                     columnId: "paymentStatus",
                                     title: "Status",

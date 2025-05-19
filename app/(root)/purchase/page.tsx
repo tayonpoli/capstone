@@ -129,7 +129,7 @@ export default async function page() {
     const stats = await getStats();
 
     return (
-        <div className="min-h-screen m-3 p-5 bg-white rounded-md">
+        <div className="min-h-screen m-3 p-5 rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="text-3xl font-semibold pl-1">
                     Purchase

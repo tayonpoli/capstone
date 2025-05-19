@@ -55,9 +55,7 @@ export async function GET() {
             return existing || day;
         });
 
-        console.log('Raw sales data:', groupedSales)
         return NextResponse.json(completeData);
-
     } catch (error) {
         console.error('Error fetching sales data:', error);
         return NextResponse.json(

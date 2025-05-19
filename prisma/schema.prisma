@@ -22,12 +22,26 @@ model User {
   role      Role     @default(Staff)
   status    String   @default("Active")
   createdAt DateTime @default(now())
+
+  PasswordReset PasswordReset[]
 }
 
 enum Role {
   Owner
   Admin
   Staff
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@index([email])
 }
 
 model Invitation {
@@ -89,16 +103,6 @@ enum Unit {
   Litre
   ml
 }
-
-// model Production {
-//   id         String    @id @default(uuid())
-//   productId  String
-//   product    Inventory @relation("ProductBOM", fields: [productId], references: [id])
-//   materialId String
-//   material   Inventory @relation("MaterialBOM", fields: [materialId], references: [id])
-//   qty        Float
-//   unit       Unit
-// }
 
 model Production {
   id          String     @id @default(uuid())

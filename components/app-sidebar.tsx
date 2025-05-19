@@ -14,32 +14,51 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ session }: AppSidebarProps) {
+  const userRole = session?.user?.role || 'guest';
+  const isAdminOwner = ['Admin', 'Owner'].includes(userRole);
+  const isOwner = userRole === 'Owner';
+
   const data = {
     user: {
       id: session?.user?.id || "Guest",
       name: session?.user?.name || "Guest",
       email: session?.user?.email || "-",
       avatar: "/avatars/shadcn.jpg",
+      role: userRole,
     },
     navMain: [
       { title: "Overview", url: "/", icon: Waypoints },
-      {
+      ...(isAdminOwner ? [{
         title: "AI",
         url: "/ai",
         icon: Sparkles,
-      },
+      }] : []),
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
       // { title: "Expenses", url: "#", icon: CreditCard },
       { title: "Production", url: "/production", icon: Boxes },
       { title: "Inventory", url: "/product", icon: PackageOpen },
       { title: "Customers", url: "/customer", icon: UsersRound },
-      { title: "Suppliers", url: "/supplier", icon: UsersRound },
-      { title: "Staff", url: "/staff", icon: UsersRound },
+      ...(isAdminOwner ? [
+        {
+          title: "Staff",
+          url: "/staff",
+          icon: UsersRound,
+        },
+        {
+          title: "Suppliers",
+          url: "/supplier",
+          icon: UsersRound
+        },
+      ] : []),
     ],
     navSecondary: [
       // { title: "Settings", url: "#", icon: LifeBuoy },
-      { title: "User Management", url: "/user", icon: UserRoundCog },
+      ...(isOwner ? [{
+        title: "User Management",
+        url: "/user",
+        icon: UserRoundCog,
+      }] : []),
     ],
   }
 

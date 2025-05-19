@@ -5,15 +5,15 @@ type UserRole = 'Owner' | 'Admin' | 'Staff'
 
 export async function middleware(request: NextRequest) {
     const token = await getToken({ req: request })
+    if (!token) {
+        const url = new URL('/sign-in', request.url)
+        url.searchParams.set('callbackUrl', request.nextUrl.pathname)
+        return NextResponse.redirect(url)
+    }
+
+    const userRole = token.role as UserRole
 
     if (request.nextUrl.pathname.startsWith('/production') || request.nextUrl.pathname.startsWith('/api/production')) {
-        if (!token) {
-            const url = new URL('/sign-in', request.url)
-            url.searchParams.set('callbackUrl', request.nextUrl.pathname)
-            return NextResponse.redirect(url)
-        }
-
-        const userRole = token.role as UserRole
 
         if (request.nextUrl.pathname.startsWith('/production')) {
 
@@ -41,13 +41,6 @@ export async function middleware(request: NextRequest) {
     }
 
     if (request.nextUrl.pathname.startsWith('/sales') || request.nextUrl.pathname.startsWith('/api/sales')) {
-        if (!token) {
-            const url = new URL('/sign-in', request.url)
-            url.searchParams.set('callbackUrl', request.nextUrl.pathname)
-            return NextResponse.redirect(url)
-        }
-
-        const userRole = token.role as UserRole
 
         if (request.nextUrl.pathname.startsWith('/sales')) {
 
@@ -73,6 +66,33 @@ export async function middleware(request: NextRequest) {
 
         return NextResponse.next()
     }
+
+    if (request.nextUrl.pathname.startsWith('/purchase') || request.nextUrl.pathname.startsWith('/api/purchase')) {
+
+        if (request.nextUrl.pathname.startsWith('/purchase')) {
+
+            if (userRole === 'Staff') {
+                const isAllowed = request.nextUrl.pathname === '/purchase' ||
+                    request.nextUrl.pathname.match(/^\/sales\/[^\/]+$/) !== null
+
+                if (!isAllowed) {
+                    return NextResponse.redirect(new URL('/unauthorized', request.url))
+                }
+            }
+        }
+
+        if (request.nextUrl.pathname.startsWith('/api/purchase')) {
+            // Staff hanya bisa mengakses GET requests
+            if (userRole === 'Staff') {
+                return NextResponse.json(
+                    { error: 'Unauthorized: Staff can only view data' },
+                    { status: 403 }
+                )
+            }
+        }
+
+        return NextResponse.next()
+    }
 }
 
 export const config = {
@@ -81,5 +101,7 @@ export const config = {
         '/api/production/:path*',
         '/sales/:path*',
         '/api/sales/:path*',
+        '/purchase/:path*',
+        '/api/purchase/:path*',
     ],
 }

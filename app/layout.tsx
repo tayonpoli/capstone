@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from 'geist/font/sans';
 import "./globals.css";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Maumanage",
@@ -18,9 +19,16 @@ export default function RootLayout({
       <body
         className={GeistSans.className}
       >
-        {children}
-        <Toaster />
-        <Toaster richColors />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+          <Toaster richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

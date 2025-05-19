@@ -53,7 +53,7 @@ export default async function PurchaseDetailPage({
     const remainingAmount = purchase.total - totalPaid;
 
     return (
-        <div className="h-min-screen m-3 p-5 bg-white rounded-md">
+        <div className="h-min-screen m-3 p-5 rounded-md">
             <div className="flex flex-center items-start p-4 pb-0">
                 <div>
                     <p className='text-sm font-light text-gray-400'>

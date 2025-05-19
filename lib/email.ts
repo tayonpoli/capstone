@@ -1,4 +1,34 @@
 import nodemailer from "nodemailer"
+import { Resend } from 'resend'
+import { ResetPasswordEmail } from "@/components/emails/reset-password";
+import { NextResponse } from 'next/server';
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+export const sendPasswordResetEmail = async (
+  email: string,
+  token: string,
+  userName?: string | null
+) => {
+  try {
+    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/new-password?token=${token}`
+
+    const { data, error } = await resend.emails.send({
+      from: 'MauManage <no-reply@maumanage.com>',
+      to: email,
+      subject: 'Reset Password MauManage',
+      react: ResetPasswordEmail({ userName: userName || '', resetPasswordLink: resetLink }),
+    })
+
+    if (error) {
+      return NextResponse.json({ error }, { status: 500 });
+    }
+
+    return NextResponse.json(data)
+  } catch (error) {
+    return NextResponse.json({ error }, { status: 500 });
+  }
+}
 
 // Konfigurasi transporter
 const transporter = nodemailer.createTransport({

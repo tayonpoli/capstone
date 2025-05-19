@@ -29,7 +29,7 @@ export default async function ProductDetailPage({
     if (!product) return notFound()
 
     return (
-        <div className="h-full m-3 p-5 bg-white rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <ProductDetail product={product} />
             {!isStaff && (
                 <div className='fixed bottom-16 right-14 space-x-4'>
