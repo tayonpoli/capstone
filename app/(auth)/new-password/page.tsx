@@ -24,22 +24,22 @@ const formSchema = z.object({
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export async function generateMetadata(props: {
-    params: Params;
-    searchParams: SearchParams;
-}) {
-    const searchParams = await props.searchParams;
-    const token = Array.isArray(searchParams.token)
-        ? searchParams.token[0]
-        : searchParams.token;
+// export async function generateMetadata(props: {
+//     params: Params;
+//     searchParams: SearchParams;
+// }) {
+//     const searchParams = await props.searchParams;
+//     const token = Array.isArray(searchParams.token)
+//         ? searchParams.token[0]
+//         : searchParams.token;
 
-    return {
-        title: token ? 'Accept Invitation' : 'Sign Up',
-        description: token
-            ? 'Accept your invitation to join our platform'
-            : 'Create a new account',
-    } satisfies Metadata;
-}
+//     return {
+//         title: token ? 'Accept Invitation' : 'Sign Up',
+//         description: token
+//             ? 'Accept your invitation to join our platform'
+//             : 'Create a new account',
+//     } satisfies Metadata;
+// }
 
 export default async function SignUpPage(props: {
     params: Params;
