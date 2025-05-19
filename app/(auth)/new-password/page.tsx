@@ -1,7 +1,6 @@
 // app/auth/new-password/page.tsx
 "use client"
 
-import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -12,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import Link from 'next/link'
+import { Metadata } from 'next'
 
 const formSchema = z.object({
     password: z.string().min(6, "Password minimal 6 karakter"),
@@ -21,9 +21,34 @@ const formSchema = z.object({
     path: ["confirmPassword"]
 })
 
-export default function NewPasswordPage() {
-    const searchParams = useSearchParams()
-    const token = searchParams.get('token')
+type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export async function generateMetadata(props: {
+    params: Params;
+    searchParams: SearchParams;
+}) {
+    const searchParams = await props.searchParams;
+    const token = Array.isArray(searchParams.token)
+        ? searchParams.token[0]
+        : searchParams.token;
+
+    return {
+        title: token ? 'Accept Invitation' : 'Sign Up',
+        description: token
+            ? 'Accept your invitation to join our platform'
+            : 'Create a new account',
+    } satisfies Metadata;
+}
+
+export default async function SignUpPage(props: {
+    params: Params;
+    searchParams: SearchParams;
+}) {
+    const searchParams = await props.searchParams;
+    const token = Array.isArray(searchParams.token)
+        ? searchParams.token[0]
+        : searchParams.token;
     const [isLoading, setIsLoading] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -93,7 +118,7 @@ export default function NewPasswordPage() {
     return (
         <div className="w-full">
             <CardHeader>
-                <CardTitle className='text-center mb-6'>Reset Password</CardTitle>
+                <CardTitle className='text-center mb-4'>Reset Password</CardTitle>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
