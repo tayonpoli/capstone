@@ -44,3 +44,40 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
     }
 }
+
+export async function GET(req: Request) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const token = searchParams.get('token');
+
+        if (!token) {
+            return NextResponse.json(
+                { message: "Token is required" },
+                { status: 400 }
+            );
+        }
+
+        const reset = await prisma.passwordReset.findUnique({
+            where: { token }
+        });
+
+        if (!reset) {
+            return NextResponse.json(
+                { message: "Invalid invitation token" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(
+            { success: true },
+            { status: 200 }
+        );
+
+    } catch (error) {
+        console.error("Reset password validation error:", error);
+        return NextResponse.json(
+            { message: "Internal server error" },
+            { status: 500 }
+        );
+    }
+}
