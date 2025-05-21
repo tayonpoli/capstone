@@ -1,5 +1,4 @@
 import NewPasswordForm from '@/components/form/NewPasswordForm'
-import { Metadata } from 'next';
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;

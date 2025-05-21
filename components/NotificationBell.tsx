@@ -80,7 +80,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                 <SheetHeader>
                     <SheetTitle>Notifications</SheetTitle>
                 </SheetHeader>
-                <div className="mt-4 max-h-[80vh] overflow-y-auto">
+                <div className="mt-2 max-h-[80vh] overflow-y-auto">
                     {notifications.length === 0 ? (
                         <p className="p-4 text-sm text-center">Tidak ada notifikasi</p>
                     ) : (
@@ -88,19 +88,19 @@ export function NotificationBell({ userId }: { userId: string }) {
                             {notifications.map((notification) => (
                                 <li
                                     key={notification.id}
-                                    className={`p-3 border-b flex justify-between items-start ${!notification.isRead ? 'bg-blue-50' : ''}`}
+                                    className={`p-3 border-b flex justify-between items-start ${!notification.isRead ? 'bg-card' : ''}`}
                                 >
                                     <div className="flex-1">
                                         <h4 className="font-medium">{notification.title}</h4>
                                         <p className="text-sm">{notification.message}</p>
-                                        <p className="text-xs text-gray-500 mt-1">
+                                        <p className="text-xs text-muted-foreground mt-1">
                                             {new Date(notification.createdAt).toLocaleString()}
                                         </p>
                                     </div>
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-6 w-6 text-gray-500 hover:text-green-600"
+                                        className="h-6 w-6 hover:text-primary"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             markAsReadAndDelete(notification.id);

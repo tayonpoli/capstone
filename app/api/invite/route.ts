@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { sendInvitationEmail } from '@/lib/email';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
@@ -56,7 +55,7 @@ export async function POST(req: Request) {
 
     // Kirim email invitation
     const { data, error } = await resend.emails.send({
-        from: 'Acme <onboarding@resend.dev>',
+        from: 'MauManage <onboarding@resend.dev>',
         to: [email],
         subject: 'MauManage Invitation Email',
         react: InvitationEmail({ email: email || "", invitationLink: linkInvitation }),

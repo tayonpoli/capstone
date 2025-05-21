@@ -39,7 +39,7 @@ async function getData(): Promise<Purchase[]> {
     }
 }
 
-async function getInvoiceData(): Promise<PurchaseInvoice[]> {
+export async function getInvoiceData(): Promise<PurchaseInvoice[]> {
     try {
         const invoice = await prisma.invoice.findMany({
             include: {
@@ -65,7 +65,7 @@ async function getInvoiceData(): Promise<PurchaseInvoice[]> {
     }
 }
 
-async function getStats() {
+export async function getPurchaseStats() {
     try {
 
         const supplier = await prisma.supplier.count();
@@ -126,7 +126,7 @@ export default async function page() {
 
     const data = await getData();
     const invoiceData = await getInvoiceData();
-    const stats = await getStats();
+    const stats = await getPurchaseStats();
 
     return (
         <div className="min-h-screen m-3 p-5 rounded-md">

@@ -65,7 +65,7 @@ async function getInvoiceData(): Promise<SalesInvoice[]> {
     }
 }
 
-async function getSalesStats() {
+export async function getSalesStats() {
     try {
         const customer = await prisma.customer.count();
         const totalTransactions = await prisma.salesOrder.count();

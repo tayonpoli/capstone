@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         const resetLink = `${process.env.NEXTAUTH_URL}/new-password?token=${passwordResetToken.token}`;
 
         const { data, error } = await resend.emails.send({
-            from: 'Acme <onboarding@resend.dev>',
+            from: 'MauManage <onboarding@resend.dev>',
             to: [email],
             subject: 'Reset Password Verification',
             react: ResetPasswordEmail({ userFirstName: existingUser.name || "", resetPasswordLink: resetLink }),
