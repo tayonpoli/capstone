@@ -73,7 +73,7 @@ const ProductActions = ({ product }: { product: Product }) => {
                     <Link href={`/product/${product.id}`}>View Details</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                    <Link href={`/products/${product.id}/edit`}>Edit</Link>
+                    <Link href={`/product/${product.id}/edit`}>Edit</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <DeleteProduct onConfirm={handleDelete} />
