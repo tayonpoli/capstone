@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { getSalesStats } from "./sales/page";
 import { formatIDR } from "@/lib/formatCurrency";
 import { getPurchaseStats } from "./purchase/page";
+import SalesAnalysis from "@/components/ai/SalesAnalysis";
 
 
 const DashboardPage = async () => {
@@ -22,14 +23,27 @@ const DashboardPage = async () => {
 
   return (
     <div className="m-3 mb-0 pb-0 p-5 rounded-md">
-      <div className="p-3">
+      <div className="grid grid-cols-2 p-3">
+        <div>
+          <p className="text-sm text-gray-500">
+            Dashboard
+          </p>
+          <h1 className="font-semibold text-3xl">
+            Business Overview
+          </h1>
+        </div>
+        <div className="flex justify-end">
+          <SalesAnalysis />
+        </div>
+      </div>
+      {/* <div className="p-3">
         <p className="text-sm text-gray-500">
           Dashboard
         </p>
         <h1 className="font-semibold text-3xl">
           Business Overview
         </h1>
-      </div>
+      </div> */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 my-4 p-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -18,6 +18,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { CardHeader, CardTitle } from '../ui/card';
+import { Blocks } from 'lucide-react';
 
 const FormSchema = z.object({
     email: z.string().min(1, 'Email is required').email('Invalid email'),
@@ -56,8 +57,17 @@ const SignInForm = () => {
 
     return (
         <Form {...form}>
-            <CardHeader>
-                <CardTitle className='text-center mb-6'>Sign In</CardTitle>
+            <CardHeader className='grid items-center justify-center space-y-4'>
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg ml-1.5">
+                    <Blocks className="size-5" />
+                </div>
+                {/* <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">MauManage</span>
+                        <span className="truncate text-xs">Enterprise</span>
+                    </div> */}
+                <CardTitle className='text-center mb-6'>
+                    Sign In
+                </CardTitle>
             </CardHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                 <div className='space-y-10'>

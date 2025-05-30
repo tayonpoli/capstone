@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { CardHeader, CardTitle } from '../ui/card';
+import { Blocks } from 'lucide-react';
 
 const FormSchema = z.object({
     name: z.string().min(1, 'Username is required').max(100),
@@ -102,7 +103,18 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
     return (
         <Form {...form}>
             <CardHeader>
-                <CardTitle className='text-center mb-6'>Sign Up</CardTitle>
+                <CardHeader className='grid items-center justify-center space-y-4'>
+                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg ml-2">
+                        <Blocks className="size-5" />
+                    </div>
+                    {/* <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">MauManage</span>
+                        <span className="truncate text-xs">Enterprise</span>
+                    </div> */}
+                    <CardTitle className='text-center mb-6'>
+                        Sign Up
+                    </CardTitle>
+                </CardHeader>
             </CardHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                 <div className='space-y-6'>

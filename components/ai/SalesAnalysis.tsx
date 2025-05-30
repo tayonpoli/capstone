@@ -55,30 +55,17 @@ export default function SalesAnalysis() {
 
     return (
         <div className="p-4">
-            <div className="flex flex-center items-start">
-                <div>
-                    <p className='text-sm font-light text-gray-400'>
-                        Ask AI
-                    </p>
-                    <h1 className='mb-10 text-2xl font-semibold'>
-                        Business Analysis with AI
-                    </h1>
-                </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <Button
-                    onClick={analyzeSales}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <>
-                            <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                            Analyzing...
-                        </>
-                    ) : 'Run Sales Analysis'}
-                </Button>
-            </div>
+            <Button
+                onClick={analyzeSales}
+                disabled={loading}
+            >
+                {loading ? (
+                    <>
+                        <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                        Analyzing...
+                    </>
+                ) : 'Run Sales Analysis'}
+            </Button>
 
             {error && (
                 <div className="p-4 mb-6 bg-red-50 text-red-700 rounded-lg">
