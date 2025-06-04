@@ -60,13 +60,13 @@ export async function RecentTransactions() {
                 <CardDescription>Showing recent purchase orders</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="border rounded-lg p-4">
+                <div className="border rounded-lg p-3 px-6">
                     <Table>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Supplier</TableHead>
-                                <TableHead>Payment Status</TableHead>
+                                <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Amount</TableHead>
                             </TableRow>
                         </TableHeader>

@@ -6,8 +6,9 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
-import { Blocks, Waypoints, Sparkles, ShoppingBasket, SquareChartGantt, Boxes, PackageOpen, UsersRound, UserRoundCog } from "lucide-react"
+import { Blocks, Waypoints, Sparkles, ShoppingBasket, SquareChartGantt, Boxes, PackageOpen, UsersRound, UserRoundCog, CreditCard } from "lucide-react"
 import { NotificationBell } from "./NotificationBell"
+import { NavProjects } from "./nav-projects"
 
 interface AppSidebarProps {
   session: Session | null
@@ -28,27 +29,42 @@ export function AppSidebar({ session }: AppSidebarProps) {
     },
     navMain: [
       { title: "Overview", url: "/", icon: Waypoints },
-      ...(isAdminOwner ? [{
-        title: "AI",
-        url: "/ai",
-        icon: Sparkles,
-      }] : []),
+      // ...(isAdminOwner ? [{
+      //   title: "AI",
+      //   url: "/ai",
+      //   icon: Sparkles,
+      // }] : []),
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
-      // { title: "Expenses", url: "#", icon: CreditCard },
-      { title: "Production", url: "/production", icon: Boxes },
+      { title: "Expenses", url: "/expenses", icon: CreditCard },
       { title: "Inventory", url: "/product", icon: PackageOpen },
+      { title: "Production", url: "/production", icon: Boxes },
+      // { title: "Customers", url: "/customer", icon: UsersRound },
+      // ...(isAdminOwner ? [
+      //   {
+      //     title: "Staff",
+      //     url: "/staff",
+      //     icon: UsersRound,
+      //   },
+      //   {
+      //     title: "Suppliers",
+      //     url: "/supplier",
+      //     icon: UsersRound
+      //   },
+      // ] : []),
+    ],
+    projects: [
       { title: "Customers", url: "/customer", icon: UsersRound },
       ...(isAdminOwner ? [
-        {
-          title: "Staff",
-          url: "/staff",
-          icon: UsersRound,
-        },
         {
           title: "Suppliers",
           url: "/supplier",
           icon: UsersRound
+        },
+        {
+          title: "Staff",
+          url: "/staff",
+          icon: UsersRound,
         },
       ] : []),
     ],
@@ -83,6 +99,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <NavProjects items={data.projects} />
         <div className="mt-auto">
           <NotificationBell userId={data.user.id} />
           <NavSecondary items={data.navSecondary} className="mt-auto" />

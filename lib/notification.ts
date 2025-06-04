@@ -28,10 +28,11 @@ export async function checkStockNotifications() {
 
     // Buat notifikasi untuk setiap produk
     for (const product of lowStockProducts) {
+        const flooredStock = Math.floor(Number(product.stock));
         await prisma.notification.create({
             data: {
-                title: `Stok ${product.product} ${product.stock <= 0 ? 'Habis' : 'Rendah'}`,
-                message: `Stok ${product.product} tersisa ${product.stock} ${product.unit}. ${product.limit ? `(Limit: ${product.limit})` : ''}`,
+                title: `The stock of ${product.product} ${product.stock <= 0 ? 'is out' : 'is low'}`,
+                message: `Stock of ${product.product} only ${flooredStock} ${product.unit} left. ${product.limit ? `(Limit: ${product.limit})` : ''}`,
                 type: 'stock',
                 relatedId: product.id
             }

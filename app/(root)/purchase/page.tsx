@@ -154,9 +154,6 @@ export default async function page() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -168,9 +165,6 @@ export default async function page() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatIDR(stats.totalPayable)}</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -182,9 +176,6 @@ export default async function page() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.totalTransactions}</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -196,9 +187,6 @@ export default async function page() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.supplier}</div>
-                        <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
-                        </p>
                     </CardContent>
                 </Card>
             </div>

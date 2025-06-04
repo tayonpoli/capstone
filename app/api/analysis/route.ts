@@ -3,8 +3,16 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
     try {
+        const oneMonth = new Date();
+        oneMonth.setDate(oneMonth.getDate() - 30);
+
         // Ambil semua sales order dan items-nya
         const orders = await prisma.salesOrder.findMany({
+            where: {
+                orderDate: {
+                    gte: oneMonth
+                }
+            },
             include: {
                 items: {
                     include: {

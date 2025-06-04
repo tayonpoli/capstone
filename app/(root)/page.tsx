@@ -44,7 +44,7 @@ const DashboardPage = async () => {
           Business Overview
         </h1>
       </div> */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 my-4 p-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 mb-4 p-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -55,21 +55,21 @@ const DashboardPage = async () => {
           <CardContent>
             <div className="text-2xl font-bold">{formatIDR(salesStats.totalRevenue)}</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              From current sales orders
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Purchases
+              Total Expenses
             </CardTitle>
             Rp
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              From expenses and purchase orders
             </p>
           </CardContent>
         </Card>
@@ -83,7 +83,7 @@ const DashboardPage = async () => {
           <CardContent>
             <div className="text-2xl font-bold">{formatIDR(salesStats.totalReceivable)}</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              Of the current sales orders
             </p>
           </CardContent>
         </Card>
@@ -97,7 +97,7 @@ const DashboardPage = async () => {
           <CardContent>
             <div className="text-2xl font-bold">{formatIDR(stats.totalPayable)}</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              On the current purchase orders
             </p>
           </CardContent>
         </Card>

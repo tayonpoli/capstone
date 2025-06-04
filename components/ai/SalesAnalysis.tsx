@@ -4,13 +4,14 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Typewriter } from 'react-simple-typewriter';
 import { Button } from '../ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from '../ui/scroll-area';
 
 export default function SalesAnalysis() {
     const [result, setResult] = useState<string | null>(null);
@@ -54,7 +55,7 @@ export default function SalesAnalysis() {
     };
 
     return (
-        <div className="p-4">
+        <div className='py-2'>
             <Button
                 onClick={analyzeSales}
                 disabled={loading}
@@ -64,7 +65,12 @@ export default function SalesAnalysis() {
                         <Loader2 className="animate-spin mr-2 h-4 w-4" />
                         Analyzing...
                     </>
-                ) : 'Run Sales Analysis'}
+                ) : (
+                    <>
+                        <Sparkles />
+                        Ask Analysis
+                    </>
+                )}
             </Button>
 
             {error && (
@@ -74,40 +80,43 @@ export default function SalesAnalysis() {
             )}
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className=" max-h-[50vh] flex flex-col">
-                    <DialogHeader>
-                        <DialogTitle>Analysis Results</DialogTitle>
-                    </DialogHeader>
-                    <div
-                        ref={contentRef}
-                        className="overflow-y-auto flex-1 py-2 pr-2"
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="prose max-w-none"
+                <ScrollArea>
+                    <DialogContent className=" max-h-[50vh] flex flex-col">
+                        <DialogHeader>
+                            <DialogTitle>Analysis Results</DialogTitle>
+                        </DialogHeader>
+
+                        <div
+                            ref={contentRef}
+                            className="overflow-y-auto flex-1 py-2 pr-2"
                         >
-                            {result && (
-                                <p className="text-gray-700 whitespace-pre-line">
-                                    <Typewriter
-                                        words={[result]}
-                                        typeSpeed={15}
-                                        deleteSpeed={0}
-                                        delaySpeed={1000}
-                                        cursor
-                                        onType={() => {
-                                            // Trigger scroll on each type
-                                            if (contentRef.current) {
-                                                contentRef.current.scrollTop = contentRef.current.scrollHeight;
-                                            }
-                                        }}
-                                    />
-                                </p>
-                            )}
-                        </motion.div>
-                    </div>
-                </DialogContent>
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="prose max-w-none"
+                            >
+                                {result && (
+                                    <p className="text-gray-700 whitespace-pre-line">
+                                        <Typewriter
+                                            words={[result]}
+                                            typeSpeed={15}
+                                            deleteSpeed={0}
+                                            delaySpeed={1000}
+                                            cursor
+                                            onType={() => {
+                                                // Trigger scroll on each type
+                                                if (contentRef.current) {
+                                                    contentRef.current.scrollTop = contentRef.current.scrollHeight;
+                                                }
+                                            }}
+                                        />
+                                    </p>
+                                )}
+                            </motion.div>
+                        </div>
+                    </DialogContent>
+                </ScrollArea>
             </Dialog>
         </div>
     );

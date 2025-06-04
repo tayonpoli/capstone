@@ -135,6 +135,7 @@ model Supplier {
   address        String
   createdAt      DateTime        @default(now())
   purchaseOrders PurchaseOrder[]
+  Expenses       Expenses[]
 }
 
 model SalesOrder {
@@ -261,4 +262,31 @@ model SalesInvoice {
   salesOrderId  String
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+}
+
+model Expenses {
+  id             String           @id @default(uuid())
+  supplierId     String
+  supplier       Supplier         @relation(fields: [supplierId], references: [id])
+  expenseDate    DateTime
+  category       String?
+  total          Float            @default(0)
+  paymentStatus  Payment          @default(Unpaid)
+  memo           String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  ExpenseInvoice ExpenseInvoice[]
+}
+
+model ExpenseInvoice {
+  id            String    @id @default(uuid())
+  amount        Float
+  paymentMethod String?
+  bankName      String?
+  accountNumber String?
+  paymentDate   DateTime?
+  Expenses      Expenses  @relation(fields: [expensesId], references: [id])
+  expensesId    String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
