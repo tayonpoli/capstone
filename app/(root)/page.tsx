@@ -22,7 +22,7 @@ const DashboardPage = async () => {
   const stats = await getPurchaseStats();
 
   return (
-    <div className="m-3 mb-0 pb-0 p-5 rounded-md">
+    <div className="m-3 mb-0 pb-0 px-5 rounded-md">
       <div className="grid grid-cols-2 p-3">
         <div>
           <p className="text-sm text-gray-500">

@@ -1,4 +1,3 @@
-// app-sidebar.tsx (Client Component)
 "use client"
 
 import { Session } from "next-auth"

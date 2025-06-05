@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { SiteHeader } from "@/components/site-header";
 
 export default async function DashboardLayout({
     children,
@@ -26,6 +27,7 @@ export default async function DashboardLayout({
             <SidebarProvider>
                 <AppSidebar session={session} />
                 <SidebarInset>
+                    <SiteHeader />
                     {children}
                 </SidebarInset>
             </SidebarProvider>

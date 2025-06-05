@@ -37,7 +37,7 @@ async function getData(): Promise<Expenses[]> {
     }
 }
 
-export async function getExpenseStats() {
+async function getExpenseStats() {
     try {
 
         const supplier = await prisma.supplier.count();
@@ -96,7 +96,6 @@ export default async function page() {
     const isStaff = session?.user.role === 'Staff'
 
     const data = await getData();
-    // const invoiceData = await getInvoiceData();
     const stats = await getExpenseStats();
 
     const suppliers = await prisma.supplier.findMany({
