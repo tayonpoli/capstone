@@ -1,7 +1,7 @@
 import { LongChart } from "@/components/charts/LongChart";
 import { RecentTransactions } from "@/components/charts/RecentPurchase";
 import { DailySalesChart } from "@/components/charts/RevenueChart";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation";
@@ -36,67 +36,59 @@ const DashboardPage = async () => {
           <SalesAnalysis />
         </div>
       </div>
-      {/* <div className="p-3">
-        <p className="text-sm text-gray-500">
-          Dashboard
-        </p>
-        <h1 className="font-semibold text-3xl">
-          Business Overview
-        </h1>
-      </div> */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 mb-4 p-3">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>
               Total Revenue
             </CardTitle>
             Rp
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatIDR(salesStats.totalRevenue)}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="space-y-4">
+            <div className="text-2xl font-bold tabular-nums">{formatIDR(salesStats.totalRevenue)}</div>
+            <p className="text-sm text-muted-foreground">
               From current sales orders
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>
               Total Expenses
             </CardTitle>
             Rp
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               From expenses and purchase orders
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>
               Account Receivable
             </CardTitle>
             Rp
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="text-2xl font-bold">{formatIDR(salesStats.totalReceivable)}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Of the current sales orders
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle>
               Account Payable
             </CardTitle>
             Rp
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="text-2xl font-bold">{formatIDR(stats.totalPayable)}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               On the current purchase orders
             </p>
           </CardContent>
