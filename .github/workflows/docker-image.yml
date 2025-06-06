@@ -14,8 +14,8 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: build image
-        run: docker build . -t tayonpoli/capstone-project
+        run: docker build . -t tayonpoli/capstone-project-v2
       - name: push image
         run: |
           docker login -u tayonpoli -p ${{ secrets.DOCKER_HUB_SECRET }}
-          docker push tayonpoli/capstone-project
+          docker push tayonpoli/capstone-project-v2
