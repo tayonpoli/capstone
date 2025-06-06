@@ -11,7 +11,7 @@ RUN npx prisma generate
 COPY . .
 RUN npm run build
 
-FROM node:23-alpine AS runner
+FROM debian:bullseye-slim
 
 WORKDIR /work
 
