@@ -18,4 +18,4 @@ jobs:
       - name: push image
         run: |
           docker login -u tayonpoli -p ${{ secrets.DOCKER_HUB_SECRET }}
-          docker push tayonpoli/capstone-project-v2:0.0.1
+          docker push tayonpoli/capstone-project-v2:0.0.2
