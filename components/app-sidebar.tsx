@@ -56,7 +56,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
       { title: "Customers", url: "/customer", icon: UsersRound },
       ...(isAdminOwner ? [
         {
-          title: "Suppliers",
+          title: "Vendors",
           url: "/supplier",
           icon: UsersRound
         },

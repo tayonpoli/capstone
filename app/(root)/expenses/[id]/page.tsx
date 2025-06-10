@@ -66,7 +66,7 @@ export default async function CustomerDetailPage({
                         </Dialog>
 
                         {!isPaid && (
-                            <Dialog>
+                            <Dialog modal={false}>
                                 <DialogTrigger asChild>
                                     <Button>
                                         Set Payment

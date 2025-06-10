@@ -1,15 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlusIcon, BookUser, Info } from "lucide-react"
+import { PlusIcon, Info } from "lucide-react"
 import { Expenses, columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { prisma } from "@/lib/prisma"
-import Link from "next/link"
 import { formatIDR } from "@/lib/formatCurrency"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { ExpenseForm } from "@/components/expenses/CreateExpense"
 
@@ -105,7 +103,7 @@ export default async function page() {
     });
 
     return (
-        <div className="min-h-screen m-3 p-5 rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="pl-1">
                     <p className='text-sm font-light text-gray-400'>
@@ -117,7 +115,7 @@ export default async function page() {
                 </div>
                 {!isStaff && (
                     <div className="flex justify-end">
-                        <Dialog>
+                        <Dialog modal={false}>
                             <DialogTrigger asChild>
                                 <Button>
                                     <PlusIcon /> Create New Expenses

@@ -20,7 +20,7 @@ interface ResetPasswordEmailProps {
     invitationLink: string
 }
 
-const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+const baseUrl = process.env.NEXTAUTH_URL
 
 export const InvitationEmail = ({
     email,
@@ -33,9 +33,9 @@ export const InvitationEmail = ({
                 <Preview>MauManage Email Invitation</Preview>
                 <Container style={container}>
                     <Img
-                        src={`${baseUrl}/images/logo.png`}
-                        width="40"
-                        height="33"
+                        src={`${baseUrl}/logo.png`}
+                        width="200"
+                        height="60"
                         alt="MauManage"
                     />
                     <Section>
@@ -68,7 +68,7 @@ export const InvitationEmail = ({
                                 {email}
                             </Column>
                         </Row>
-                        <Button style={button} href={invitationLink}>
+                        <Button className='my-3' style={button} href={invitationLink}>
                             Complete Registration
                         </Button>
                         <Text style={text}>

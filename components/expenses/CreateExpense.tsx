@@ -75,7 +75,7 @@ export function ExpenseForm({ suppliers }: CreateExpenseFormProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
                 <FormField
                     control={form.control}
                     name='supplierId'
@@ -171,7 +171,6 @@ export function ExpenseForm({ suppliers }: CreateExpenseFormProps) {
                                         disabled={(date) =>
                                             date > new Date() || date < new Date("1900-01-01")
                                         }
-                                        initialFocus
                                     />
                                 </PopoverContent>
                             </Popover>

@@ -146,7 +146,20 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Supplier</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={(value) => {
+                                            field.onChange(value);
+
+                                            const selectedSupplier = suppliers.find(s => s.id === value);
+
+                                            if (selectedSupplier && selectedSupplier.email) {
+                                                form.setValue('email', selectedSupplier.email);
+                                            }
+
+                                            if (selectedSupplier && selectedSupplier.address) {
+                                                form.setValue('address', selectedSupplier.address);
+                                            }
+                                        }}
+                                            defaultValue={field.value}>
                                             <FormControl className='w-full'>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select supplier" />
@@ -344,7 +357,7 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                         </Button>
                     </div>
 
-                    <div className='flex justify-end space-x-4'>
+                    <div className='flex justify-end my-6 space-x-4'>
                         <Button asChild variant='outline'>
                             <Link href='/purchase'>
                                 Cancel

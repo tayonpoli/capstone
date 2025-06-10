@@ -22,7 +22,7 @@ Font.register({
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    fontFamily: 'Open Sans',
+    fontFamily: 'Helvetica',
     backgroundColor: '#FFFFFF'
   },
   container: {

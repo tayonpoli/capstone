@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound, redirect, unauthorized } from 'next/navigation'
 import { Customer, Inventory } from '@prisma/client'
 import { EditSalesForm } from '@/components/sales/EditSalesForm'
 import { prisma } from "@/lib/prisma";
@@ -37,7 +37,7 @@ export default async function EditSalesPage({
   }
 
   if (!allowedRoles.includes(session.user.role)) {
-    redirect("/unauthorized")
+    unauthorized();
   }
 
   const { id } = await params

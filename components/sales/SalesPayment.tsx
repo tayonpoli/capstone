@@ -152,7 +152,7 @@ export function SalesPayment({
 
                 <FormField
                     control={form.control}
-                    name="paymentDate"
+                    name='paymentDate'
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Payment Date</FormLabel>

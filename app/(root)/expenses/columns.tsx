@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { formatIDR } from "@/lib/formatCurrency"
 import { format } from "date-fns"
 import { DeletePurchase } from "@/components/purchase/DeletePurchase"
+import { DeleteExpenses } from "@/components/expenses/DeleteExpense"
 
 export type Expenses = {
     id: string
@@ -78,7 +79,7 @@ const PurchaseActions = ({ expenses }: { expenses: Expenses }) => {
                     <Link href={`/expenses/${expenses.id}`}>View Details</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <DeletePurchase onConfirm={handleDelete} />
+                    <DeleteExpenses onConfirm={handleDelete} />
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

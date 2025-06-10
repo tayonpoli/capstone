@@ -70,13 +70,13 @@ export default async function page() {
                         Contacts
                     </p>
                     <h1 className='text-3xl font-semibold'>
-                        Suppliers
+                        Vendors
                     </h1>
                 </div>
                 <div className="flex justify-end">
                     <Link href='/supplier/create'>
                         <Button>
-                            <PlusIcon /> Create New Supplier
+                            <PlusIcon /> Add New Vendor
                         </Button>
                     </Link>
                 </div>
@@ -99,14 +99,14 @@ export default async function page() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                         <CardTitle className="text-sm font-medium">
-                            Suppliers
+                            Vendors
                         </CardTitle>
                         <BookUser />
                     </CardHeader>
                     <CardContent className="space-y-2">
                         <div className="text-2xl font-bold pl-1">{stats.totalSupplier}</div>
                         <p className="text-xs text-muted-foreground">
-                            Supplier contact listed
+                            Vendor contact listed
                         </p>
                     </CardContent>
                 </Card>

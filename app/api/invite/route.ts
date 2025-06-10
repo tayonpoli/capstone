@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 
     // Kirim email invitation
     const { data, error } = await resend.emails.send({
-        from: 'MauManage <onboarding@resend.dev>',
+        from: 'MauManage <no-reply@maumanage.site>',
         to: [email],
         subject: 'MauManage Invitation Email',
         react: InvitationEmail({ email: email || "", invitationLink: linkInvitation }),
