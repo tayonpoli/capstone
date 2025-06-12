@@ -129,7 +129,7 @@ export default async function page() {
     const stats = await getPurchaseStats();
 
     return (
-        <div className="min-h-screen m-3 p-5 rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="text-3xl font-semibold pl-1">
                     Purchase
@@ -144,7 +144,7 @@ export default async function page() {
                     </div>
                 )}
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 my-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
@@ -192,7 +192,7 @@ export default async function page() {
             </div>
             <Tabs defaultValue="order" className="py-8">
                 <div className="flex justify-between">
-                    <TabsList className="grid w-[400px] grid-cols-2">
+                    <TabsList className="grid grid-cols-2">
                         <TabsTrigger value="order">Purchase Order</TabsTrigger>
                         <TabsTrigger value="invoice">Purchase Invoice</TabsTrigger>
                     </TabsList>

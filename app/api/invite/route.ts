@@ -118,3 +118,29 @@ export async function GET(req: Request) {
         );
     }
 }
+
+export async function DELETE(req: Request) {
+    const { id } = await req.json()
+
+    if (!id) {
+        return NextResponse.json(
+            { error: 'Invitation ID is required' },
+            { status: 400 }
+        )
+    }
+
+    try {
+        await prisma.invitation.delete({
+            where: { id: id }
+        })
+        return NextResponse.json({ success: true })
+    } catch (error) {
+        console.error('[INVITATION_DELETE]', error);
+        return NextResponse.json(
+            { error: 'Failed to delete the invitation' },
+            { status: 500 }
+        )
+    } finally {
+        await prisma.$disconnect()
+    }
+}

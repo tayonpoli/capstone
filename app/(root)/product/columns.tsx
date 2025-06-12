@@ -19,6 +19,7 @@ import { DeleteProduct } from "@/components/products/DeleteProduct"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import { formatIDR } from "@/lib/formatCurrency"
 
 export type Product = {
     id: string
@@ -142,11 +143,11 @@ export const columns: ColumnDef<Product>[] = [
         },
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("buyprice"))
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "IDR",
-            }).format(amount)
+            if (amount === 0) {
+                return <div className="font-medium px-12">-</div>
+            }
 
+            const formatted = formatIDR(amount)
             return <div className="font-medium">{formatted}</div>
         },
     },
@@ -165,11 +166,11 @@ export const columns: ColumnDef<Product>[] = [
         },
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("sellprice"))
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "IDR",
-            }).format(amount)
+            if (amount === 0) {
+                return <div className="font-medium px-12">-</div>
+            }
 
+            const formatted = formatIDR(amount)
             return <div className="font-medium">{formatted}</div>
         },
     },
@@ -194,7 +195,9 @@ export const columns: ColumnDef<Product>[] = [
             // Handle berbagai tipe data dan lakukan floor
             const flooredStock = Math.floor(Number(stockValue));
             return (
-                <div className="text-center">{flooredStock}</div>
+                <div className="text-center">
+                    {flooredStock === 0 ? "-" : flooredStock}
+                </div>
             )
         },
     },

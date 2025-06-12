@@ -8,7 +8,7 @@ import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatIDR } from "@/lib/formatCurrency"
 import { ReportGenerator } from "@/components/reports/ReportGenerator"
-import { invoiceColumns, SalesInvoice } from "./invoiceColumns"
+import { POS, posColumns } from "./posColumns"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
@@ -16,6 +16,9 @@ import { redirect } from "next/navigation"
 async function getData(): Promise<Sales[]> {
     try {
         const sales = await prisma.salesOrder.findMany({
+            where: {
+                customerName: null
+            },
             include: {
                 customer: {
                     select: {
@@ -36,26 +39,32 @@ async function getData(): Promise<Sales[]> {
     }
 }
 
-async function getInvoiceData(): Promise<SalesInvoice[]> {
+async function getPosData(): Promise<POS[]> {
     try {
-        const invoice = await prisma.salesInvoice.findMany({
+        const pos = await prisma.salesOrder.findMany({
+            where: {
+                customerName: {
+                    not: null
+                }
+            },
             include: {
-                salesOrder: {
-                    include: {
-                        customer: {
-                            select: {
-                                name: true
-                            }
-                        }
+                user: {
+                    select: {
+                        name: true
                     }
                 },
+                SalesInvoice: {
+                    select: {
+                        paymentMethod: true
+                    }
+                }
             },
             orderBy: {
-                paymentDate: 'desc'
+                orderDate: 'desc'
             }
         })
 
-        return invoice
+        return pos
 
     } catch (error) {
         console.error('Error fetching data:', error)
@@ -121,8 +130,9 @@ export default async function page() {
     const isStaff = session.user.role === 'Staff'
 
     const data = await getData();
-    const invoiceData = await getInvoiceData();
+    const posData = await getPosData();
     const salesStats = await getSalesStats();
+
 
     return (
         <div className="h-full m-3 p-5 rounded-md">
@@ -184,11 +194,11 @@ export default async function page() {
                     </CardContent>
                 </Card>
             </div>
-            <Tabs defaultValue="order" className="py-10">
+            <Tabs defaultValue="pos" className="py-10">
                 <div className="flex justify-between">
-                    <TabsList className="grid w-[400px] grid-cols-2">
+                    <TabsList className="grid grid-cols-2">
+                        <TabsTrigger value="pos">Point of Sales</TabsTrigger>
                         <TabsTrigger value="order">Sales Order</TabsTrigger>
-                        <TabsTrigger value="invoice">Sales Invoice</TabsTrigger>
                     </TabsList>
                     {!isStaff && (
                         <ReportGenerator reportType="sales" />
@@ -204,7 +214,7 @@ export default async function page() {
                             facetedFilters={[
                                 {
                                     columnId: "tag",
-                                    title: "Tag",
+                                    title: "Type",
                                     options: [
                                         { label: "Other", value: "other" },
                                         { label: "Shopee", value: "Shopee" },
@@ -225,21 +235,23 @@ export default async function page() {
                         />
                     </div>
                 </TabsContent>
-                <TabsContent value="invoice" className="space-y-2">
+                <TabsContent value="pos" className="space-y-2">
                     <div className="container mx-auto py-2">
                         <DataTable
-                            columns={invoiceColumns}
-                            data={invoiceData}
+                            columns={posColumns}
+                            data={posData}
                             searchColumn="customerName"
                             searchPlaceholder="Search customer ..."
                             facetedFilters={[
                                 {
-                                    columnId: "paymentMethod",
-                                    title: "Method",
+                                    columnId: "tag",
+                                    title: "Type",
                                     options: [
-                                        { label: "Transfer", value: "Transfer" },
-                                        { label: "Cash", value: "Cash" },
-                                        { label: "QRIS", value: "Qris" },
+                                        { label: "Other", value: "other" },
+                                        { label: "Shopee", value: "Shopee" },
+                                        { label: "Grab", value: "Grab" },
+                                        { label: "Gofood", value: "Gofood" },
+                                        { label: "Takeaway", value: "Takeaway" },
                                     ],
                                 },
                             ]}

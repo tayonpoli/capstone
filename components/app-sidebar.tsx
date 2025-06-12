@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
-import { Blocks, Waypoints, Sparkles, ShoppingBasket, SquareChartGantt, Boxes, PackageOpen, UsersRound, UserRoundCog, CreditCard } from "lucide-react"
+import { Blocks, Waypoints, ShoppingBasket, SquareChartGantt, Boxes, PackageOpen, UsersRound, UserRoundCog, CreditCard, Keyboard } from "lucide-react"
 import { NotificationBell } from "./NotificationBell"
 import { NavProjects } from "./nav-projects"
 
@@ -34,6 +34,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
       //   icon: Sparkles,
       // }] : []),
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
+      { title: "Point of Sales", url: "/pos", icon: Keyboard },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
       { title: "Expenses", url: "/expenses", icon: CreditCard },
       { title: "Inventory", url: "/product", icon: PackageOpen },

@@ -45,7 +45,7 @@ export function SalesDetail({ sales }: SalesDetailProps) {
                         <div className="flex items-center">
                             <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
                             <div>
-                                <p className="text-sm text-gray-500">Tag</p>
+                                <p className="text-sm text-gray-500">Order Type</p>
                                 <p>{sales.tag || "-"}</p>
                             </div>
                         </div>
@@ -64,22 +64,27 @@ export function SalesDetail({ sales }: SalesDetailProps) {
                     <div className="space-y-4">
                         <div>
                             <p className="text-sm text-gray-500">Customer Name</p>
-                            <p>{sales.customer.name}</p>
+                            <p>{sales.customerName || sales.customer?.name || "-"}</p>
                         </div>
-                        <div className="flex items-center">
-                            <MailIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Email</p>
-                                <p>{sales.email || "-"}</p>
+                        {(sales.email) && (
+                            <div className="flex items-center">
+                                <MailIcon className="mr-2 h-4 w-4 text-gray-500" />
+                                <div>
+                                    <p className="text-sm text-gray-500">Email</p>
+                                    <p>{sales.email}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center">
-                            <MapPinIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Address</p>
-                                <p>{sales.address || "-"}</p>
+                        )}
+
+                        {(sales.address) && (
+                            <div className="flex items-center">
+                                <MapPinIcon className="mr-2 h-4 w-4 text-gray-500" />
+                                <div>
+                                    <p className="text-sm text-gray-500">Address</p>
+                                    <p>{sales.address}</p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

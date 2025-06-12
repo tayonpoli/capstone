@@ -10,9 +10,9 @@ export default async function CreateSalesPage() {
 
     // Fetch products data
     const products = await prisma.inventory.findMany({
-        // where: {
-        //     category: 'product'
-        // },
+        where: {
+            category: 'product'
+        },
         orderBy: {
             product: 'asc',
         },

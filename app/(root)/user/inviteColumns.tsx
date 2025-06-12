@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -12,41 +12,35 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
-import { DeleteUser } from "@/components/form/DeleteUser"
+import { Invitation } from "@prisma/client"
+import { format } from "date-fns"
+import { DeleteInvitation } from "@/components/form/DeleteInvitation"
 
-export type User = {
-    id: string
-    name: string | null
-    email: string
-    role: string
-    status: string
-}
 
-const UserActions = ({ user }: { user: User }) => {
+const InviteActions = ({ invitation }: { invitation: Invitation }) => {
     const router = useRouter();
 
     const handleDelete = async () => {
         try {
-            const response = await fetch('/api/user', {
+            const response = await fetch('/api/invite', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id: user.id }),
+                body: JSON.stringify({ id: invitation.id }),
             })
 
             const result = await response.json()
 
             if (response.ok) {
-                toast.success(result.message || "User deleted successfully")
+                toast.success(result.message || "User invitation deleted successfully")
                 router.refresh()
             } else {
-                throw new Error(result.error || "Failed to delete user")
+                throw new Error(result.error || "Failed to delete the invitation")
             }
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "An error occurred")
@@ -67,14 +61,14 @@ const UserActions = ({ user }: { user: User }) => {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <DeleteUser onConfirm={handleDelete} />
+                    <DeleteInvitation onConfirm={handleDelete} />
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
 };
 
-export const columns: ColumnDef<User>[] = [
+export const inviteColumns: ColumnDef<Invitation>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -98,10 +92,6 @@ export const columns: ColumnDef<User>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "name",
-        header: "User name",
-    },
-    {
         accessorKey: "email",
         header: "Email",
     },
@@ -118,20 +108,26 @@ export const columns: ColumnDef<User>[] = [
 
     },
     {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => (
-            <div className="w-32">
-                <Badge variant="success" className="px-1.5 text-muted-foreground text-gray-50">
-                    {row.original.status}
-                </Badge>
-            </div>
-        ),
-
+        accessorKey: "expiresAt",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Expired Date
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const date = row.getValue("expiresAt") as Date
+            return <div className="ml-4">{format(new Date(date), "dd MMM yyyy")}</div>
+        },
     },
     {
         id: "actions",
-        cell: ({ row }) => <UserActions user={row.original} />,
+        cell: ({ row }) => <InviteActions invitation={row.original} />,
     },
 ]
 

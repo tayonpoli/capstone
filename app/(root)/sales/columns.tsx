@@ -62,7 +62,7 @@ const SalesActions = ({ sales }: { sales: Sales }) => {
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "An error occurred")
       console.error('Delete error:', error)
-      throw error // Penting untuk ditangkap oleh DeleteProduct
+      throw error
     }
   }
 
@@ -139,7 +139,7 @@ export const columns: ColumnDef<Sales>[] = [
   },
   {
     accessorKey: "tag",
-    header: "Tag",
+    header: "Type",
     cell: ({ row }) => (
       <div className="w-32">
         <Badge variant="outline" className="px-1.5 text-muted-foreground">

@@ -27,8 +27,9 @@ const FormSchema = z.object({
     email: z.string().optional(),
     orderDate: z.string().min(1, 'Order date is required'),
     tag: z.string().optional(),
-    status: z.string().min(1, 'Status is required'),
+    status: z.string().optional(),
     memo: z.string().optional(),
+    customerName: z.string().nullable(),
     items: z.array(
         z.object({
             productId: z.string().min(1, 'Product is required'),
@@ -52,6 +53,7 @@ export function EditSalesForm({ initialData, customers, products }: any) {
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
+            console.log(values);
             const response = await fetch(`/api/sales/${initialData.id}`, {
                 method: 'PUT',
                 headers: {
@@ -59,6 +61,7 @@ export function EditSalesForm({ initialData, customers, products }: any) {
                 },
                 body: JSON.stringify({
                     ...values,
+                    // customerName: values.customerName ?? '',
                     orderDate: new Date(values.orderDate).toISOString(),
                 }),
             });
@@ -77,6 +80,9 @@ export function EditSalesForm({ initialData, customers, products }: any) {
     }
 
     const items = form.watch('items');
+    const hasCustomerName = initialData.customerName !== undefined && initialData.customerName !== null && initialData.customerName !== '';
+    const showEmailField = initialData.email !== undefined && initialData.email !== null && initialData.email !== '';
+    const showAddressField = initialData.address !== undefined && initialData.address !== null && initialData.address !== '';
 
     return (
         <div className='p-3'>
@@ -84,43 +90,66 @@ export function EditSalesForm({ initialData, customers, products }: any) {
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
                         <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
-                            <FormField
-                                control={form.control}
-                                name='customerId'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Customer</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl className='w-full'>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select customer" />
-                                                </SelectTrigger>
+                            {!hasCustomerName && (
+                                <FormField
+                                    control={form.control}
+                                    name='customerId'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Customer</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl className='w-full'>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select customer" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {customers.map((customer: Customer) => (
+                                                        <SelectItem key={customer.id} value={customer.id}>
+                                                            {customer.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
+                            {hasCustomerName && (
+                                <FormField
+                                    control={form.control}
+                                    name='customerName'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Customer Name</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Customer name"
+                                                    {...field}
+                                                    value={field.value ?? ''}
+                                                />
                                             </FormControl>
-                                            <SelectContent>
-                                                {customers.map((customer: Customer) => (
-                                                    <SelectItem key={customer.id} value={customer.id}>
-                                                        {customer.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name='email'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='Customer email' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
+                            {showEmailField && (
+                                <FormField
+                                    control={form.control}
+                                    name='email'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder='Customer email' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
                             <FormField
                                 control={form.control}
                                 name='orderDate'
@@ -139,7 +168,7 @@ export function EditSalesForm({ initialData, customers, products }: any) {
                                 name='tag'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Tag</FormLabel>
+                                        <FormLabel>Order Type</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
                                                 <SelectTrigger className='w-full'>
@@ -147,11 +176,11 @@ export function EditSalesForm({ initialData, customers, products }: any) {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="other">Others</SelectItem>
+                                                <SelectItem value="Other">Others</SelectItem>
                                                 <SelectItem value="Takeaway">Take away</SelectItem>
-                                                <SelectItem value="Gofood">GoFood</SelectItem>
-                                                <SelectItem value="Grab">GrabFood</SelectItem>
-                                                <SelectItem value="Shopee">ShopeeFood</SelectItem>
+                                                <SelectItem value="GoFood">GoFood</SelectItem>
+                                                <SelectItem value="GrabFood">GrabFood</SelectItem>
+                                                <SelectItem value="ShopeeFood">ShopeeFood</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -173,19 +202,21 @@ export function EditSalesForm({ initialData, customers, products }: any) {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name='address'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Address</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder='Shipping address' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            {showAddressField && (
+                                <FormField
+                                    control={form.control}
+                                    name='address'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Address</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder='Shipping address' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
                         </div>
                     </div>
 

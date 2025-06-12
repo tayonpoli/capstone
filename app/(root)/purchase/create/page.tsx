@@ -32,6 +32,9 @@ export default async function CreatePurchasePage() {
 
     // Fetch products data
     const products = await prisma.inventory.findMany({
+        where: {
+            category: 'material'
+        },
         orderBy: {
             product: 'asc',
         },

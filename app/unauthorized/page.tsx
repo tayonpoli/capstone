@@ -14,7 +14,9 @@ export default function Unauthorized() {
                 <CardTitle>Unauthorized</CardTitle>
                 <Badge variant="outline">401</Badge>
             </div>
-            <CardDescription className="text-center">Oops! Sorry you don't have enough authorization for accessing this feature. You need a higher user authorization.</CardDescription>
+            <CardDescription className="text-center">
+                Oops! Sorry you don&apos;t have enough authorization for accessing this feature. You need a higher user authorization.
+            </CardDescription>
             <Button asChild>
                 <Link href={`/`}>
                     Back to Dashboard

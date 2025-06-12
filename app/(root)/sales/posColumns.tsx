@@ -18,26 +18,29 @@ import { useRouter } from "next/navigation"
 import { formatIDR } from "@/lib/formatCurrency"
 import { format } from "date-fns"
 import { DeleteSales } from "@/components/sales/DeleteSales"
+import { Badge } from "@/components/ui/badge"
+import { SalesInvoice } from "@prisma/client"
 
-export type SalesInvoice = {
+export type POS = {
     id: string
-    amount: number
-    paymentMethod: string | null
-    bankName: string | null
-    accountNumber: string | null
-    paymentDate: Date | null
-    salesOrderId: string
-    salesOrder: {
-        customerId: string
-        customer: {
-            name: string | null
-        }
+    customerName: string | null
+    total: number
+    tag: string | null
+    memo: string | null
+    paymentStatus: string
+    userId: string
+    user: {
+        name: string | null
     }
+    orderDate: Date
     createdAt: Date
     updatedAt: Date
+    SalesInvoice: {
+        paymentMethod: string | null
+    }[]
 }
 
-const InvoiceActions = ({ sales }: { sales: SalesInvoice }) => {
+const PosActions = ({ sales }: { sales: POS }) => {
     const router = useRouter();
 
     const handleDelete = async () => {
@@ -61,7 +64,7 @@ const InvoiceActions = ({ sales }: { sales: SalesInvoice }) => {
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "An error occurred")
             console.error('Delete error:', error)
-            throw error // Penting untuk ditangkap oleh DeleteProduct
+            throw error
         }
     }
 
@@ -77,10 +80,10 @@ const InvoiceActions = ({ sales }: { sales: SalesInvoice }) => {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href={`/sales/${sales.salesOrderId}`}>View Details</Link>
+                    <Link href={`/sales/${sales.id}`}>View Details</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                    <Link href={`/sales/${sales.salesOrderId}/edit`}>Edit</Link>
+                    <Link href={`/sales/${sales.id}/edit`}>Edit</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <DeleteSales onConfirm={handleDelete} />
@@ -90,7 +93,7 @@ const InvoiceActions = ({ sales }: { sales: SalesInvoice }) => {
     )
 };
 
-export const invoiceColumns: ColumnDef<SalesInvoice>[] = [
+export const posColumns: ColumnDef<POS>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -114,44 +117,60 @@ export const invoiceColumns: ColumnDef<SalesInvoice>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "createdAt",
-        header: "Invoice Number",
-        cell: ({ row }) => {
-            const date = row.getValue("createdAt") as Date
-            // Format tanggal ke dalam bentuk ddmmyy (140525 untuk 14 May 2025)
-            const invoiceNumber = `${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear().toString().slice(-2)}`;
-            return <div>Sales Invoice #{invoiceNumber}</div>;
-        },
+        accessorFn: (row) => row.user.name,
+        header: "Staff",
+        id: "staffName",
     },
     {
-        accessorFn: (row) => row.salesOrder.customer.name,
-        header: "Customer",
-        id: "customerName",
+        accessorKey: "customerName",
+        header: "Customer Name"
     },
     {
-        accessorKey: "paymentMethod",
-        header: "Payment Method",
-    },
-    {
-        accessorKey: "paymentDate",
+        accessorKey: "orderDate",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Payment Date
+                    Order Date
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
         cell: ({ row }) => {
-            const date = row.getValue("paymentDate") as Date
+            const date = row.getValue("orderDate") as Date
             return <div className="ml-4">{format(new Date(date), "dd MMM yyyy")}</div>
         },
     },
     {
-        accessorKey: "amount",
+        accessorKey: "tag",
+        header: "Type",
+        cell: ({ row }) => (
+            <div className="w-32">
+                <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                    {row.original.tag || "No tag"}
+                </Badge>
+            </div>
+        ),
+    },
+    {
+        id: "paymentMethod",
+        header: "Payment Method",
+        cell: ({ row }) => {
+            const method = row.original.SalesInvoice?.[0]?.paymentMethod || "Unknown"
+            return (
+                <div className="w-32">
+                    <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                        {method}
+                    </Badge>
+                </div>
+            )
+        },
+    },
+
+    {
+        accessorKey: "total",
         header: ({ column }) => {
             return (
                 <Button
@@ -164,12 +183,12 @@ export const invoiceColumns: ColumnDef<SalesInvoice>[] = [
             )
         },
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("amount"))
+            const amount = parseFloat(row.getValue("total"))
             return <div className="font-medium">{formatIDR(amount)}</div>
         },
     },
     {
         id: "actions",
-        cell: ({ row }) => <InvoiceActions sales={row.original} />,
+        cell: ({ row }) => <PosActions sales={row.original} />,
     },
 ]

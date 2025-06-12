@@ -218,11 +218,11 @@ export function CreateSalesForm({ customers, products }: CreateSalesFormProps) {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="other">Others</SelectItem>
-                                                <SelectItem value="Takeaway">Take away</SelectItem>
-                                                <SelectItem value="Gofood">GoFood</SelectItem>
-                                                <SelectItem value="Grab">GrabFood</SelectItem>
-                                                <SelectItem value="Shopee">ShopeeFood</SelectItem>
+                                                <SelectItem value="Takeaway">Takeaway</SelectItem>
+                                                <SelectItem value="GoFood">GoFood</SelectItem>
+                                                <SelectItem value="GrabFood">GrabFood</SelectItem>
+                                                <SelectItem value="ShopeeFood">ShopeeFood</SelectItem>
+                                                <SelectItem value="Other">Other</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />

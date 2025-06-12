@@ -58,7 +58,7 @@ export function PurchaseItem({
                             <SelectContent>
                                 {products.map((product) => (
                                     <SelectItem key={product.id} value={product.id}>
-                                        {product.product} ({product.code})
+                                        {product.product}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

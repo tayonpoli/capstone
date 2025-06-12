@@ -22,9 +22,9 @@ COPY --from=base /work/public ./public
 COPY --from=base /work/prisma ./prisma
 COPY --from=base /work/node_modules/.prisma ./node_modules/.prisma
 
-RUN apk add --no-cache dos2unix && \
-    dos2unix /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-entrypoint.sh
+# RUN apk add --no-cache dos2unix && \
+#     dos2unix /usr/local/bin/docker-entrypoint.sh && \
+#     chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 3000
 

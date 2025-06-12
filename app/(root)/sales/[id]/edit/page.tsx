@@ -8,6 +8,7 @@ import { authOptions } from '@/lib/auth';
 interface SalesData {
   id: string
   customerId: string
+  customerName: string | null
   address?: string | null
   email?: string | null
   orderDate: string
@@ -64,6 +65,7 @@ export default async function EditSalesPage({
       return {
         id: sale.id,
         customerId: sale.customerId,
+        customerName: sale.customerName,
         address: sale.address || undefined,
         email: sale.email || undefined,
         orderDate: sale.orderDate.toISOString(),
@@ -106,31 +108,6 @@ export default async function EditSalesPage({
     }
   }
 
-  // async function updateSale(data: any) {
-
-  //   try {
-  //     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sales`, {
-  //       method: 'PUT',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         id: params.id,
-  //         ...data
-  //       }),
-  //     })
-
-  //     if (!res.ok) {
-  //       throw new Error('Failed to update sale')
-  //     }
-
-  //     redirect('/sales')
-  //   } catch (error) {
-  //     console.error('Failed to update sale:', error)
-  //     throw new Error('Failed to update sale. Please try again.')
-  //   }
-  // }
-
   return (
     <div className="h-min-full m-3 p-5 rounded-md">
       <div className="p-3">
@@ -145,7 +122,6 @@ export default async function EditSalesPage({
         initialData={saleData}
         customers={customers}
         products={products}
-      // onUpdate={updateSale}
       />
     </div>
   )

@@ -24,6 +24,7 @@ model User {
   createdAt DateTime @default(now())
 
   PasswordReset PasswordReset[]
+  SalesOrder    SalesOrder[]
 }
 
 enum Role {
@@ -140,8 +141,11 @@ model Supplier {
 
 model SalesOrder {
   id            String         @id @default(uuid())
+  userId        String         @default("001")
+  user          User           @relation(fields: [userId], references: [id])
   customerId    String
   customer      Customer       @relation(fields: [customerId], references: [id])
+  customerName  String?
   address       String?
   email         String?
   orderDate     DateTime
