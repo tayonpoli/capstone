@@ -14,10 +14,10 @@ import { useRouter } from 'next/navigation'
 
 const FormSchema = z.object({
     token: z.string().min(1, 'Invitation token is required'),
-    password: z.string().min(6, "Password minimal 6 karakter"),
+    password: z.string().min(6, "The password minimal 6 characters"),
     confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
-    message: "Password tidak cocok",
+    message: "Password not match",
     path: ["confirmPassword"]
 })
 

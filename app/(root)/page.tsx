@@ -1,7 +1,7 @@
 import { LongChart } from "@/components/charts/LongChart";
 import { RecentTransactions } from "@/components/charts/RecentPurchase";
 import { DailySalesChart } from "@/components/charts/RevenueChart";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation";
@@ -18,6 +18,8 @@ const DashboardPage = async () => {
     redirect("/api/auth/signin");
   }
 
+  const isStaff = session.user.role === 'Staff'
+
   const salesStats = await getSalesStats();
   const stats = await getPurchaseStats();
 
@@ -32,9 +34,11 @@ const DashboardPage = async () => {
             Business Overview
           </h1>
         </div>
-        <div className="flex justify-end">
-          <SalesAnalysis />
-        </div>
+        {!isStaff && (
+          <div className="flex justify-end">
+            <SalesAnalysis />
+          </div>
+        )}
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 mb-4 p-3">
         <Card>

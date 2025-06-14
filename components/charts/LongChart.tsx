@@ -157,7 +157,7 @@ export function LongChart() {
 
   return (
     <Card>
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
           <CardTitle>Revenue & Expenses</CardTitle>
           <CardDescription>
@@ -265,10 +265,30 @@ export function LongChart() {
                       labelFormatter={(value) => {
                         return format(new Date(value), "MMM d, yyyy")
                       }}
-                      formatter={(value) => [
-                        `${formatIDR(Number(value))}`,
-                        value === chartData[0]?.revenue
-                      ]}
+                      formatter={(value, name) => (
+                        <>
+                          <div
+                            className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-(--color-bg)"
+                            style={
+                              {
+                                "--color-bg": `var(--color-${name})`,
+                              } as React.CSSProperties
+                            }
+                          />
+                          {/* {chartConfig[name as keyof typeof chartConfig]?.label ||
+                        name} */}
+                          <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
+                            <span className="text-muted-foreground font-normal mr-1">
+                              Rp
+                            </span>
+                            {value.toLocaleString('id-ID') || '0'}
+                          </div>
+                        </>
+                      )}
+                    // formatter={(value) => [
+                    //   `${formatIDR(Number(value))}`,
+                    //   value === chartData[0]?.revenue
+                    // ]}
                     />
                   }
                 />

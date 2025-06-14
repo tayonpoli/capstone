@@ -114,7 +114,7 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: "code",
-        header: "Product Code",
+        header: "SKU",
     },
     {
         accessorKey: "category",

@@ -3,6 +3,8 @@ import { Inventory, PurchaseOrder, Staff, Supplier, PurchaseItem, Invoice } from
 import { CalendarIcon, TagIcon, FileTextIcon, MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
 import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Label } from "../ui/label"
 
 interface PurchaseDetailProps {
     purchase: PurchaseOrder & {
@@ -21,74 +23,86 @@ export function DetailPurchase({ purchase }: PurchaseDetailProps) {
 
     return (
         <div className="px-4">
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Column - Order Information */}
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Order Information</h2>
-                    <div className="space-y-4">
-                        <div>
-                            <p className="text-sm text-gray-500">Staff Name</p>
-                            <p>{purchase.staff.name}</p>
+            <Card className="mb-4">
+                <CardHeader>
+                    <CardTitle>
+                        Order Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-2/3 flex grid grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Purchase date
+                            </CardDescription>
+                            <Label className="text-md font-medium">{format(new Date(purchase.purchaseDate), "dd MMMM yyyy")}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Order Date</p>
-                                <p>{format(new Date(purchase.purchaseDate), "dd MMMM yyyy")}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Due Date
+                            </CardDescription>
+                            <Label className="text-md font-medium">{format(new Date(purchase.dueDate), "dd MMMM yyyy")}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Payment Status</p>
-                                <p className="capitalize">{purchase.paymentStatus}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Staff name
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.staff.name}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Tag</p>
-                                <p>{purchase.tag || "-"}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Payment status
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.paymentStatus}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <FileTextIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Memo</p>
-                                <p>{purchase.memo || "-"}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Tag
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.tag || "-"}</Label>
                         </div>
-                    </div>
-                </div>
-
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Supplier Information</h2>
-                    <div className="space-y-4">
-                        <div>
-                            <p className="text-sm text-gray-500">Supplier Name</p>
-                            <p>{purchase.supplier.name}</p>
-                        </div>
-                        <div className="flex items-center">
-                            <MailIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Email</p>
-                                <p>{purchase.supplier.email || "-"}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <MapPinIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Address</p>
-                                <p>{purchase.supplier.address || "-"}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Memo
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.memo || "-"}</Label>
                         </div>
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
+
+            <Card className="my-4">
+                <CardHeader>
+                    <CardTitle>
+                        Supplier Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-2/3 flex grid grid-cols-2 space-y-6">
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Name
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.supplier.name}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Email
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.supplier.email || "-"}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Address
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.supplier.address || "-"}</Label>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* Right Column - Order Items */}
-            <div className="mb-8">
+            <div className="my-6">
                 <h2 className="text-xl font-semibold mb-4">Purchase Items</h2>
                 <div className="p-2 border rounded-lg">
                     <Table>

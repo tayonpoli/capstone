@@ -17,7 +17,8 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
-  name      String?
+  name      String
+  phone     String?
   password  String
   role      Role     @default(Staff)
   status    String   @default("Active")
@@ -25,6 +26,15 @@ model User {
 
   PasswordReset PasswordReset[]
   SalesOrder    SalesOrder[]
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  email     String
+  name      String
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
 }
 
 enum Role {

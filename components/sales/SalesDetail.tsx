@@ -2,9 +2,11 @@
 
 import { formatIDR } from "@/lib/formatCurrency"
 import { SalesOrder, Customer, SalesItem, Inventory, SalesInvoice } from "@prisma/client"
-import { CalendarIcon, TagIcon, FileTextIcon, MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
+import { MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
 import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Label } from "../ui/label"
 
 interface SalesDetailProps {
     sales: SalesOrder & {
@@ -22,75 +24,83 @@ export function SalesDetail({ sales }: SalesDetailProps) {
 
     return (
         <div className="px-4">
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Column - Order Information */}
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Order Information</h2>
-                    <div className="space-y-4">
-                        <div className="flex items-center">
-                            <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Order Date</p>
-                                <p>{format(new Date(sales.orderDate), "dd MMMM yyyy")}</p>
-                            </div>
+            <Card className="mb-4">
+                <CardHeader>
+                    <CardTitle>
+                        Order Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-2/3 flex grid grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Order date
+                            </CardDescription>
+                            <Label className="text-md font-medium">{format(new Date(sales.orderDate), "dd MMMM yyyy")}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Payment Status</p>
-                                <p className="capitalize">{sales.paymentStatus}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Order Type</p>
-                                <p>{sales.tag || "-"}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <FileTextIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Memo</p>
-                                <p>{sales.memo || "-"}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
-                    <div className="space-y-4">
-                        <div>
-                            <p className="text-sm text-gray-500">Customer Name</p>
-                            <p>{sales.customerName || sales.customer?.name || "-"}</p>
-                        </div>
-                        {(sales.email) && (
-                            <div className="flex items-center">
-                                <MailIcon className="mr-2 h-4 w-4 text-gray-500" />
-                                <div>
-                                    <p className="text-sm text-gray-500">Email</p>
-                                    <p>{sales.email}</p>
-                                </div>
+                        {(sales.customerName) && (
+                            <div className="space-y-1">
+                                <CardDescription>
+                                    Customer name
+                                </CardDescription>
+                                <Label className="text-md font-medium">{sales.customerName}</Label>
                             </div>
                         )}
-
-                        {(sales.address) && (
-                            <div className="flex items-center">
-                                <MapPinIcon className="mr-2 h-4 w-4 text-gray-500" />
-                                <div>
-                                    <p className="text-sm text-gray-500">Address</p>
-                                    <p>{sales.address}</p>
-                                </div>
-                            </div>
-                        )}
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Payment status
+                            </CardDescription>
+                            <Label className="text-md font-medium">{sales.paymentStatus}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Order type
+                            </CardDescription>
+                            <Label className="text-md font-medium">{sales.tag || "-"}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Memo
+                            </CardDescription>
+                            <Label className="text-md font-medium">{sales.memo || "-"}</Label>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
 
-            {/* Right Column - Order Items */}
-            <div className="mb-8">
+            {(!sales.customerName) && (
+                <Card className="my-4">
+                    <CardHeader>
+                        <CardTitle>
+                            Customer Information
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="w-2/3 flex grid grid-cols-2 space-y-6">
+                            <div className="space-y-1">
+                                <CardDescription>
+                                    Name
+                                </CardDescription>
+                                <Label className="text-md font-medium">{sales.customer?.name}</Label>
+                            </div>
+                            <div className="space-y-1">
+                                <CardDescription>
+                                    Email
+                                </CardDescription>
+                                <Label className="text-md font-medium">{sales.email}</Label>
+                            </div>
+                            <div className="space-y-1">
+                                <CardDescription>
+                                    Address
+                                </CardDescription>
+                                <Label className="text-md font-medium">{sales.address}</Label>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            <div className="my-6">
                 <h2 className="text-xl font-semibold mb-4">Order Items</h2>
                 <div className="p-2 border rounded-lg">
                     <Table>

@@ -24,14 +24,13 @@ export async function POST(req: Request) {
         );
     }
 
-    // Cek apakah user sudah ada
     const existingUser = await prisma.user.findUnique({
         where: { email: email }
     });
 
     if (existingUser) {
         return NextResponse.json(
-            { message: "User already exists" },
+            { message: "Email already exists" },
             { status: 400 }
         );
     }

@@ -12,6 +12,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from '../ui/scroll-area';
+import { toast } from 'sonner';
 
 export default function SalesAnalysis() {
     const [result, setResult] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export default function SalesAnalysis() {
             });
 
             if (!response.ok) {
+                toast.error("Ai Analysis failed");
                 throw new Error('Analysis failed');
             }
 
@@ -73,11 +75,11 @@ export default function SalesAnalysis() {
                 )}
             </Button>
 
-            {error && (
+            {/* {error && (
                 <div className="p-4 mb-6 bg-red-50 text-red-700 rounded-lg">
                     Error: {error}
                 </div>
-            )}
+            )} */}
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <ScrollArea>

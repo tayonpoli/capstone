@@ -10,7 +10,7 @@ interface ProductDetailProps {
 
 export function ProductDetail({ product }: ProductDetailProps) {
     return (
-        <div className="p-4">
+        <div className="px-4">
             <div className="flex flex-center items-start">
                 <div>
                     <p className='text-sm font-light text-gray-400'>

@@ -36,9 +36,13 @@ export function AppSidebar({ session }: AppSidebarProps) {
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Point of Sales", url: "/pos", icon: Keyboard },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
-      { title: "Expenses", url: "/expenses", icon: CreditCard },
+      ...(isAdminOwner ? [
+        { title: "Expenses", url: "/expenses", icon: CreditCard },
+      ] : []),
       { title: "Inventory", url: "/product", icon: PackageOpen },
-      { title: "Production", url: "/production", icon: Boxes },
+      ...(isAdminOwner ? [
+        { title: "Production", url: "/production", icon: Boxes },
+      ] : []),
       // { title: "Customers", url: "/customer", icon: UsersRound },
       // ...(isAdminOwner ? [
       //   {

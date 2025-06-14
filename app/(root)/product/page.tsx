@@ -160,7 +160,7 @@ export default async function page() {
                     columns={columns}
                     data={data}
                     searchColumn="product"
-                    searchPlaceholder="Search by product ..."
+                    searchPlaceholder="Search products..."
                     facetedFilters={[
                         {
                             columnId: "category",

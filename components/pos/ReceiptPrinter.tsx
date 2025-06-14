@@ -20,7 +20,7 @@ export default function ReceiptPrinter({ order }: { order: any }) {
         #receipt { visibility: visible; }
       }
     `,
-        onAfterPrint: () => toast.success("Struk berhasil dicetak!")
+        onAfterPrint: () => toast.success("Receipt successfully printed!")
     })
 
     const handleBluetoothPrint = async () => {
@@ -29,7 +29,7 @@ export default function ReceiptPrinter({ order }: { order: any }) {
             await printBluetoothReceipt(order)
             toast.success("Struk terkirim ke printer!")
         } catch (error) {
-            toast.error("Gagal mengirim ke printer Bluetooth")
+            toast.error("Failed to print the receipt")
             console.error("Print error:", error)
         } finally {
             setIsPrinting(false)

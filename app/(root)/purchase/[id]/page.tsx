@@ -54,12 +54,12 @@ export default async function PurchaseDetailPage({
 
     return (
         <div className="h-min-screen m-3 p-5 rounded-md">
-            <div className="flex flex-center items-start p-4 pb-0">
+            <div className="flex flex-center items-start px-4">
                 <div>
                     <p className='text-sm font-light text-gray-400'>
                         Purchase
                     </p>
-                    <h1 className='mb-10 text-2xl font-semibold'>
+                    <h1 className='mb-6 text-2xl font-semibold'>
                         Purchase Order Details
                     </h1>
                 </div>
@@ -79,7 +79,8 @@ export default async function PurchaseDetailPage({
             <div className='flex justify-end mt-auto space-x-4'>
                 {!isStaff && (
                     <>
-                        <Button asChild>
+                        <ReportButton order={purchase} type="purchase" />
+                        <Button variant='outline' asChild>
                             <Link href={`/purchase/${id}/edit`}>
                                 Edit
                             </Link>
@@ -103,8 +104,6 @@ export default async function PurchaseDetailPage({
                                 </DialogContent>
                             </Dialog>
                         )}
-
-                        <ReportButton order={purchase} type="purchase" />
                     </>
                 )}
             </div>

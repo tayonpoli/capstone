@@ -92,6 +92,7 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
                 toast.success(data.message || "Account created successfully!");
                 router.push('/sign-in');
             } else {
+                toast.error(data.message || "Ooops! Something went wrong!");
                 throw new Error(data.message || "Registration failed");
             }
         } catch (error) {
@@ -107,10 +108,6 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
                     <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg ml-2">
                         <Blocks className="size-5" />
                     </div>
-                    {/* <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-medium">MauManage</span>
-                        <span className="truncate text-xs">Enterprise</span>
-                    </div> */}
                     <CardTitle className='text-center mb-6'>
                         Sign Up
                     </CardTitle>

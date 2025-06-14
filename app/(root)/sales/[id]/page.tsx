@@ -46,13 +46,13 @@ export default async function SalesDetailPage({
     const remainingAmount = sales.total - totalPaid;
 
     return (
-        <div className="h-min-screen m-3 p-5 rounded-md">
-            <div className="flex flex-center items-start p-4 pb-0">
+        <div className="h-full m-3 p-5 rounded-md">
+            <div className="flex flex-center items-start px-4">
                 <div>
                     <p className='text-sm font-light text-gray-400'>
                         Sales
                     </p>
-                    <h1 className='mb-10 text-2xl font-semibold'>
+                    <h1 className='mb-6 text-2xl font-semibold'>
                         Sales Order Details
                     </h1>
                 </div>
