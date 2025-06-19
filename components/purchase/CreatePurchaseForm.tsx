@@ -197,7 +197,9 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='Supplier email' {...field} />
+                                            <Input
+                                                disabled
+                                                placeholder='Supplier email' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -274,10 +276,6 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                                     mode="single"
                                                     selected={field.value}
                                                     onSelect={field.onChange}
-                                                    disabled={(date) =>
-                                                        date > new Date() || date < new Date("1900-01-01")
-                                                    }
-                                                    initialFocus
                                                 />
                                             </PopoverContent>
                                         </Popover>
@@ -294,7 +292,7 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                     <FormItem>
                                         <FormLabel>Address</FormLabel>
                                         <FormControl>
-                                            <Textarea placeholder='Supplier address' {...field} />
+                                            <Textarea placeholder='Supplier address' {...field} disabled />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

@@ -41,7 +41,7 @@ export default function ReceiptPrinter({ order }: { order: any }) {
             <div
                 ref={receiptRef}
                 id="receipt"
-                className="p-4 bg-white text-black text-sm"
+                className="p-4 text-sm"
                 style={{ width: "80mm" }}
             >
                 <h2 className="text-center font-bold text-lg">MauNgopi</h2>

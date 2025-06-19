@@ -20,14 +20,23 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Customer, Inventory, Staff } from '@prisma/client';
 import { OrderItem } from '../sales/OrderItem';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '../ui/calendar';
 
 const FormSchema = z.object({
     staffId: z.string().min(1, 'Staff is required'),
     supplierId: z.string().min(1, 'Customer is required'),
     address: z.string().optional(),
     email: z.string().optional(),
-    purchaseDate: z.string().min(1, 'Order date is required'),
-    dueDate: z.string().min(1, 'Order date is required'),
+    purchaseDate: z.date({
+        required_error: "Purchase date is required.",
+    }),
+    dueDate: z.date({
+        required_error: "due date is required.",
+    }),
     tag: z.string().optional(),
     urgency: z.string().min(1, 'urgency is required'),
     status: z.string().min(1, 'Status is required'),
@@ -49,17 +58,10 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
         resolver: zodResolver(FormSchema),
         defaultValues: {
             ...initialData,
-            purchaseDate: initialData.purchaseDate ? new Date(initialData.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            dueDate: initialData.dueDate ? new Date(initialData.dueDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            purchaseDate: initialData.purchaseDate ? new Date(initialData.purchaseDate) : new Date(),
+            dueDate: initialData.dueDate ? new Date(initialData.dueDate) : new Date(),
         },
     });
-
-    // const statusOptions = [
-    //     { value: 'Draft', label: 'Draft' },
-    //     { value: 'Approved', label: 'Approved' },
-    //     { value: 'Completed', label: 'Completed' },
-    //     { value: 'Cancelled', label: 'Cancelled' },
-    // ] as const;
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
@@ -163,9 +165,37 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Purchase Date</FormLabel>
-                                        <FormControl>
-                                            <Input type="date" {...field} />
-                                        </FormControl>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-[240px] pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -176,9 +206,33 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Due Date</FormLabel>
-                                        <FormControl>
-                                            <Input type="date" {...field} />
-                                        </FormControl>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-[240px] pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                         <FormMessage />
                                     </FormItem>
                                 )}

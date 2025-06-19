@@ -79,7 +79,7 @@ const DashboardPage = async () => {
           <CardContent className="space-y-4">
             <div className="text-2xl font-bold">{formatIDR(salesStats.totalReceivable)}</div>
             <p className="text-sm text-muted-foreground">
-              Of the current sales orders
+              On the current sales orders
             </p>
           </CardContent>
         </Card>

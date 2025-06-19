@@ -136,11 +136,11 @@ export default async function EditPurchasePage({
 
   return (
     <div className="h-min-full m-3 p-5 rounded-md">
-      <div className="p-3">
+      <div className="px-3">
         <div className='text-sm font-light text-gray-400'>
           Purchase
         </div>
-        <div className='mb-10 text-3xl font-semibold'>
+        <div className='mb-6 text-3xl font-semibold'>
           Edit Purchase Order
         </div>
       </div>

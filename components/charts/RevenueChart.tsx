@@ -19,7 +19,7 @@ import { useEffect, useState } from "react"
 
 const chartConfig = {
     sales: {
-        label: "Total Sales ",
+        label: "Total ",
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig

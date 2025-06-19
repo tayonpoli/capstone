@@ -44,7 +44,7 @@ export default async function PosPage() {
                     <div className="text-3xl font-semibold pl-1">
                         Point of Sales
                     </div>
-                    <ScrollArea className="h-full w-full">
+                    <ScrollArea className=" w-full">
                         <div className="grid gap-4 grid-cols-3 xl:grid-cols-4 my-4">
                             {data.map((product) => (
                                 <ProductCard key={product.code} product={product} />

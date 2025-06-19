@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Maumanage",
-  description: "Capstone project",
+  description: "Enterprise System",
 };
 
 export default function RootLayout({
@@ -15,18 +15,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={GeistSans.className}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
           {children}
-          <Toaster />
           <Toaster richColors />
         </ThemeProvider>
       </body>

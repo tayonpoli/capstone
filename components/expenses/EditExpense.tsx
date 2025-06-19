@@ -40,7 +40,7 @@ export function EditExpense({ initialData, suppliers }: any) {
         resolver: zodResolver(expenseSchema),
         defaultValues: {
             ...initialData,
-            purchaseDate: initialData.purchaseDate ? new Date(initialData.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            expenseDate: initialData.expenseDate ? new Date(initialData.expenseDate) : new Date(),
         },
     });
 
@@ -164,7 +164,7 @@ export function EditExpense({ initialData, suppliers }: any) {
                                         disabled={(date) =>
                                             date > new Date() || date < new Date("1900-01-01")
                                         }
-                                        initialFocus
+                                        captionLayout="dropdown"
                                     />
                                 </PopoverContent>
                             </Popover>
