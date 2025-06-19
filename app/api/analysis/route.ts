@@ -37,13 +37,13 @@ export async function POST() {
         }));
 
         const prompt = `
-Kamu adalah analis data penjualan. Berdasarkan data berikut, berikan analisis **dalam bentuk paragraf biasa tanpa format markdown atau simbol**:
-- Ringkasan performa penjualan
-- 3 produk dengan penjualan tertinggi
-- Analisis tren penjualan (jika ada)
-- 3 rekomendasi bisnis
+You are a professional business analyst. Based on this data, give analysis with this format:
+- Summary of sales performance
+- Products with highest sales
+- Market trends analysis
+- Business recommendation for decision making
 
-Data Penjualan (dalam JSON):
+Sales data (in JSON):
 ${JSON.stringify(formatted, null, 2)}
 `;
 
@@ -54,8 +54,8 @@ ${JSON.stringify(formatted, null, 2)}
                 Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
             },
             body: JSON.stringify({
-                model: 'llama3-8b-8192',
-                messages: [{ role: 'user', content: prompt }],
+                model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+                messages: [{ 'role': 'user', 'content': prompt }],
                 temperature: 0.3,
             }),
         });

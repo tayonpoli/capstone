@@ -107,10 +107,12 @@ export async function PUT(
               const isBelowLimit = updatedMaterial.limit && updatedMaterial.stock <= updatedMaterial.limit;
               const isOutOfStock = updatedMaterial.stock <= 0;
 
+              const flooredMaterial = Math.floor(updatedMaterial.stock);
+
               if (isBelowLimit || isOutOfStock) {
                 notificationsToCreate.push({
                   title: `The stock of ${updatedMaterial.product} ${isOutOfStock ? 'is out' : 'is low'}`,
-                  message: `Stock of ${updatedMaterial.product} is ${updatedMaterial.stock} left ${updatedMaterial.unit}. ${updatedMaterial.limit ? `(Limit: ${updatedMaterial.limit})` : ''}`,
+                  message: `Stock of ${updatedMaterial.product} is ${flooredMaterial} left ${updatedMaterial.unit}. ${updatedMaterial.limit ? `(Limit: ${updatedMaterial.limit})` : ''}`,
                   type: 'stock',
                   relatedId: updatedMaterial.id
                 });
@@ -137,10 +139,12 @@ export async function PUT(
             const isBelowLimit = updatedProduct.limit && updatedProduct.stock <= updatedProduct.limit;
             const isOutOfStock = updatedProduct.stock <= 0;
 
+            const flooredStock = Math.floor(updatedProduct.stock);
+
             if (isBelowLimit || isOutOfStock) {
               notificationsToCreate.push({
                 title: `The stock of ${updatedProduct.product} ${isOutOfStock ? 'is out' : 'is low'}`,
-                message: `Stock of ${updatedProduct.product} is ${updatedProduct.stock} left ${updatedProduct.unit}. ${updatedProduct.limit ? `(Limit: ${updatedProduct.limit})` : ''}`,
+                message: `Stock of ${updatedProduct.product} is ${flooredStock} left ${updatedProduct.unit}. ${updatedProduct.limit ? `(Limit: ${updatedProduct.limit})` : ''}`,
                 type: 'stock',
                 relatedId: updatedProduct.id
               });

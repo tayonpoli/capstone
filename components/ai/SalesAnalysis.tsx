@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import { Typewriter } from 'react-simple-typewriter';
 import { Button } from '../ui/button';
 import { Loader2, Sparkles } from 'lucide-react';
@@ -75,22 +76,14 @@ export default function SalesAnalysis() {
                 )}
             </Button>
 
-            {/* {error && (
-                <div className="p-4 mb-6 bg-red-50 text-red-700 rounded-lg">
-                    Error: {error}
-                </div>
-            )} */}
-
             <Dialog open={open} onOpenChange={setOpen}>
-                <ScrollArea>
-                    <DialogContent className=" max-h-[50vh] flex flex-col">
-                        <DialogHeader>
-                            <DialogTitle>Analysis Results</DialogTitle>
-                        </DialogHeader>
-
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Analysis Results</DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea ref={contentRef} className='max-h-[50vh] overflow-y-auto'>
                         <div
-                            ref={contentRef}
-                            className="overflow-y-auto flex-1 py-2 pr-2"
+                            className="flex-1 py-2"
                         >
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
@@ -99,8 +92,9 @@ export default function SalesAnalysis() {
                                 className="prose max-w-none"
                             >
                                 {result && (
-                                    <p className="text-gray-700 whitespace-pre-line">
-                                        <Typewriter
+                                    <div className="whitespace-pre-line">
+                                        <ReactMarkdown>
+                                            {/* <Typewriter
                                             words={[result]}
                                             typeSpeed={15}
                                             deleteSpeed={0}
@@ -112,13 +106,15 @@ export default function SalesAnalysis() {
                                                     contentRef.current.scrollTop = contentRef.current.scrollHeight;
                                                 }
                                             }}
-                                        />
-                                    </p>
+                                        /> */}
+                                            {result}
+                                        </ReactMarkdown>
+                                    </div>
                                 )}
                             </motion.div>
                         </div>
-                    </DialogContent>
-                </ScrollArea>
+                    </ScrollArea>
+                </DialogContent>
             </Dialog>
         </div>
     );

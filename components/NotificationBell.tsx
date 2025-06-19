@@ -11,6 +11,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from './ui/sheet';
+import { ScrollArea } from './ui/scroll-area';
 
 export function NotificationBell({ userId }: { userId: string }) {
     const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -80,7 +81,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                 <SheetHeader>
                     <SheetTitle>Notifications</SheetTitle>
                 </SheetHeader>
-                <div className="mt-2 max-h-[80vh] overflow-y-auto">
+                <ScrollArea className="max-h-[80vh] rounded-md border">
                     {notifications.length === 0 ? (
                         <p className="p-4 text-sm text-center">Tidak ada notifikasi</p>
                     ) : (
@@ -112,7 +113,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                             ))}
                         </ul>
                     )}
-                </div>
+                </ScrollArea>
                 {notifications.length > 0 && (
                     <Button
                         variant="ghost"

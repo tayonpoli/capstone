@@ -57,10 +57,12 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
             if (token) {
                 try {
                     const response = await fetch(`/api/invite?token=${token}`);
+                    const data = await response.json();
                     if (response.ok) {
-                        const data = await response.json();
                         form.setValue('email', data.email);
                         form.setValue('token', token);
+                    } else {
+                        toast.error(data.message)
                     }
                 } catch (error) {
                     console.error('Failed to fetch invitation:', error);
