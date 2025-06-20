@@ -8,8 +8,7 @@ import { formatIDR } from "@/lib/formatCurrency"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ExpenseForm } from "@/components/expenses/CreateExpense"
+import { CreateExpense } from "@/components/expenses/CreateExpense"
 
 async function getData(): Promise<Expenses[]> {
     try {
@@ -115,19 +114,7 @@ export default async function page() {
                 </div>
                 {!isStaff && (
                     <div className="flex justify-end">
-                        <Dialog modal={false}>
-                            <DialogTrigger asChild>
-                                <Button>
-                                    <PlusIcon /> Create New Expenses
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                    <DialogTitle>Expense Details</DialogTitle>
-                                </DialogHeader>
-                                <ExpenseForm suppliers={suppliers} />
-                            </DialogContent>
-                        </Dialog>
+                        <CreateExpense suppliers={suppliers} />
                     </div>
                 )}
             </div>

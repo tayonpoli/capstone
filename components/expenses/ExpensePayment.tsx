@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 const paymentSchema = z.object({
     amount: z.number().min(1, "Amount must be greater than 0"),
@@ -32,13 +34,42 @@ const paymentSchema = z.object({
     }),
 });
 
+interface ExpensePaymentFormProps {
+    expenseId: string;
+    remainingAmount: number;
+    onSuccess?: () => void;
+}
+
+export function PaymentExpenses({ expenseId, remainingAmount }: ExpensePaymentFormProps) {
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    Set Payment
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Payment Details</DialogTitle>
+                </DialogHeader>
+                <ExpensePayment
+                    expenseId={expenseId}
+                    remainingAmount={remainingAmount}
+                    onSuccess={() => setIsOpen(false)}
+                />
+            </DialogContent>
+        </Dialog>
+    )
+}
+
 export function ExpensePayment({
     expenseId,
     remainingAmount,
-}: {
-    expenseId: string;
-    remainingAmount: number;
-}) {
+    onSuccess
+}: ExpensePaymentFormProps) {
     const router = useRouter();
     const form = useForm({
         resolver: zodResolver(paymentSchema),
@@ -65,7 +96,7 @@ export function ExpensePayment({
                 throw new Error("Payment failed");
             }
             toast.success("Payment created successfully!");
-
+            onSuccess?.();
             router.refresh();
         } catch (error) {
             console.error('Payment error', error);
@@ -155,7 +186,7 @@ export function ExpensePayment({
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Payment Date</FormLabel>
-                            <Popover>
+                            <Popover modal={true}>
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button

@@ -5,8 +5,8 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ExpensePayment } from "@/components/expenses/ExpensePayment"
-import { EditExpense } from "@/components/expenses/EditExpense"
+import { ExpensePayment, PaymentExpenses } from "@/components/expenses/ExpensePayment"
+import { EditExpenses } from "@/components/expenses/EditExpense"
 
 export default async function CustomerDetailPage({
     params,
@@ -48,40 +48,16 @@ export default async function CustomerDetailPage({
             <div className='fixed bottom-16 right-14 space-x-4'>
                 {!isStaff && (
                     <>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button>
-                                    Edit
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                    <DialogTitle>Edit Expenses</DialogTitle>
-                                </DialogHeader>
-                                <EditExpense
-                                    initialData={expenses}
-                                    suppliers={suppliers}
-                                />
-                            </DialogContent>
-                        </Dialog>
+                        <EditExpenses
+                            initialData={expenses}
+                            suppliers={suppliers}
+                        />
 
                         {!isPaid && (
-                            <Dialog modal={false}>
-                                <DialogTrigger asChild>
-                                    <Button>
-                                        Set Payment
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px]">
-                                    <DialogHeader>
-                                        <DialogTitle>Payment Details</DialogTitle>
-                                    </DialogHeader>
-                                    <ExpensePayment
-                                        expenseId={id}
-                                        remainingAmount={remainingAmount}
-                                    />
-                                </DialogContent>
-                            </Dialog>
+                            <PaymentExpenses
+                                expenseId={id}
+                                remainingAmount={remainingAmount}
+                            />
                         )}
                     </>
                 )}

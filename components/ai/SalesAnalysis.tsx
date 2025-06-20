@@ -79,9 +79,12 @@ export default function SalesAnalysis() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Analysis Results</DialogTitle>
+                        <DialogTitle>
+                            <Sparkles className="h-5 w-5 text-primary" />
+                            Analysis Results
+                        </DialogTitle>
                     </DialogHeader>
-                    <ScrollArea ref={contentRef} className='max-h-[50vh] overflow-y-auto'>
+                    <ScrollArea ref={contentRef} className='max-h-[50vh] overflow-y-auto border-t py-2'>
                         <div
                             className="flex-1 py-2"
                         >

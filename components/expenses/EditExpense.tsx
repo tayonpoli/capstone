@@ -19,9 +19,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PlusIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { Textarea } from "../ui/textarea";
+import { Supplier } from "@prisma/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { useState } from "react";
 
 const expenseSchema = z.object({
     supplierId: z.string().min(1, 'Customer is required'),
@@ -33,8 +36,36 @@ const expenseSchema = z.object({
     }),
 });
 
+interface EditExpensesFormProps {
+    initialData: any;
+    suppliers: Supplier[];
+    onSuccess?: () => void;
+}
 
-export function EditExpense({ initialData, suppliers }: any) {
+export function EditExpenses({ initialData, suppliers }: EditExpensesFormProps) {
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button>Edit</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Edit Expenses</DialogTitle>
+                </DialogHeader>
+                <EditExpense
+                    initialData={initialData}
+                    suppliers={suppliers}
+                    onSuccess={() => setIsOpen(false)}
+                />
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+export function EditExpense({ initialData, suppliers, onSuccess }: EditExpensesFormProps) {
     const router = useRouter();
     const form = useForm({
         resolver: zodResolver(expenseSchema),
@@ -58,8 +89,8 @@ export function EditExpense({ initialData, suppliers }: any) {
                 throw new Error("Failed to edit the expenses");
             }
             toast.success("Expenses edited successfully!");
-
-            router.push('/expenses');
+            onSuccess?.();
+            router.refresh();
         } catch (error) {
             console.error('Expenses error', error);
             toast.error("Expenses failed");
@@ -135,9 +166,9 @@ export function EditExpense({ initialData, suppliers }: any) {
                     control={form.control}
                     name='expenseDate'
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col">
                             <FormLabel>Expense Date</FormLabel>
-                            <Popover>
+                            <Popover modal={true}>
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button
@@ -156,6 +187,7 @@ export function EditExpense({ initialData, suppliers }: any) {
                                         </Button>
                                     </FormControl>
                                 </PopoverTrigger>
+                                {/* Fix: Add higher z-index and portal for dialog compatibility */}
                                 <PopoverContent className="w-auto p-0" align="start">
                                     <Calendar
                                         mode="single"

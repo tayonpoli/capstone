@@ -19,10 +19,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PlusIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { Supplier } from "@prisma/client";
 import { Textarea } from "../ui/textarea";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 const expenseSchema = z.object({
     supplierId: z.string().min(1, 'Customer is required'),
@@ -36,9 +38,38 @@ const expenseSchema = z.object({
 
 type CreateExpenseFormProps = {
     suppliers: Supplier[];
+    onSuccess?: () => void;
 };
 
-export function ExpenseForm({ suppliers }: CreateExpenseFormProps) {
+export function CreateExpense({
+    suppliers
+}: {
+    suppliers: any
+}) {
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    <PlusIcon /> Create New Expenses
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Expense Details</DialogTitle>
+                </DialogHeader>
+                <ExpenseForm
+                    suppliers={suppliers}
+                    onSuccess={() => setIsOpen(false)}
+                />
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+export function ExpenseForm({ suppliers, onSuccess }: CreateExpenseFormProps) {
     const router = useRouter();
     const form = useForm({
         resolver: zodResolver(expenseSchema),
@@ -65,7 +96,7 @@ export function ExpenseForm({ suppliers }: CreateExpenseFormProps) {
                 throw new Error("Failed to create the expenses");
             }
             toast.success("Expenses created successfully!");
-
+            onSuccess?.();
             router.refresh();
         } catch (error) {
             console.error('Expenses error', error);
@@ -144,7 +175,7 @@ export function ExpenseForm({ suppliers }: CreateExpenseFormProps) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Expense Date</FormLabel>
-                            <Popover>
+                            <Popover modal={true}>
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button

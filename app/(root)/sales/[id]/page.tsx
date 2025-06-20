@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Undo2Icon } from "lucide-react";
 import { ReportButton } from "@/components/reports/ReportButton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { SalesPayment } from "@/components/sales/SalesPayment";
+import { PaymentSales } from "@/components/sales/SalesPayment";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -80,22 +79,10 @@ export default async function SalesDetailPage({
                 )}
 
                 {!isPaid && (
-                    <Dialog modal={false}>
-                        <DialogTrigger asChild>
-                            <Button>
-                                Set Payment
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle>Payment Details</DialogTitle>
-                            </DialogHeader>
-                            <SalesPayment
-                                salesId={id}
-                                remainingAmount={remainingAmount}
-                            />
-                        </DialogContent>
-                    </Dialog>
+                    <PaymentSales
+                        salesId={id}
+                        remainingAmount={remainingAmount}
+                    />
                 )}
             </div>
         </div>

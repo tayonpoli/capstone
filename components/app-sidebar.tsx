@@ -33,8 +33,8 @@ export function AppSidebar({ session }: AppSidebarProps) {
       //   url: "/ai",
       //   icon: Sparkles,
       // }] : []),
-      { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Point of Sales", url: "/pos", icon: Keyboard },
+      { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
       ...(isAdminOwner ? [
         { title: "Expenses", url: "/expenses", icon: CreditCard },
