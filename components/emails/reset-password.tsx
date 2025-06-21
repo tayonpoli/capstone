@@ -27,7 +27,7 @@ export const ResetPasswordEmail = ({
         <Html>
             <Head />
             <Body style={main}>
-                <Preview>Reset password untuk akun MauManage Anda</Preview>
+                <Preview>Reset password for your MauManage account</Preview>
                 <Container style={container}>
                     <Img
                         src={`${baseUrl}/images/logo.png`}

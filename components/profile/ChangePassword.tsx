@@ -16,25 +16,27 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Pen } from "lucide-react";
 
-const editProfileSchema = z.object({
-    name: z.string().min(1, 'User name is required'),
-    email: z.string().min(1, 'Email is required'),
-    phone: z.string().optional(),
-    address: z.string().optional(),
-});
+const changePasswordSchema = z.object({
+    oldPassword: z.string().min(8, 'The old password minimal 8 characters'),
+    password: z.string().min(8, "The password minimal 8 characters"),
+    confirmPassword: z.string()
+}).refine(data => data.password === data.confirmPassword, {
+    message: "Password not match",
+    path: ["confirmPassword"]
+})
 
-interface EditProfileProps {
-    initialData: any;
+interface ChangePasswordProps {
+    id: string,
     onSuccess?: () => void;
 }
 
-export function ProfileCard({
-    profile
+export function ChangePasswordCard({
+    id
 }: {
-    profile: any
+    id: string
 }) {
 
     const [isOpen, setIsOpen] = useState(false);
@@ -42,17 +44,16 @@ export function ProfileCard({
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">
-                    Edit
-                    <Pen />
+                <Button>
+                    Change Password
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader className="mb-3">
-                    <DialogTitle>Edit Profile</DialogTitle>
+                    <DialogTitle>Change Password</DialogTitle>
                 </DialogHeader>
-                <EditProfile
-                    initialData={profile}
+                <ChangePassword
+                    id={id}
                     onSuccess={() => setIsOpen(false)}
                 />
             </DialogContent>
@@ -60,37 +61,45 @@ export function ProfileCard({
     )
 }
 
-export function EditProfile({ initialData, onSuccess }: EditProfileProps) {
+export function ChangePassword({ id, onSuccess }: ChangePasswordProps) {
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false)
+
     const form = useForm({
-        resolver: zodResolver(editProfileSchema),
+        resolver: zodResolver(changePasswordSchema),
         defaultValues: {
-            name: initialData.name || '',
-            email: initialData.email || '',
-            phone: initialData.phone || '',
-            address: initialData.address || '',
+            oldPassword: '',
+            password: '',
+            confirmPassword: ''
         },
     });
 
-    async function onSubmit(values: z.infer<typeof editProfileSchema>) {
+    async function onSubmit(values: z.infer<typeof changePasswordSchema>) {
         try {
-            const response = await fetch(`/api/user/${initialData.id}`, {
+            const response = await fetch(`/api/auth/reset-password/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(values),
+                body: JSON.stringify({
+                    oldPassword: values.oldPassword,
+                    password: values.password
+                }),
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to edit the profile");
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success(data.message || "Password change successfully!");
+                onSuccess?.();
+                router.refresh();
+            } else {
+                toast.error(data.error || "Ooops! Something went wrong!");
+                throw new Error(data.error || "Chaneg password failed");
             }
-            toast.success("Profile edited successfully!");
-            onSuccess?.(); // Call onSuccess if it exists
-            router.refresh();
         } catch (error) {
             console.error('Profile error', error);
-            toast.error("Edit profile failed");
+            toast.error("Change password failed");
         }
     }
 
@@ -99,14 +108,16 @@ export function EditProfile({ initialData, onSuccess }: EditProfileProps) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
-                    name="name"
+                    name="oldPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Full name</FormLabel>
+                            <FormLabel>Old Password</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="Enter your full name"
+                                    type="password"
+                                    placeholder="••••••"
                                     {...field}
+                                    disabled={isLoading}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -115,14 +126,16 @@ export function EditProfile({ initialData, onSuccess }: EditProfileProps) {
                 />
                 <FormField
                     control={form.control}
-                    name="email"
+                    name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>New Password</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="Enter your email"
+                                    type="password"
+                                    placeholder="••••••"
                                     {...field}
+                                    disabled={isLoading}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -131,38 +144,28 @@ export function EditProfile({ initialData, onSuccess }: EditProfileProps) {
                 />
                 <FormField
                     control={form.control}
-                    name="phone"
+                    name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Phone number</FormLabel>
+                            <FormLabel>Confirm Password</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="+62 123456789"
+                                    type="password"
+                                    placeholder="••••••"
                                     {...field}
+                                    disabled={isLoading}
                                 />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Address</FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder="Enter your address"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" className="w-full">
-                    Edit Profile
+                <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isLoading}
+                >
+                    {isLoading ? "Processing..." : "Change Password"}
                 </Button>
             </form>
         </Form>

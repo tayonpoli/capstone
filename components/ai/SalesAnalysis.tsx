@@ -22,7 +22,6 @@ export default function SalesAnalysis() {
     const [open, setOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll effect
     useEffect(() => {
         if (contentRef.current && result) {
             contentRef.current.scrollTop = contentRef.current.scrollHeight;
@@ -79,15 +78,12 @@ export default function SalesAnalysis() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>
-                            <Sparkles className="h-5 w-5 text-primary" />
-                            Analysis Results
+                        <DialogTitle className='flex items-center gap-2'>
+                            <Sparkles className='text-primary' /> Analysis Results
                         </DialogTitle>
                     </DialogHeader>
                     <ScrollArea ref={contentRef} className='max-h-[50vh] overflow-y-auto border-t py-2'>
-                        <div
-                            className="flex-1 py-2"
-                        >
+                        <div className="flex-1 py-2">
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}

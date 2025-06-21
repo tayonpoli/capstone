@@ -151,7 +151,7 @@ export default async function page() {
                     </CardContent>
                 </Card>
             </div>
-            <div className="container mx-auto py-8">
+            <div className="container mx-auto py-4">
                 <DataTable
                     columns={columns}
                     data={data}

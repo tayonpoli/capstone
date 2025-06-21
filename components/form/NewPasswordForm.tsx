@@ -96,15 +96,15 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
             <div>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-center">Token Tidak Valid</CardTitle>
+                        <CardTitle className="text-center">Invalid token</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className="text-center text-sm text-muted-foreground">
-                            Link reset password tidak valid atau sudah kadaluarsa.
+                            Invalid link for reset password.
                         </p>
                         <Button asChild className="w-full mt-4">
                             <Link href="/auth/forgot-password">
-                                Minta link reset baru
+                                Ask for new link
                             </Link>
                         </Button>
                     </CardContent>
@@ -124,7 +124,7 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password Baru</FormLabel>
+                            <FormLabel>New Password</FormLabel>
                             <FormControl>
                                 <Input
                                     type="password"
@@ -142,7 +142,7 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
                     name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Konfirmasi Password</FormLabel>
+                            <FormLabel>Confirm Password</FormLabel>
                             <FormControl>
                                 <Input
                                     type="password"

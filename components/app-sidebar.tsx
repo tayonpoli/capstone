@@ -28,11 +28,6 @@ export function AppSidebar({ session }: AppSidebarProps) {
     },
     navMain: [
       { title: "Overview", url: "/", icon: Waypoints },
-      // ...(isAdminOwner ? [{
-      //   title: "AI",
-      //   url: "/ai",
-      //   icon: Sparkles,
-      // }] : []),
       { title: "Point of Sales", url: "/pos", icon: Keyboard },
       { title: "Sales", url: "/sales", icon: ShoppingBasket },
       { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
@@ -43,19 +38,6 @@ export function AppSidebar({ session }: AppSidebarProps) {
       ...(isAdminOwner ? [
         { title: "Production", url: "/production", icon: Boxes },
       ] : []),
-      // { title: "Customers", url: "/customer", icon: UsersRound },
-      // ...(isAdminOwner ? [
-      //   {
-      //     title: "Staff",
-      //     url: "/staff",
-      //     icon: UsersRound,
-      //   },
-      //   {
-      //     title: "Suppliers",
-      //     url: "/supplier",
-      //     icon: UsersRound
-      //   },
-      // ] : []),
     ],
     projects: [
       { title: "Customers", url: "/customer", icon: UsersRound },
@@ -73,7 +55,6 @@ export function AppSidebar({ session }: AppSidebarProps) {
       ] : []),
     ],
     navSecondary: [
-      // { title: "Settings", url: "#", icon: LifeBuoy },
       ...(isOwner ? [{
         title: "User Management",
         url: "/user",

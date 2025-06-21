@@ -17,6 +17,8 @@ export async function PUT(
                 data: {
                     name: body.name,
                     email: body.email,
+                    phone: body.phone,
+                    address: body.address,
                 },
             });
 

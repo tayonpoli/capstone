@@ -1,3 +1,4 @@
+import { ChangePasswordCard } from "@/components/profile/ChangePassword";
 import { CompanyCard } from "@/components/profile/EditCompany";
 import { ProfileCard } from "@/components/profile/EditProfile";
 import { Badge } from "@/components/ui/badge";
@@ -67,13 +68,13 @@ export default async function ProfilePage() {
                             <CardDescription>
                                 Phone
                             </CardDescription>
-                            <Label className="text-md font-medium">+62 123456789</Label>
+                            <Label className="text-md font-medium">{profile?.phone || "-"}</Label>
                         </div>
                         <div className="space-y-1">
                             <CardDescription>
                                 Address
                             </CardDescription>
-                            <Label className="text-md font-medium">Jl. Raya Mustikasari</Label>
+                            <Label className="text-md font-medium">{profile?.address || "-"}</Label>
                         </div>
                     </div>
                     <div className="space-y-1">
@@ -131,17 +132,15 @@ export default async function ProfilePage() {
             <Card className="my-4">
                 <CardHeader>
                     <CardTitle>
-                        Reset Password
+                        Change Password
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                     <CardDescription>
-                        You can change your password by filling the registered email.
+                        You can change your password account here.
                     </CardDescription>
                     <Button asChild>
-                        <Link href="/forgot-password">
-                            Change Password
-                        </Link>
+                        <ChangePasswordCard id={session.user.id} />
                     </Button>
                 </CardContent>
             </Card>

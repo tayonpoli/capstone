@@ -16,6 +16,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { ScrollArea } from "../ui/scroll-area"
 
 // Define validation schema
 const orderFormSchema = z.object({
@@ -108,13 +109,14 @@ export function OrderSummary({ userId }: OrderSummaryProps) {
                         <CardHeader>
                             <CardTitle>Order Summary</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 mt-2">
                             {/* Customer Name Field */}
                             <FormField
                                 control={form.control}
                                 name="customerName"
                                 render={({ field }) => (
                                     <FormItem>
+                                        <FormLabel>Customer name</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Input the customer name"
@@ -125,29 +127,30 @@ export function OrderSummary({ userId }: OrderSummaryProps) {
                                     </FormItem>
                                 )}
                             />
-
-                            <div className="space-y-2 mt-6">
-                                {items.length > 0 ? (
-                                    items.map(item => (
-                                        <div key={item.code} className="flex justify-between">
-                                            <div>
-                                                <span className="font-medium">{item.product}</span>
-                                                <span className="text-sm text-gray-500 ml-2">
-                                                    x{item.quantity}
-                                                </span>
+                            <ScrollArea className='max-h-[70vh] overflow-y-auto border-t'>
+                                <div className="space-y-2 mt-2">
+                                    {items.length > 0 ? (
+                                        items.map(item => (
+                                            <div key={item.code} className="flex justify-between md:text-sm xl:text-base">
+                                                <div>
+                                                    <span className="font-medium">{item.product}</span>
+                                                    <span className="text-sm text-gray-500 ml-2">
+                                                        x{item.quantity}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    Rp {((item.sellprice || 0) * (item.quantity ?? 0)).toLocaleString('id-ID')}
+                                                </div>
                                             </div>
-                                            <div>
-                                                Rp {((item.sellprice || 0) * (item.quantity ?? 0)).toLocaleString('id-ID')}
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="text-gray-500">No products</p>
-                                )}
-                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-500">No products</p>
+                                    )}
+                                </div>
+                            </ScrollArea>
 
                             <div className="border-t pt-4">
-                                <div className="flex justify-between font-semibold text-lg">
+                                <div className="flex justify-between font-semibold md:text-base xl:text-lg">
                                     <span>Total</span>
                                     <span>Rp {total.toLocaleString('id-ID')}</span>
                                 </div>
