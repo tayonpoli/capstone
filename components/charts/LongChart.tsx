@@ -27,7 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { formatIDR } from "@/lib/formatCurrency"
 
 interface ChartData {
   date: string
@@ -44,7 +43,7 @@ const chartConfig = {
     color: "hsl(var(--chart-1))",
   },
   expenses: {
-    label: "Expenses",
+    label: "Purchases",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
@@ -146,7 +145,7 @@ export function LongChart() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Revenue & Expenses</CardTitle>
+          <CardTitle>Revenue & Purchases</CardTitle>
         </CardHeader>
         <CardContent className="flex h-[300px] items-center justify-center">
           <div className="text-center text-red-500">{error}</div>
@@ -159,13 +158,13 @@ export function LongChart() {
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 border-b sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Revenue & Expenses</CardTitle>
+          <CardTitle>Revenue & Purchases</CardTitle>
           <CardDescription>
             {timeRange === "7d"
-              ? "Showing revenue and expenses for the last 7 days"
+              ? "Showing revenue and purchases for the last 7 days"
               : timeRange === "30d"
-                ? "Showing revenue and expenses for the last 30 days"
-                : "Showing revenue and expenses for the last 3 months"}
+                ? "Showing revenue and purchases for the last 30 days"
+                : "Showing revenue and purchases for the last 3 months"}
           </CardDescription>
         </div>
         <Select

@@ -9,6 +9,7 @@ import { getSalesStats } from "./sales/page";
 import { formatIDR } from "@/lib/formatCurrency";
 import { getPurchaseStats } from "./purchase/page";
 import SalesAnalysis from "@/components/ai/SalesAnalysis";
+import { ExpensesPieChart } from "@/components/charts/PieChart";
 
 
 const DashboardPage = async () => {
@@ -49,7 +50,7 @@ const DashboardPage = async () => {
             Rp
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-2xl font-bold tabular-nums">{formatIDR(salesStats.totalRevenue)}</div>
+            <div className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">{formatIDR(salesStats.totalRevenue)}</div>
             <p className="text-sm text-muted-foreground">
               From current sales orders
             </p>
@@ -63,7 +64,7 @@ const DashboardPage = async () => {
             Rp
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-2xl font-bold">{formatIDR(stats.totalExpense)}</div>
+            <div className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">{formatIDR(stats.totalExpense)}</div>
             <p className="text-sm text-muted-foreground">
               From expenses and purchase orders
             </p>
@@ -77,7 +78,7 @@ const DashboardPage = async () => {
             Rp
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-2xl font-bold">{formatIDR(salesStats.totalReceivable)}</div>
+            <div className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">{formatIDR(salesStats.totalReceivable)}</div>
             <p className="text-sm text-muted-foreground">
               On the current sales orders
             </p>
@@ -91,19 +92,22 @@ const DashboardPage = async () => {
             Rp
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-2xl font-bold">{formatIDR(stats.totalPayable)}</div>
+            <div className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">{formatIDR(stats.totalPayable)}</div>
             <p className="text-sm text-muted-foreground">
               On the current purchase orders
             </p>
           </CardContent>
         </Card>
       </div>
-      <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4 items-start p-3'>
-        <div className="col-span-4">
+      <div className='space-y-6 grid gap-4 md:grid-cols-2 xl:grid-cols-6 my-4 items-start p-3'>
+        <div className="md:col-span-2 xl:col-span-6">
           <LongChart />
         </div>
         <div className="col-span-2">
           <DailySalesChart />
+        </div>
+        <div className="col-span-2">
+          <ExpensesPieChart />
         </div>
         <div className="col-span-2">
           <RecentTransactions />

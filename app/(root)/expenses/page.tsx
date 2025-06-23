@@ -184,7 +184,9 @@ export default async function page() {
                             title: "Category",
                             options: [
                                 { label: "Electricity", value: "Electricity" },
-                                { label: "Unpaid", value: "Unpaid" },
+                                { label: "Rent", value: "Rent" },
+                                { label: "Utilities", value: "Utilities" },
+                                { label: "Other", value: "Other" },
                             ],
                         },
                     ]}

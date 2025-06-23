@@ -140,12 +140,14 @@ export function ExpenseForm({ suppliers, onSuccess }: CreateExpenseFormProps) {
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                     <SelectTrigger className='w-full'>
-                                        <SelectValue placeholder="Select sales tag" />
+                                        <SelectValue placeholder="Select expenses category" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
                                     <SelectItem value="Electricity">Electricity</SelectItem>
                                     <SelectItem value="Rent">Rent</SelectItem>
+                                    <SelectItem value="Utilities">Utilities</SelectItem>
+                                    <SelectItem value="Other">Other</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />
@@ -173,7 +175,7 @@ export function ExpenseForm({ suppliers, onSuccess }: CreateExpenseFormProps) {
                     control={form.control}
                     name='expenseDate'
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col">
                             <FormLabel>Expense Date</FormLabel>
                             <Popover modal={true}>
                                 <PopoverTrigger asChild>
@@ -202,6 +204,7 @@ export function ExpenseForm({ suppliers, onSuccess }: CreateExpenseFormProps) {
                                         disabled={(date) =>
                                             date > new Date() || date < new Date("1900-01-01")
                                         }
+                                        captionLayout="dropdown"
                                     />
                                 </PopoverContent>
                             </Popover>

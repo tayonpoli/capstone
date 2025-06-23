@@ -47,7 +47,7 @@ export default async function page() {
     const stats = await getContactStats();
 
     return (
-        <div className="min-h-screen m-3 p-5 rounded-md">
+        <div className="h-full m-3 p-5 rounded-md">
             <div className="grid grid-cols-2 mb-8">
                 <div className="pl-1">
                     <p className='text-sm font-light text-gray-400'>

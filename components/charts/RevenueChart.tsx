@@ -39,7 +39,6 @@ export function DailySalesChart() {
                     sales: item.sales
                 })))
 
-                console.log('Chart data:', data)
             } finally {
                 setLoading(false)
             }
@@ -84,7 +83,7 @@ export function DailySalesChart() {
                         <Bar
                             dataKey="sales"
                             fill="hsl(var(--chart-1))"
-                            radius={[6, 6, 0, 0]}
+                            radius={8}
                             barSize={56}
                         />
                     </BarChart>

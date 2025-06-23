@@ -86,7 +86,7 @@ export function EditProfile({ initialData, onSuccess }: EditProfileProps) {
                 throw new Error("Failed to edit the profile");
             }
             toast.success("Profile edited successfully!");
-            onSuccess?.(); // Call onSuccess if it exists
+            onSuccess?.();
             router.refresh();
         } catch (error) {
             console.error('Profile error', error);

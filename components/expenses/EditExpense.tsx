@@ -139,6 +139,8 @@ export function EditExpense({ initialData, suppliers, onSuccess }: EditExpensesF
                                 <SelectContent>
                                     <SelectItem value="Electricity">Electricity</SelectItem>
                                     <SelectItem value="Rent">Rent</SelectItem>
+                                    <SelectItem value="Utilities">Utilities</SelectItem>
+                                    <SelectItem value="Other">Other</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />

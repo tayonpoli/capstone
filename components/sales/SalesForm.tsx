@@ -68,13 +68,6 @@ export function CreateSalesForm({ customers, products }: CreateSalesFormProps) {
         },
     });
 
-    // const statusOptions = [
-    //     { value: 'Draft', label: 'Draft' },
-    //     { value: 'Approved', label: 'Approved' },
-    //     { value: 'Completed', label: 'Completed' },
-    //     { value: 'Cancelled', label: 'Cancelled' },
-    // ] as const;
-
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
             const response = await fetch('/api/sales', {
@@ -118,7 +111,20 @@ export function CreateSalesForm({ customers, products }: CreateSalesFormProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Customer</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={(value) => {
+                                            field.onChange(value);
+
+                                            const selectedCustomer = customers.find(s => s.id === value);
+
+                                            if (selectedCustomer && selectedCustomer.email) {
+                                                form.setValue('email', selectedCustomer.email);
+                                            }
+
+                                            if (selectedCustomer && selectedCustomer.address) {
+                                                form.setValue('address', selectedCustomer.address);
+                                            }
+                                        }}
+                                            defaultValue={field.value}>
                                             <FormControl className='w-full'>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select customer" />

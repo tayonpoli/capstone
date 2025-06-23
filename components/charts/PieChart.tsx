@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { Label, Pie, PieChart, Sector } from "recharts"
 import { PieSectorDataItem } from "recharts/types/polar/Pie"
 
@@ -8,6 +7,7 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -25,78 +25,203 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-const desktopData = [
-    { month: "january", desktop: 186, fill: "var(--color-january)" },
-    { month: "february", desktop: 305, fill: "var(--color-february)" },
-    { month: "march", desktop: 237, fill: "var(--color-march)" },
-    { month: "april", desktop: 173, fill: "var(--color-april)" },
-    { month: "may", desktop: 209, fill: "var(--color-may)" },
-]
+import { Skeleton } from "@/components/ui/skeleton"
+import { useEffect, useMemo, useState } from "react"
+import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 
+// Default chart configuration
 const chartConfig = {
-    visitors: {
-        label: "Customers",
+    expenses: {
+        label: "Expenses",
     },
-    desktop: {
-        label: "Online",
-    },
-    mobile: {
-        label: "On-Store",
-    },
-    january: {
-        label: "January",
+    Electricity: {
+        label: "Electricity",
         color: "hsl(var(--chart-1))",
     },
-    february: {
-        label: "February",
+    Rent: {
+        label: "Rent",
         color: "hsl(var(--chart-2))",
     },
-    march: {
-        label: "March",
+    Utilities: {
+        label: "Utilities",
         color: "hsl(var(--chart-3))",
     },
-    april: {
-        label: "April",
+    Other: {
+        label: "Other",
         color: "hsl(var(--chart-4))",
-    },
-    may: {
-        label: "May",
-        color: "hsl(var(--chart-5))",
     },
 } satisfies ChartConfig
 
-export function PieCharts() {
-    const id = "pie-interactive"
-    const [activeMonth, setActiveMonth] = React.useState(desktopData[0].month)
+// Simplified type definitions
+interface ExpenseCategory {
+    category: string
+    total: number
+    fill: string
+}
 
-    const activeIndex = React.useMemo(
-        () => desktopData.findIndex((item) => item.month === activeMonth),
-        [activeMonth]
+interface ExpenseApiResponse {
+    categories: ExpenseCategory[]
+    percentageChange: number
+}
+
+export function ExpensesPieChart() {
+    const id = "expenses-pie-chart"
+    const [activeCategory, setActiveCategory] = useState<string>("")
+    const [data, setData] = useState<ExpenseCategory[]>([])
+    const [percentageChange, setPercentageChange] = useState<number>(0)
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    // Fetch expense data from API
+    useEffect(() => {
+        async function fetchExpenseData() {
+            try {
+                setIsLoading(true)
+                setError(null)
+
+                const response = await fetch('/api/livechart/expenses')
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+
+                const apiData: ExpenseApiResponse = await response.json()
+
+                if (!apiData || !apiData.categories || !Array.isArray(apiData.categories)) {
+                    throw new Error("Invalid data format received from API")
+                }
+
+                setData(apiData.categories)
+                setPercentageChange(apiData.percentageChange || 0)
+
+                if (apiData.categories.length > 0) {
+                    setActiveCategory(apiData.categories[0].category)
+                }
+            } catch (err) {
+                console.error("Failed to fetch expense data:", err)
+                setError(err instanceof Error ? err.message : "Failed to load data")
+                setData([])
+                setPercentageChange(0)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchExpenseData()
+    }, [])
+
+    const activeIndex = useMemo(
+        () => data.findIndex((item) => item.category === activeCategory),
+        [activeCategory, data]
     )
-    const months = React.useMemo(() => desktopData.map((item) => item.month), [])
+
+    const categories = useMemo(() => data.map((item) => item.category), [data])
+
+    // Format currency
+    const formatCurrency = (amount: number) => {
+        return amount.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        })
+    }
+
+    // Get trend info based on percentage change
+    const getTrendInfo = () => {
+        if (percentageChange > 0) {
+            return {
+                icon: TrendingUp,
+                color: "text-red-500",
+                text: `Trending up by ${Math.abs(percentageChange)}% this month`
+            }
+        } else if (percentageChange < 0) {
+            return {
+                icon: TrendingDown,
+                color: "text-green-500",
+                text: `Trending down by ${Math.abs(percentageChange)}% this month`
+            }
+        } else {
+            return {
+                icon: Minus,
+                color: "text-muted-foreground",
+                text: "No change this month"
+            }
+        }
+    }
+
+    if (isLoading) {
+        return (
+            <Card className="flex flex-col">
+                <CardHeader className="flex-row items-start space-y-0 pb-0">
+                    <div className="grid gap-1">
+                        <CardTitle>Expenses by Category</CardTitle>
+                        <CardDescription>Loading expense data...</CardDescription>
+                    </div>
+                    <Skeleton className="ml-auto h-7 w-[130px] rounded-lg" />
+                </CardHeader>
+                <CardContent className="flex flex-1 justify-center pb-0">
+                    <Skeleton className="mx-auto aspect-square w-full max-w-[300px] rounded-full" />
+                </CardContent>
+            </Card>
+        )
+    }
+
+    if (error) {
+        return (
+            <Card className="flex flex-col">
+                <CardHeader className="flex-row items-start space-y-0 pb-0">
+                    <div className="grid gap-1">
+                        <CardTitle>Expenses by Category</CardTitle>
+                        <CardDescription className="text-destructive">
+                            Error: {error}
+                        </CardDescription>
+                    </div>
+                </CardHeader>
+                <CardContent className="flex flex-1 items-center justify-center pb-0 text-destructive">
+                    Failed to load expense data. Please try again later.
+                </CardContent>
+            </Card>
+        )
+    }
+
+    if (data.length === 0) {
+        return (
+            <Card className="flex flex-col">
+                <CardHeader className="flex-row items-start space-y-0 pb-0">
+                    <div className="grid gap-1">
+                        <CardTitle>Expenses by Category</CardTitle>
+                        <CardDescription>No expense data available</CardDescription>
+                    </div>
+                </CardHeader>
+                <CardContent className="flex flex-1 items-center justify-center pb-0 text-muted-foreground">
+                    No expense records found
+                </CardContent>
+            </Card>
+        )
+    }
+
+    const trendInfo = getTrendInfo()
+    const TrendIcon = trendInfo.icon
 
     return (
         <Card data-chart={id} className="flex flex-col">
             <ChartStyle id={id} config={chartConfig} />
             <CardHeader className="flex-row items-start space-y-0 pb-0">
                 <div className="grid gap-1">
-                    <CardTitle>Customers</CardTitle>
-                    <CardDescription>January - June 2024</CardDescription>
+                    <CardTitle>Monthly Expenses</CardTitle>
+                    <CardDescription>Showing expenses by category</CardDescription>
                 </div>
-                <Select value={activeMonth} onValueChange={setActiveMonth}>
+                <Select value={activeCategory} onValueChange={setActiveCategory}>
                     <SelectTrigger
                         className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
-                        aria-label="Select a value"
+                        aria-label="Select a category"
                     >
-                        <SelectValue placeholder="Select month" />
+                        <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent align="end" className="rounded-xl">
-                        {months.map((key) => {
+                        {categories.map((key) => {
                             const config = chartConfig[key as keyof typeof chartConfig]
-
-                            if (!config) {
-                                return null
-                            }
 
                             return (
                                 <SelectItem
@@ -106,7 +231,7 @@ export function PieCharts() {
                                 >
                                     <div className="flex items-center gap-2 text-xs">
                                         <span
-                                            className="flex h-3 w-3 shrink-0 rounded-sm"
+                                            className="flex h-3 w-3 shrink-0 rounded-xs"
                                             style={{
                                                 backgroundColor: `var(--color-${key})`,
                                             }}
@@ -119,11 +244,11 @@ export function PieCharts() {
                     </SelectContent>
                 </Select>
             </CardHeader>
-            <CardContent className="flex flex-1 justify-center pb-0">
+            <CardContent className="flex flex-1 justify-center items-center gap-2 pb-6">
                 <ChartContainer
                     id={id}
                     config={chartConfig}
-                    className="mx-auto aspect-square w-full max-w-[300px]"
+                    className="mx-auto aspect-square w-full max-w-[300px] max-h-[250px]"
                 >
                     <PieChart>
                         <ChartTooltip
@@ -131,9 +256,9 @@ export function PieCharts() {
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Pie
-                            data={desktopData}
-                            dataKey="desktop"
-                            nameKey="month"
+                            data={data}
+                            dataKey="total"
+                            nameKey="category"
                             innerRadius={60}
                             strokeWidth={5}
                             activeIndex={activeIndex}
@@ -154,6 +279,12 @@ export function PieCharts() {
                             <Label
                                 content={({ viewBox }) => {
                                     if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                        const activeItem = data[activeIndex];
+                                        const total = data.reduce((sum, item) => sum + item.total, 0);
+                                        const percentage = total > 0
+                                            ? Math.round((activeItem.total / total) * 100)
+                                            : 0;
+
                                         return (
                                             <text
                                                 x={viewBox.cx}
@@ -166,24 +297,38 @@ export function PieCharts() {
                                                     y={viewBox.cy}
                                                     className="fill-foreground text-3xl font-bold"
                                                 >
-                                                    {desktopData[activeIndex].desktop.toLocaleString()}
-                                                </tspan>
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 24}
-                                                    className="fill-muted-foreground"
-                                                >
-                                                    Customers
+                                                    {percentage}%
                                                 </tspan>
                                             </text>
                                         )
                                     }
+                                    return null;
                                 }}
                             />
                         </Pie>
                     </PieChart>
                 </ChartContainer>
+                <div className="text-center">
+                    {data[activeIndex] && (
+                        <>
+                            <div className="text-2xl font-bold">
+                                {formatCurrency(data[activeIndex].total)}
+                            </div>
+                            <div className="text-muted-foreground">
+                                {chartConfig[data[activeIndex].category as keyof typeof chartConfig]?.label || 'Other'}
+                            </div>
+                        </>
+                    )}
+                </div>
             </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+                <div className={`flex items-center gap-2 leading-none font-medium ${trendInfo.color}`}>
+                    {trendInfo.text} <TrendIcon className="h-4 w-4" />
+                </div>
+                <div className="text-muted-foreground leading-none">
+                    Showing total expenses for this current month
+                </div>
+            </CardFooter>
         </Card>
     )
 }

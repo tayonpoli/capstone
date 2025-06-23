@@ -15,13 +15,52 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Inventory } from "@prisma/client";
 
 const adjustStockSchema = z.object({
     product: z.string(),
     stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
 });
 
-export function AdjustForm({ product }: any) {
+interface AdjustStockProps {
+    product: Inventory;
+    onSuccess?: () => void;
+}
+
+export function AdjustCard({
+    product
+}: {
+    product: any
+}) {
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button variant='outline'>
+                    Adjust stock
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Adjust Stock</DialogTitle>
+                    <DialogDescription>
+                        Adjust stock for this product.
+                    </DialogDescription>
+                </DialogHeader>
+                <AdjustForm
+                    product={product}
+                    onSuccess={() => setIsOpen(false)}
+                />
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+export function AdjustForm({ product, onSuccess }: AdjustStockProps) {
     const router = useRouter();
 
     const form = useForm({
@@ -48,6 +87,7 @@ export function AdjustForm({ product }: any) {
             }
 
             toast.success("Stock adjusted successfully!");
+            onSuccess?.();
             router.refresh();
         } catch (error) {
             console.error('Adjust stock error', error);

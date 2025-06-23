@@ -4,7 +4,7 @@ import { ProductDetail } from "@/components/products/DetailProduct"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { AdjustForm } from "@/components/products/AdjustForm"
+import { AdjustCard, AdjustForm } from "@/components/products/AdjustForm"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
@@ -33,22 +33,7 @@ export default async function ProductDetailPage({
             <ProductDetail product={product} />
             {!isStaff && (
                 <div className='fixed bottom-16 right-14 space-x-4'>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant='outline'>
-                                Adjust stock
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle>Adjust Stock</DialogTitle>
-                                <DialogDescription>
-                                    Adjust stock for this product.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <AdjustForm product={product} />
-                        </DialogContent>
-                    </Dialog>
+                    <AdjustCard product={product} />
                     <Button asChild>
                         <Link href={`/product/${product.id}/edit`}>
                             Edit
