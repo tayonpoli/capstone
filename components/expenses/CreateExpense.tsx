@@ -27,8 +27,8 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 const expenseSchema = z.object({
-    supplierId: z.string().min(1, 'Customer is required'),
-    category: z.string().optional(),
+    supplierId: z.string().min(1, 'Supplier is required'),
+    category: z.string().min(1, 'Category is required'),
     total: z.number().min(1, "Amount must be greater than 0"),
     memo: z.string().optional(),
     expenseDate: z.date({
@@ -147,6 +147,7 @@ export function ExpenseForm({ suppliers, onSuccess }: CreateExpenseFormProps) {
                                     <SelectItem value="Electricity">Electricity</SelectItem>
                                     <SelectItem value="Rent">Rent</SelectItem>
                                     <SelectItem value="Utilities">Utilities</SelectItem>
+                                    <SelectItem value="Salary">Salary</SelectItem>
                                     <SelectItem value="Other">Other</SelectItem>
                                 </SelectContent>
                             </Select>

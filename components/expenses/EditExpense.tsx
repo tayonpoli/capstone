@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { Textarea } from "../ui/textarea";
 import { Supplier } from "@prisma/client";
@@ -27,8 +27,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from "react";
 
 const expenseSchema = z.object({
-    supplierId: z.string().min(1, 'Customer is required'),
-    category: z.string().optional(),
+    supplierId: z.string().min(1, 'Supplier is required'),
+    category: z.string().min(1, 'Category is required'),
     total: z.number().min(1, "Amount must be greater than 0"),
     memo: z.string().optional(),
     expenseDate: z.date({
@@ -140,6 +140,7 @@ export function EditExpense({ initialData, suppliers, onSuccess }: EditExpensesF
                                     <SelectItem value="Electricity">Electricity</SelectItem>
                                     <SelectItem value="Rent">Rent</SelectItem>
                                     <SelectItem value="Utilities">Utilities</SelectItem>
+                                    <SelectItem value="Salary">Salary</SelectItem>
                                     <SelectItem value="Other">Other</SelectItem>
                                 </SelectContent>
                             </Select>
