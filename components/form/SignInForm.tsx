@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { CardHeader, CardTitle } from '../ui/card';
+import { CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Blocks } from 'lucide-react';
 
 const FormSchema = z.object({
@@ -57,17 +57,14 @@ const SignInForm = () => {
 
     return (
         <Form {...form}>
-            <CardHeader className='grid items-center justify-center space-y-4'>
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg ml-1.5">
+            <CardHeader className='grid items-center justify-items-center mb-6'>
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg mb-3">
                     <Blocks className="size-5" />
                 </div>
-                {/* <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-medium">MauManage</span>
-                        <span className="truncate text-xs">Enterprise</span>
-                    </div> */}
-                <CardTitle className='text-center mb-6'>
-                    Sign In
-                </CardTitle>
+                <CardTitle className="text-xl">Welcome back</CardTitle>
+                <CardDescription>
+                    Login to your MauManage account
+                </CardDescription>
             </CardHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                 <div className='space-y-10'>

@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
-import { CardHeader, CardTitle } from '../ui/card';
+import { CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Blocks } from 'lucide-react';
 
 const FormSchema = z.object({
@@ -105,15 +105,14 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
 
     return (
         <Form {...form}>
-            <CardHeader>
-                <CardHeader className='grid items-center justify-center space-y-4'>
-                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg ml-2">
-                        <Blocks className="size-5" />
-                    </div>
-                    <CardTitle className='text-center mb-6'>
-                        Sign Up
-                    </CardTitle>
-                </CardHeader>
+            <CardHeader className='grid items-center justify-items-center mb-6'>
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg mb-3">
+                    <Blocks className="size-5" />
+                </div>
+                <CardTitle className="text-xl">Register account</CardTitle>
+                <CardDescription>
+                    Complete your account registration now!
+                </CardDescription>
             </CardHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                 <div className='space-y-6'>

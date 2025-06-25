@@ -311,11 +311,11 @@ export function ExpensesPieChart() {
                 <div className="text-center">
                     {data[activeIndex] && (
                         <>
+                            <div className="text-muted-foreground">
+                                Total
+                            </div>
                             <div className="text-2xl font-bold">
                                 {formatCurrency(data[activeIndex].total)}
-                            </div>
-                            <div className="text-muted-foreground">
-                                {chartConfig[data[activeIndex].category as keyof typeof chartConfig]?.label || 'Other'}
                             </div>
                         </>
                     )}
