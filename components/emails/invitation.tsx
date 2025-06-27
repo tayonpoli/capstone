@@ -34,8 +34,8 @@ export const InvitationEmail = ({
                 <Container style={container}>
                     <Img
                         src={`${baseUrl}/logo.png`}
-                        width="200"
-                        height="60"
+                        width="160"
+                        height="48"
                         alt="MauManage"
                     />
                     <Section>
@@ -68,7 +68,7 @@ export const InvitationEmail = ({
                                 {email}
                             </Column>
                         </Row>
-                        <Button className='my-3' style={button} href={invitationLink}>
+                        <Button className='my-4' style={button} href={invitationLink}>
                             Complete Registration
                         </Button>
                         <Text style={text}>
@@ -80,7 +80,7 @@ export const InvitationEmail = ({
                         <Text style={text}>MauManage Team</Text>
                     </Section>
                     <Text style={footerText}>
-                        © ${new Date().getFullYear()} MauManage. All rights reserved.
+                        © {new Date().getFullYear()} MauManage. All rights reserved.
                     </Text>
                 </Container>
             </Body>

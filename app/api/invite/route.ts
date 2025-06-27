@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         }
     });
 
-    const linkInvitation = `${process.env.NEXTAUTH_URL}}/sign-up?token=${token}`;
+    const linkInvitation = `${process.env.NEXTAUTH_URL}/sign-up?token=${token}`;
 
     // Kirim email invitation
     const { data, error } = await resend.emails.send({
