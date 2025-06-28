@@ -16,7 +16,8 @@ import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Send } from 'lucide-react';
+import { Loader2, Send } from 'lucide-react';
+import { useState } from 'react';
 
 const FormSchema = z.object({
     email: z.string().min(1, 'User email is required').max(100),
@@ -25,6 +26,7 @@ const FormSchema = z.object({
 
 export function InviteForm() {
     const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -41,6 +43,7 @@ export function InviteForm() {
     ] as const;
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
+        setIsSubmitting(true)
         try {
             const response = await fetch('/api/invite', {
                 method: 'POST',
@@ -49,7 +52,7 @@ export function InviteForm() {
                 },
                 body: JSON.stringify({
                     email: values.email.toLowerCase(),
-                    role: values.role // Pastikan konsisten dengan API
+                    role: values.role
                 }),
             });
 
@@ -65,6 +68,8 @@ export function InviteForm() {
         } catch (error) {
             toast.error("Something went wrong");
             console.error('Submission error:', error);
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -110,8 +115,18 @@ export function InviteForm() {
                         )}
                     />
                 </div>
-                <Button className='w-full mt-6' type='submit'>
-                    Send Invitation <Send />
+                <Button
+                    className='w-full mt-6'
+                    type='submit'
+                    disabled={isSubmitting}>
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Sending...
+                        </>
+                    ) : <>
+                        Send Invitation <Send />
+                    </>}
                 </Button>
             </form>
         </Form>

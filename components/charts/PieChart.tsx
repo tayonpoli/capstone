@@ -92,7 +92,7 @@ export function ExpensesPieChart() {
                 }
 
                 setData(apiData.categories)
-                setPercentageChange(apiData.percentageChange || 0)
+                setPercentageChange(Math.round(apiData.percentageChange) || 0)
 
                 if (apiData.categories.length > 0) {
                     setActiveCategory(apiData.categories[0].category)
