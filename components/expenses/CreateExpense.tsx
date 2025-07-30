@@ -25,6 +25,7 @@ import { Supplier } from "@prisma/client";
 import { Textarea } from "../ui/textarea";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { useTranslations } from "next-intl";
 
 const expenseSchema = z.object({
     supplierId: z.string().min(1, 'Supplier is required'),
@@ -47,13 +48,15 @@ export function CreateExpense({
     suppliers: any
 }) {
 
+    const t = useTranslations('expenses')
+
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button>
-                    <PlusIcon /> Create New Expenses
+                    <PlusIcon /> {t('create')}
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -116,7 +119,7 @@ export function ExpenseForm({ suppliers, onSuccess }: CreateExpenseFormProps) {
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl className='w-full'>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select supplier" />
+                                        <SelectValue placeholder="Select vendor" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -147,7 +150,7 @@ export function ExpenseForm({ suppliers, onSuccess }: CreateExpenseFormProps) {
                                     <SelectItem value="Electricity">Electricity</SelectItem>
                                     <SelectItem value="Rent">Rent</SelectItem>
                                     <SelectItem value="Utilities">Utilities</SelectItem>
-                                    <SelectItem value="Salary">Salary</SelectItem>
+                                    <SelectItem value="Payroll">Payroll</SelectItem>
                                     <SelectItem value="Other">Other</SelectItem>
                                 </SelectContent>
                             </Select>

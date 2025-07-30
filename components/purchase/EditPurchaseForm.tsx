@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Customer, Inventory, Staff } from '@prisma/client';
+import { Inventory, Staff, Supplier } from '@prisma/client';
 import { OrderItem } from '../sales/OrderItem';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { cn } from '@/lib/utils';
@@ -28,17 +28,18 @@ import { Calendar } from '../ui/calendar';
 
 const FormSchema = z.object({
     staffId: z.string().min(1, 'Staff is required'),
-    supplierId: z.string().min(1, 'Customer is required'),
+    supplierId: z.string().min(1, 'Supplier is required'),
+    contact: z.string().min(1, 'Contact is required'), // Added contact field
     address: z.string().optional(),
-    email: z.string().optional(),
+    email: z.string().email('Invalid email').or(z.literal('')),
     purchaseDate: z.date({
         required_error: "Purchase date is required.",
     }),
     dueDate: z.date({
-        required_error: "due date is required.",
+        required_error: "Due date is required.",
     }),
     tag: z.string().optional(),
-    urgency: z.string().min(1, 'urgency is required'),
+    urgency: z.string().min(1, 'Urgency is required'),
     status: z.string().min(1, 'Status is required'),
     memo: z.string().optional(),
     items: z.array(
@@ -51,7 +52,20 @@ const FormSchema = z.object({
     ).min(1, 'At least one item is required'),
 });
 
-export function EditPurchaseForm({ initialData, suppliers, staffs, products }: any) {
+interface EditPurchaseFormProps {
+    initialData: any;
+    suppliers: (Supplier & {
+        contacts?: {
+            id: string;
+            name: string;
+            department: string
+        }[];
+    })[];
+    staffs: Staff[];
+    products: Inventory[];
+}
+
+export function EditPurchaseForm({ initialData, suppliers, staffs, products }: EditPurchaseFormProps) {
     const router = useRouter();
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -60,8 +74,15 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
             ...initialData,
             purchaseDate: initialData.purchaseDate ? new Date(initialData.purchaseDate) : new Date(),
             dueDate: initialData.dueDate ? new Date(initialData.dueDate) : new Date(),
+            items: initialData.items || [{ productId: '', quantity: 1, price: 0 }],
+            email: suppliers.find(s => s.id === initialData.supplierId)?.email || '',
+            address: suppliers.find(s => s.id === initialData.supplierId)?.address || '',
         },
     });
+
+    const selectedSupplierId = form.watch('supplierId');
+    const selectedSupplier = suppliers.find(s => s.id === selectedSupplierId);
+    const items = form.watch('items');
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
@@ -72,8 +93,8 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                 },
                 body: JSON.stringify({
                     ...values,
-                    purchaseDate: new Date(values.purchaseDate).toISOString(),
-                    dueDate: new Date(values.dueDate).toISOString(),
+                    purchaseDate: values.purchaseDate.toISOString(),
+                    dueDate: values.dueDate.toISOString(),
                 }),
             });
 
@@ -82,7 +103,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                 router.push('/purchase');
                 router.refresh();
             } else {
-                throw new Error("Failed to update sales order");
+                throw new Error(await response.text());
             }
         } catch (error) {
             toast.error("Something went wrong");
@@ -90,28 +111,27 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
         }
     }
 
-    const items = form.watch('items');
-
     return (
         <div className='p-3'>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
                         <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
+                            {/* Staff Select */}
                             <FormField
                                 control={form.control}
                                 name='staffId'
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Staff</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl className='w-full'>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select customer" />
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder="Select staff" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {staffs.map((staff: any) => (
+                                                {staffs.map((staff) => (
                                                     <SelectItem key={staff.id} value={staff.id}>
                                                         {staff.name}
                                                     </SelectItem>
@@ -122,20 +142,34 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Supplier Select */}
                             <FormField
                                 control={form.control}
                                 name='supplierId'
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Supplier</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl className='w-full'>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select customer" />
+                                        <Select
+                                            onValueChange={(value) => {
+                                                field.onChange(value);
+                                                form.resetField('contact'); // Reset contact when supplier changes
+
+                                                const selectedSupplier = suppliers.find(s => s.id === value);
+                                                if (selectedSupplier) {
+                                                    form.setValue('email', selectedSupplier.email || '');
+                                                    form.setValue('address', selectedSupplier.address || '');
+                                                }
+                                            }}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder="Select supplier" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {suppliers.map((supplier: any) => (
+                                                {suppliers.map((supplier) => (
                                                     <SelectItem key={supplier.id} value={supplier.id}>
                                                         {supplier.name}
                                                     </SelectItem>
@@ -146,6 +180,44 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Contact Select */}
+                            <FormField
+                                control={form.control}
+                                name='contact'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Contact</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                            disabled={!selectedSupplier?.contacts?.length}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder={
+                                                        !selectedSupplier
+                                                            ? "Select supplier first"
+                                                            : !selectedSupplier.contacts?.length
+                                                                ? "No contacts available"
+                                                                : "Select contact"
+                                                    } />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {selectedSupplier?.contacts?.map((contact) => (
+                                                    <SelectItem key={contact.id} value={contact.name}>
+                                                        {contact.name} ({contact.department})
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Email Field */}
                             <FormField
                                 control={form.control}
                                 name='email'
@@ -153,12 +225,16 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='Customer email' {...field} />
+                                            <Input
+                                                disabled
+                                                placeholder='Supplier email' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Purchase Date */}
                             <FormField
                                 control={form.control}
                                 name='purchaseDate'
@@ -200,6 +276,8 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Due Date */}
                             <FormField
                                 control={form.control}
                                 name='dueDate'
@@ -237,6 +315,27 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                     </FormItem>
                                 )}
                             />
+                        </div>
+
+                        {/* Memo and Address Fields */}
+                        <div className='mx-8 space-y-6'>
+                            <FormField
+                                control={form.control}
+                                name='address'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Address</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                disabled
+                                                placeholder='Shipping address' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Tag Field */}
                             <FormField
                                 control={form.control}
                                 name='tag'
@@ -250,8 +349,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                     </FormItem>
                                 )}
                             />
-                        </div>
-                        <div className='ml-4 space-y-6'>
+
                             <FormField
                                 control={form.control}
                                 name='memo'
@@ -265,22 +363,10 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name='address'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Address</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder='Shipping address' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                         </div>
                     </div>
 
+                    {/* Purchase Items Section */}
                     <div className="mt-8">
                         <h3 className="text-lg font-medium mb-4">Purchase Items</h3>
                         {items.map((item, index) => (
@@ -290,9 +376,11 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                                 index={index}
                                 products={products}
                                 onRemove={() => {
-                                    const newItems = [...items];
-                                    newItems.splice(index, 1);
-                                    form.setValue('items', newItems);
+                                    if (items.length > 1) {
+                                        const newItems = [...items];
+                                        newItems.splice(index, 1);
+                                        form.setValue('items', newItems);
+                                    }
                                 }}
                                 canRemove={items.length > 1}
                             />
@@ -300,7 +388,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                         <Button
                             type="button"
                             variant="outline"
-                            className="mt-2"
+                            className="mt-4"
                             onClick={() => {
                                 form.setValue('items', [...items, { productId: '', quantity: 1, price: 0 }]);
                             }}
@@ -309,18 +397,19 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: a
                         </Button>
                     </div>
 
-                    <div className='flex justify-end space-x-4'>
+                    {/* Form Actions */}
+                    <div className='flex justify-end gap-4 mt-8'>
                         <Button asChild variant='outline'>
                             <Link href={`/purchase/${initialData.id}`}>
                                 Cancel
                             </Link>
                         </Button>
                         <Button type='submit'>
-                            Update
+                            Update Purchase
                         </Button>
                     </div>
                 </form>
             </Form>
         </div>
     );
-};
+}

@@ -6,11 +6,8 @@ import {
   LogOut,
   UserRound,
 } from "lucide-react"
-
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
+  Avatar
 } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -29,6 +26,7 @@ import {
 } from "@/components/ui/sidebar"
 import { signOut } from "next-auth/react"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 
 export function NavUser({
   user,
@@ -41,6 +39,8 @@ export function NavUser({
     role: string
   }
 }) {
+
+  const t = useTranslations('Sidebar');
   const { isMobile } = useSidebar()
 
   return (
@@ -52,10 +52,7 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg text-gray-500"><UserRound /></AvatarFallback>
-              </Avatar>
+              <Avatar username={user.name} size="sm" />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.role}</span>
@@ -71,10 +68,7 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg text-gray-500"><UserRound /></AvatarFallback>
-                </Avatar>
+                <Avatar username={user.name} size="sm" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
@@ -85,7 +79,7 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link href={`/profile`}>
-                  <BadgeCheck /> Account
+                  <BadgeCheck /> {t('profile.account')}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -95,7 +89,7 @@ export function NavUser({
               callbackUrl: window.location.origin + '/sign-in',
             })}>
               <LogOut />
-              Log out
+              {t('profile.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

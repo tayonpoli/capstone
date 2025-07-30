@@ -3,8 +3,25 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import InvitationEmail from '@/components/emails/invitation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export async function POST(req: Request) {
+    const session = await getServerSession(authOptions);
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (session.user.role !== 'Owner') {
+        return NextResponse.json(
+            { error: 'You are unauthorized' },
+            { status: 401 }
+        );
+    }
+
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { email, role } = await req.json();
 
@@ -119,6 +136,20 @@ export async function GET(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+    const session = await getServerSession(authOptions);
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (session.user.role !== 'Owner') {
+        return NextResponse.json(
+            { error: 'You are unauthorized' },
+            { status: 401 }
+        );
+    }
+
     const { id } = await req.json()
 
     if (!id) {

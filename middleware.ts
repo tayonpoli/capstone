@@ -1,107 +1,122 @@
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from 'next-auth/middleware';
+import createMiddleware from 'next-intl/middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { routing } from './i18n/routing';
 
-type UserRole = 'Owner' | 'Admin' | 'Staff'
+type UserRole = 'Owner' | 'Admin' | 'Staff';
 
-export async function middleware(request: NextRequest) {
-    const token = await getToken({ req: request })
-    if (!token) {
-        const url = new URL('/sign-in', request.url)
-        url.searchParams.set('callbackUrl', request.nextUrl.pathname)
-        return NextResponse.redirect(url)
-    }
+// Initialize i18n middleware
+const handleI18nRouting = createMiddleware(routing);
 
-    const userRole = token.role as UserRole
+// Define public pages that don't require authentication
+const publicPages = [
+    '/',
+    '/sign-in',
+    '/sign-up',
+    '/unauthorized',
+    '/api/auth'
+];
 
-    if (request.nextUrl.pathname.startsWith('/production') || request.nextUrl.pathname.startsWith('/api/production')) {
+const authMiddleware = withAuth(
+    // This callback is only invoked if authorized returns true
+    function onSuccess(req) {
+        // Handle i18n routing first
+        const response = handleI18nRouting(req);
 
-        if (request.nextUrl.pathname.startsWith('/production')) {
+        // Then perform role-based authorization checks
+        const pathname = req.nextUrl.pathname;
+        const token = req.nextauth?.token;
+        const userRole = token?.role as UserRole;
 
+        // Production routes
+        if (pathname.startsWith('/production') || pathname.startsWith('/api/production')) {
             if (userRole === 'Staff') {
-                const isAllowed = request.nextUrl.pathname === '/production' ||
-                    request.nextUrl.pathname.match(/^\/production\/[^\/]+$/) !== null
+                if (pathname.startsWith('/production')) {
+                    const isAllowed = pathname === '/production' ||
+                        pathname.match(/^\/production\/[^\/]+$/) !== null;
 
-                if (!isAllowed) {
-                    return NextResponse.redirect(new URL('/unauthorized', request.url))
+                    if (!isAllowed) {
+                        return NextResponse.redirect(new URL('/unauthorized', req.url));
+                    }
+                } else if (pathname.startsWith('/api/production')) {
+                    return NextResponse.json(
+                        { error: 'Unauthorized: Staff can only view data' },
+                        { status: 403 }
+                    );
                 }
             }
         }
 
-        if (request.nextUrl.pathname.startsWith('/api/production')) {
-            // Staff hanya bisa mengakses GET requests
+        // Sales routes
+        if (pathname.startsWith('/sales') || pathname.startsWith('/api/sales')) {
             if (userRole === 'Staff') {
-                return NextResponse.json(
-                    { error: 'Unauthorized: Staff can only view data' },
-                    { status: 403 }
-                )
-            }
-        }
+                if (pathname.startsWith('/sales')) {
+                    const isAllowed = pathname === '/sales' ||
+                        pathname.match(/^\/sales\/[^\/]+$/) !== null;
 
-        return NextResponse.next()
-    }
-
-    if (request.nextUrl.pathname.startsWith('/sales') || request.nextUrl.pathname.startsWith('/api/sales')) {
-
-        if (request.nextUrl.pathname.startsWith('/sales')) {
-
-            if (userRole === 'Staff') {
-                const isAllowed = request.nextUrl.pathname === '/sales' ||
-                    request.nextUrl.pathname.match(/^\/sales\/[^\/]+$/) !== null
-
-                if (!isAllowed) {
-                    return NextResponse.redirect(new URL('/unauthorized', request.url))
+                    if (!isAllowed) {
+                        return NextResponse.redirect(new URL('/unauthorized', req.url));
+                    }
+                } else if (pathname.startsWith('/api/sales') && req.method !== 'POST') {
+                    return NextResponse.json(
+                        { error: 'You need higher privileges' },
+                        { status: 403 }
+                    );
                 }
             }
         }
 
-        if (request.nextUrl.pathname.startsWith('/api/sales')) {
-            // Staff hanya bisa mengakses GET requests
-            if (userRole === 'Staff' && request.method !== 'POST') {
-                return NextResponse.json(
-                    { error: 'You need higher privileges' },
-                    { status: 403 }
-                )
-            }
-        }
-
-        return NextResponse.next()
-    }
-
-    if (request.nextUrl.pathname.startsWith('/purchase') || request.nextUrl.pathname.startsWith('/api/purchase')) {
-
-        if (request.nextUrl.pathname.startsWith('/purchase')) {
-
+        // Purchase routes
+        if (pathname.startsWith('/purchase') || pathname.startsWith('/api/purchase')) {
             if (userRole === 'Staff') {
-                const isAllowed = request.nextUrl.pathname === '/purchase' ||
-                    request.nextUrl.pathname.match(/^\/sales\/[^\/]+$/) !== null
+                if (pathname.startsWith('/purchase')) {
+                    const isAllowed = pathname === '/purchase' ||
+                        pathname.match(/^\/purchase\/[^\/]+$/) !== null;
 
-                if (!isAllowed) {
-                    return NextResponse.redirect(new URL('/unauthorized', request.url))
+                    if (!isAllowed) {
+                        return NextResponse.redirect(new URL('/unauthorized', req.url));
+                    }
+                } else if (pathname.startsWith('/api/purchase')) {
+                    return NextResponse.json(
+                        { error: 'Unauthorized: Staff can only view data' },
+                        { status: 403 }
+                    );
                 }
             }
         }
 
-        if (request.nextUrl.pathname.startsWith('/api/purchase')) {
-            // Staff hanya bisa mengakses GET requests
-            if (userRole === 'Staff') {
-                return NextResponse.json(
-                    { error: 'Unauthorized: Staff can only view data' },
-                    { status: 403 }
-                )
-            }
+        return response;
+    },
+    {
+        callbacks: {
+            authorized: ({ token }) => token != null
+        },
+        pages: {
+            signIn: '/sign-in'
         }
+    }
+);
 
-        return NextResponse.next()
+export default function middleware(req: NextRequest) {
+    // Create regex to match public pages with all supported locales
+    const publicPathnameRegex = RegExp(
+        `^(/(${routing.locales.join('|')}))?(${publicPages
+            .flatMap((p) => (p === '/' ? ['', '/'] : p))
+            .join('|')})/?$`,
+        'i'
+    );
+
+    const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
+
+    if (isPublicPage) {
+        return handleI18nRouting(req);
+    } else {
+        return (authMiddleware as any)(req);
     }
 }
 
 export const config = {
     matcher: [
-        '/production/:path*',
-        '/api/production/:path*',
-        '/sales/:path*',
-        '/api/sales/:path*',
-        '/purchase/:path*',
-        '/api/purchase/:path*',
-    ],
-}
+        '/((?!api|_next|.*\\..*).*)'
+    ]
+};

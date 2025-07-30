@@ -54,20 +54,6 @@ export async function PUT(
                 })),
             });
 
-            //   // 4. Update stok produk jika status Completed
-            //   if (body.status === 'Completed') {
-            //     for (const item of body.items) {
-            //       await prisma.inventory.update({
-            //         where: { id: item.productId },
-            //         data: {
-            //           stock: {
-            //             decrement: item.quantity,
-            //           },
-            //         },
-            //       });
-            //     }
-            //   }
-
             return { production: updatedBom, materials: createdItems };
         });
 

@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ScrollArea } from "../ui/scroll-area"
+import { useTranslations } from "next-intl"
 
 // Define validation schema
 const orderFormSchema = z.object({
@@ -33,6 +34,7 @@ type OrderSummaryProps = {
 }
 
 export function OrderSummary({ userId }: OrderSummaryProps) {
+    const t = useTranslations('pos');
     const { items, clearCart } = useCart()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [orderData, setOrderData] = useState<any>(null)
@@ -107,7 +109,7 @@ export function OrderSummary({ userId }: OrderSummaryProps) {
                 <form onSubmit={form.handleSubmit(handleCheckout)} className="h-full">
                     <Card className="h-full">
                         <CardHeader>
-                            <CardTitle>Order Summary</CardTitle>
+                            <CardTitle>{t('summary.title')}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 mt-2">
                             {/* Customer Name Field */}
@@ -116,7 +118,7 @@ export function OrderSummary({ userId }: OrderSummaryProps) {
                                 name="customerName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Customer name</FormLabel>
+                                        <FormLabel>{t('summary.name')}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Input the customer name"
@@ -144,7 +146,7 @@ export function OrderSummary({ userId }: OrderSummaryProps) {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-gray-500">No products</p>
+                                        <p className="text-gray-500">{t('summary.empty')}</p>
                                     )}
                                 </div>
                             </ScrollArea>
@@ -203,35 +205,43 @@ export function OrderSummary({ userId }: OrderSummaryProps) {
                                         </FormItem>
                                     )}
                                 />
+                                <FormField
+                                    control={form.control}
+                                    name="memo"
+                                    render={({ field }) => (
+                                        <FormItem className="col-span-2 w-full">
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Note (additional)"
+                                                    {...field}
+                                                    rows={3}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button
+                                    className="w-full"
+                                    onClick={() => clearCart()}
+                                    disabled={items.length === 0 || isSubmitting}
+                                    variant="outline"
+                                >
+                                    Reset
+                                </Button>
+                                <Button
+                                    className="w-full"
+                                    type="submit"
+                                    disabled={items.length === 0 || isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : t('summary.create')}
+                                </Button>
                             </div>
-                            <FormField
-                                control={form.control}
-                                name="memo"
-                                render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Note (additional)"
-                                                {...field}
-                                                rows={3}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button
-                                className="w-full"
-                                type="submit"
-                                disabled={items.length === 0 || isSubmitting}
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Processing...
-                                    </>
-                                ) : 'Create Order'}
-                            </Button>
                         </CardFooter>
                     </Card>
                 </form>
@@ -240,7 +250,7 @@ export function OrderSummary({ userId }: OrderSummaryProps) {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Print Receipt</DialogTitle>
+                        <DialogTitle>{t('print.title')}</DialogTitle>
                     </DialogHeader>
                     <div className="justify-items-center mb-6">
                         {orderData ? (

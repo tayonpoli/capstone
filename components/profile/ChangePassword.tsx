@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Pen } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const changePasswordSchema = z.object({
     oldPassword: z.string().min(8, 'The old password minimal 8 characters'),
@@ -39,13 +40,15 @@ export function ChangePasswordCard({
     id: string
 }) {
 
+    const t = useTranslations('profile');
+
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button>
-                    Change Password
+                    {t('change.button')}
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">

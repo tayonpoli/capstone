@@ -41,6 +41,7 @@ export async function PUT(
         data: {
           staffId: body.staffId,
           supplierId: body.supplierId,
+          contact: body.contact,
           purchaseDate: new Date(body.purchaseDate),
           dueDate: new Date(body.dueDate),
           tag: body.tag,

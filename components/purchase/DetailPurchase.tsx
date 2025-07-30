@@ -1,10 +1,11 @@
 import { formatIDR } from "@/lib/formatCurrency"
 import { Inventory, PurchaseOrder, Staff, Supplier, PurchaseItem, Invoice } from "@prisma/client"
-import { CalendarIcon, TagIcon, FileTextIcon, MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
+import { CreditCardIcon } from "lucide-react"
 import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Label } from "../ui/label"
+import { Badge } from "../ui/badge"
 
 interface PurchaseDetailProps {
     purchase: PurchaseOrder & {
@@ -51,15 +52,23 @@ export function DetailPurchase({ purchase }: PurchaseDetailProps) {
                         </div>
                         <div className="space-y-1">
                             <CardDescription>
-                                Payment status
-                            </CardDescription>
-                            <Label className="text-md font-medium">{purchase.paymentStatus}</Label>
-                        </div>
-                        <div className="space-y-1">
-                            <CardDescription>
                                 Tag
                             </CardDescription>
                             <Label className="text-md font-medium">{purchase.tag || "-"}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Payment status
+                            </CardDescription>
+                            {(purchase.paymentStatus === 'Paid') && (
+                                <Badge className="text-sm font-medium">
+                                    {purchase.paymentStatus}
+                                </Badge>
+                            ) || (
+                                    <Badge variant='secondary' className="text-sm font-medium">
+                                        {purchase.paymentStatus}
+                                    </Badge>
+                                )}
                         </div>
                         <div className="space-y-1">
                             <CardDescription>
@@ -84,6 +93,12 @@ export function DetailPurchase({ purchase }: PurchaseDetailProps) {
                                 Name
                             </CardDescription>
                             <Label className="text-md font-medium">{purchase.supplier.name}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Contact
+                            </CardDescription>
+                            <Label className="text-md font-medium">{purchase.contact}</Label>
                         </div>
                         <div className="space-y-1">
                             <CardDescription>

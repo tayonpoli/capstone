@@ -1,4 +1,7 @@
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import * as z from 'zod';
 
@@ -54,6 +57,21 @@ export async function GET() {
 }
 
 export async function DELETE(request: Request) {
+    const session = await getServerSession(authOptions);
+
+    const allowedRoles = ['Admin', 'Owner'];
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (!allowedRoles.includes(session.user.role)) {
+        return NextResponse.json(
+            { error: 'You are unauthorized' },
+            { status: 401 }
+        );
+    }
     const { id } = await request.json()
 
     if (!id) {

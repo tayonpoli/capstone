@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRightWidth: 0,
         borderBottomWidth: 0,
-        marginBottom: 20
+        marginBottom: 12
     },
     tableRow: {
         flexDirection: 'row'
@@ -95,29 +95,51 @@ const styles = StyleSheet.create({
         fontSize: 9
     },
     footer: {
-        marginTop: 30,
-        paddingTop: 10,
-        borderTopWidth: 1,
-        borderTopColor: '#e0e0e0',
-        fontSize: 8,
+        position: 'absolute',
+        bottom: 20,
+        left: 0,
+        right: 0,
         textAlign: 'center',
-        color: 'grey'
+        fontSize: 8,
+        color: '#95A5A6',
+        paddingHorizontal: 40
     },
     totalSection: {
         marginTop: 10,
         padding: 10,
-        backgroundColor: '#f9f9f9',
-        borderWidth: 1,
-        borderColor: '#e0e0e0'
+        width: 200, // Lebar fixed 72
+        marginLeft: 'auto', // Posisikan ke kanan
+        display: 'flex',
+        flexDirection: 'column',
     },
     totalRow: {
+        display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 5
+        justifyContent: 'space-between', // Jarak antara label dan value
+        marginBottom: 5,
+        width: '100%', // Gunakan full width dari parent
     },
     grandTotal: {
         fontWeight: 'bold',
         fontSize: 12
+    },
+    notesSection: {
+        marginTop: 15,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#E4E4E4',
+        borderRadius: 5,
+        backgroundColor: '#f5f5f5',
+    },
+    notesTitle: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    notesText: {
+        fontSize: 9,
+        color: '#7F8C8D',
+        marginBottom: 4,
     }
 })
 
@@ -133,7 +155,8 @@ export const PdfOrderTemplate = ({
     const counterpart = isSales ? order.customer : order.supplier
     const counterpartLabel = isSales ? 'Customer' : 'Supplier'
     const orderDate = isSales ? order.orderDate : order.purchaseDate
-    const orderLabel = isSales ? 'Sales Order' : 'Purchase Order'
+    const tax = order.total * 0.1
+    const total = order.total + tax
 
     return (
         <Document>
@@ -146,8 +169,8 @@ export const PdfOrderTemplate = ({
                             src="/logo.png"
                             style={styles.logo}
                         /> */}
-                        <Text style={styles.title}>{orderLabel}</Text>
-                        <Text style={styles.orderInfo}>Order #: {order.tag || order.id}</Text>
+                        <Text style={styles.title}>INVOICE</Text>
+                        <Text style={styles.orderInfo}>#INV-{order.id.slice(0, 8).toUpperCase()}</Text>
                         <Text style={styles.orderInfo}>Date: {new Date(orderDate).toLocaleDateString()}</Text>
                         {!isSales && (
                             <Text style={styles.orderInfo}>Due Date: {new Date(order.dueDate).toLocaleDateString()}</Text>
@@ -240,28 +263,31 @@ export const PdfOrderTemplate = ({
                     </View>
                 </View>
 
+                {order.memo && (
+                    <View style={styles.notesSection}>
+                        <Text style={styles.notesTitle}>Memo</Text>
+                        <Text style={styles.notesText}>
+                            {order.memo}
+                        </Text>
+                    </View>
+                )}
+
                 {/* Totals */}
                 <View style={styles.totalSection}>
                     <View style={styles.totalRow}>
                         <Text style={styles.label}>Subtotal:</Text>
                         <Text style={styles.value}>{formatIDR(order.total)}</Text>
                     </View>
-                    {/* Tambahkan tax, discount, atau biaya lainnya jika diperlukan */}
+                    <View style={styles.totalRow}>
+                        <Text style={styles.label}>Tax (10%):</Text>
+                        <Text style={styles.value}>{formatIDR(tax)}</Text>
+                    </View>
                     <View style={[styles.totalRow, { marginTop: 5 }]}>
-                        <Text style={styles.grandTotal}>Grand Total:</Text>
-                        <Text style={styles.grandTotal}>{formatIDR(order.total)}</Text>
+                        <Text style={styles.grandTotal}>Total:</Text>
+                        <Text style={styles.grandTotal}>{formatIDR(total)}</Text>
                     </View>
                 </View>
 
-                {/* Memo */}
-                {order.memo && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Notes</Text>
-                        <Text style={styles.value}>{order.memo}</Text>
-                    </View>
-                )}
-
-                {/* Footer */}
                 <View style={styles.footer}>
                     <Text>Generated on {new Date().toLocaleDateString()}</Text>
                     <Text>Thank you for your business!</Text>

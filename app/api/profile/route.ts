@@ -31,3 +31,20 @@ export async function PUT(request: Request) {
         );
     }
 }
+
+export async function GET(request: Request) {
+    try {
+
+        const result = await prisma.company.findFirst()
+
+        return NextResponse.json(result);
+
+    } catch (error) {
+        console.error('[COMPANY_GET_ERROR]', error);
+
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
+    }
+}

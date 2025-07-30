@@ -28,6 +28,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useMemo, useState } from "react"
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 // Default chart configuration
 const chartConfig = {
@@ -65,6 +66,8 @@ interface ExpenseApiResponse {
 }
 
 export function ExpensesPieChart() {
+    const t = useTranslations('HomePage.expensesChart');
+
     const id = "expenses-pie-chart"
     const [activeCategory, setActiveCategory] = useState<string>("")
     const [data, setData] = useState<ExpenseCategory[]>([])
@@ -133,13 +136,13 @@ export function ExpensesPieChart() {
             return {
                 icon: TrendingUp,
                 color: "text-red-500",
-                text: `Trending up by ${Math.abs(percentageChange)}% this month`
+                text: ` ${t('up')} ${Math.abs(percentageChange)}% `
             }
         } else if (percentageChange < 0) {
             return {
                 icon: TrendingDown,
                 color: "text-green-500",
-                text: `Trending down by ${Math.abs(percentageChange)}% this month`
+                text: ` ${t('down')} ${Math.abs(percentageChange)}% `
             }
         } else {
             return {
@@ -155,7 +158,7 @@ export function ExpensesPieChart() {
             <Card className="flex flex-col">
                 <CardHeader className="flex-row items-start space-y-0 pb-0">
                     <div className="grid gap-1">
-                        <CardTitle>Expenses by Category</CardTitle>
+                        <CardTitle>{t('title')}</CardTitle>
                         <CardDescription>Loading expense data...</CardDescription>
                     </div>
                     <Skeleton className="ml-auto h-7 w-[130px] rounded-lg" />
@@ -172,7 +175,7 @@ export function ExpensesPieChart() {
             <Card className="flex flex-col">
                 <CardHeader className="flex-row items-start space-y-0 pb-0">
                     <div className="grid gap-1">
-                        <CardTitle>Expenses by Category</CardTitle>
+                        <CardTitle>{t('title')}</CardTitle>
                         <CardDescription className="text-destructive">
                             Error: {error}
                         </CardDescription>
@@ -190,7 +193,7 @@ export function ExpensesPieChart() {
             <Card className="flex flex-col">
                 <CardHeader className="flex-row items-start space-y-0 pb-0">
                     <div className="grid gap-1">
-                        <CardTitle>Expenses by Category</CardTitle>
+                        <CardTitle>{t('title')}</CardTitle>
                         <CardDescription>No expense data available</CardDescription>
                     </div>
                 </CardHeader>
@@ -209,8 +212,8 @@ export function ExpensesPieChart() {
             <ChartStyle id={id} config={chartConfig} />
             <CardHeader className="flex-row items-start space-y-0 pb-0">
                 <div className="grid gap-1">
-                    <CardTitle>Monthly Expenses</CardTitle>
-                    <CardDescription>Showing expenses by category</CardDescription>
+                    <CardTitle>{t('title')}</CardTitle>
+                    <CardDescription>{t('desc')}</CardDescription>
                 </div>
                 <Select value={activeCategory} onValueChange={setActiveCategory}>
                     <SelectTrigger
@@ -326,7 +329,7 @@ export function ExpensesPieChart() {
                     {trendInfo.text} <TrendIcon className="h-4 w-4" />
                 </div>
                 <div className="text-muted-foreground leading-none">
-                    Showing total expenses for this current month
+                    {t('footer')}
                 </div>
             </CardFooter>
         </Card>

@@ -109,7 +109,7 @@ export function EditExpense({ initialData, suppliers, onSuccess }: EditExpensesF
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl className='w-full'>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select supplier" />
+                                        <SelectValue placeholder="Select vendor" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -133,14 +133,14 @@ export function EditExpense({ initialData, suppliers, onSuccess }: EditExpensesF
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                     <SelectTrigger className='w-full'>
-                                        <SelectValue placeholder="Select sales tag" />
+                                        <SelectValue placeholder="Select expenses category" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
                                     <SelectItem value="Electricity">Electricity</SelectItem>
                                     <SelectItem value="Rent">Rent</SelectItem>
                                     <SelectItem value="Utilities">Utilities</SelectItem>
-                                    <SelectItem value="Salary">Salary</SelectItem>
+                                    <SelectItem value="Payroll">Payroll</SelectItem>
                                     <SelectItem value="Other">Other</SelectItem>
                                 </SelectContent>
                             </Select>

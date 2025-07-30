@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma"
 import { formatIDR } from "@/lib/formatCurrency"
 import { format } from "date-fns"
 import { Badge } from "../ui/badge"
+import { getTranslations } from "next-intl/server"
 
 type RecentPurchase = {
     id: string
@@ -50,24 +51,25 @@ async function getData(): Promise<RecentPurchase[]> {
 }
 
 export async function RecentTransactions() {
+    const t = await getTranslations('HomePage.purchaseChart');
 
     const data = await getData();
 
     return (
         <Card>
             <CardHeader className="mb-4">
-                <CardTitle>Recent Purchase</CardTitle>
-                <CardDescription>Showing recent purchase orders</CardDescription>
+                <CardTitle>{t('title')}</CardTitle>
+                <CardDescription>{t('desc')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="border rounded-lg p-3 px-6">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Date</TableHead>
+                                <TableHead>{t('date')}</TableHead>
                                 <TableHead>Supplier</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Amount</TableHead>
+                                <TableHead className="text-right">{t('total')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

@@ -1,10 +1,10 @@
 import { formatIDR } from "@/lib/formatCurrency"
 import { Inventory, Production, Material } from "@prisma/client"
-import { Undo2Icon, CalendarIcon, TagIcon } from "lucide-react"
-import { Button } from "../ui/button"
-import Link from "next/link"
 import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Label } from "../ui/label"
+import { useTranslations } from "next-intl"
 
 interface ProductionDetailProps {
     production: Production & {
@@ -16,56 +16,55 @@ interface ProductionDetailProps {
 }
 
 export function ProductionDetail({ production }: ProductionDetailProps) {
+    const t = useTranslations('production.column');
     return (
-        <div className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Column - Order Information */}
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4">General Information</h2>
-                    <div className="space-y-4">
-                        <div className="flex items-center">
-                            <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Created Date</p>
-                                <p>{format(new Date(production.createdAt), "dd MMMM yyyy")}</p>
-                            </div>
+        <div className="px-4">
+            <Card className="mb-6">
+                <CardHeader>
+                    <CardTitle>
+                        Production Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-2/3 flex grid grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('title')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{production.name}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Title</p>
-                                <p className="capitalize">{production.name}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('tag')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{production.tag}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Tag</p>
-                                <p className="capitalize">{production.tag}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Created Date
+                            </CardDescription>
+                            <Label className="text-md font-medium">{format(new Date(production.createdAt), "dd MMMM yyyy")}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Description</p>
-                                <p className="capitalize">{production.description}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('output')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{production.product.product}</Label>
                         </div>
-                        <div className="flex items-center">
-                            <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                            <div>
-                                <p className="text-sm text-gray-500">Product Output</p>
-                                <p className="capitalize">{production.product.product}</p>
-                            </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('desc')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{production.description}</Label>
                         </div>
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
 
             {/* Right Column - Order Items */}
             <div>
                 <h2 className="text-xl font-semibold mb-4">Components</h2>
-                <div className="p-2 lg:w-full">
+                <div className="p-2 border rounded-lg">
                     <Table>
                         <TableHeader>
                             <TableRow>

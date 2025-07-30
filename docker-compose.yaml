@@ -11,4 +11,5 @@ services:
       NEXTAUTH_SECRET: "capstone"
       NEXTAUTH_URL: http://localhost:3000
       RESEND_API_KEY: re_7odnGk9E_P9hMfhTGtusQKKod6wUXAPPu
+      GEMINI_API_KEY: AIzaSyCoNtGEnq4GqrOvfdG4AKjKWzRsR3U0peQ
     restart: always

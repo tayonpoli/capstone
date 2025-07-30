@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'; // pastikan prisma instance kamu tersedia
 import { NextResponse } from 'next/server';
+import { GoogleGenAI } from "@google/genai";
 
 export async function POST() {
     try {
@@ -37,32 +38,44 @@ export async function POST() {
         }));
 
         const prompt = `
-You are a professional business analyst. Based on this data, give analysis with this format:
-- Summary of sales performance
-- Products with highest sales
-- Market trends analysis
-- Business recommendation for decision making
+Berdasarkan data dari sales 30 hari belakangan ini, 
+berikan analisis bisnis yang mengandung ringkasan dari performa bisnis saat ini. 
+lalu berikan juga market trend analysis termasuk perkiraan penjualan untuk selanjutnya. 
+dan terakhir berikan rekomendasi bisnis yang bisa dilakukan untuk kedepannya.
 
-Sales data (in JSON):
+Data penjualan (in JSON):
 ${JSON.stringify(formatted, null, 2)}
 `;
 
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        const ai = new GoogleGenAI({});
+
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+            config: {
+                systemInstruction: "Kamu adalah agen profesional bisnis analis.",
+                thinkingConfig: {
+                    thinkingBudget: 0,
+                },
             },
-            body: JSON.stringify({
-                model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-                messages: [{ 'role': 'user', 'content': prompt }],
-                temperature: 0.3,
-            }),
         });
 
-        const data = await response.json();
+        // const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        //     },
+        //     body: JSON.stringify({
+        //         model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        //         messages: [{ 'role': 'user', 'content': prompt }],
+        //         temperature: 0.3,
+        //     }),
+        // });
 
-        return NextResponse.json({ success: true, data: data.choices[0].message.content });
+        const data = response.text;
+
+        return NextResponse.json({ success: true, data: data });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ success: false, error: 'AI analysis failed' }, { status: 500 });

@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { PurchaseItem } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export async function POST(req: Request) {
     try {
@@ -100,6 +103,22 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(request: Request) {
+    const session = await getServerSession(authOptions);
+
+    const allowedRoles = ['Admin', 'Owner'];
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (!allowedRoles.includes(session.user.role)) {
+        return NextResponse.json(
+            { error: 'You are unauthorized' },
+            { status: 401 }
+        );
+    }
+
     const { id } = await request.json()
 
     if (!id) {

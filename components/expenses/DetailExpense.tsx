@@ -5,6 +5,9 @@ import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
 import { Button } from "../ui/button"
 import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Label } from "../ui/label"
+import { useTranslations } from "next-intl"
 
 interface ExpenseDetailProps {
     expenses: Expenses & {
@@ -14,6 +17,8 @@ interface ExpenseDetailProps {
 }
 
 export function DetailExpense({ expenses }: ExpenseDetailProps) {
+
+    const t = useTranslations('expenses');
 
     const totalPaid = expenses.ExpenseInvoice?.reduce((sum, invoice) => sum + invoice.amount, 0) || 0
 
@@ -36,38 +41,53 @@ export function DetailExpense({ expenses }: ExpenseDetailProps) {
                     </Button>
                 </div>
             </div>
-            <div>
-                <div className="lg:w-150 grid grid-cols-2 gap-8 mt-2">
-                    <div className="col-span-2 flex flex-center items-center text-lg font-semibold">
-                        <InfoIcon />
-                        <h2 className="ml-3">Expenses Information</h2>
+            <Card className="mb-4">
+                <CardHeader>
+                    <CardTitle>
+                        Expenses Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-2/3 flex grid grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('column.vendor')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{expenses.supplier.name}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('column.date')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{format(new Date(expenses.expenseDate), "dd MMMM yyyy")}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('column.category')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{expenses.category}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('column.status')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{expenses.paymentStatus}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('column.memo')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{expenses.memo}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                {t('column.total')}
+                            </CardDescription>
+                            <Label className="text-md font-medium">{formatIDR(expenses.total)}</Label>
+                        </div>
                     </div>
-                    <div className="font-medium text-gray-500">
-                        Vendor
-                    </div>
-                    <div className="font-medium">{expenses.supplier.name}</div>
-                    <div className="font-medium text-gray-500">
-                        Date
-                    </div>
-                    <div className="font-medium">{format(new Date(expenses.expenseDate), "dd MMMM yyyy")}</div>
-                    <div className="font-medium text-gray-500">
-                        Category
-                    </div>
-                    <div className="font-medium">{expenses.category}</div>
-                    <div className="font-medium text-gray-500">
-                        Payment Status
-                    </div>
-                    <div className="font-medium">{expenses.paymentStatus}</div>
-                    <div className="font-medium text-gray-500">
-                        Memo
-                    </div>
-                    <div className="font-medium">{expenses.memo}</div>
-                    <div className="font-medium text-gray-500">
-                        Total amount
-                    </div>
-                    <div className="font-medium">{formatIDR(expenses.total)}</div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
 
             {expenses.ExpenseInvoice && expenses.ExpenseInvoice.length > 0 && (
                 <div className="my-10">

@@ -16,6 +16,7 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 
 const chartConfig = {
     sales: {
@@ -25,6 +26,7 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function DailySalesChart() {
+    const t = useTranslations('HomePage');
 
     const [chartData, setChartData] = useState([])
     const [loading, setLoading] = useState(true)
@@ -50,8 +52,8 @@ export function DailySalesChart() {
     return (
         <Card>
             <CardHeader className="mb-4">
-                <CardTitle>Daily Sales</CardTitle>
-                <CardDescription>Showing daily sales for the Last 7 days</CardDescription>
+                <CardTitle>{t('salesChart.title')}</CardTitle>
+                <CardDescription>{t('salesChart.desc')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer className="lg:h-[350px] w-full" config={chartConfig}>

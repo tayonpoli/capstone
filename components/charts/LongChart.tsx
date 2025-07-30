@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useTranslations } from "next-intl"
 
 interface ChartData {
   date: string
@@ -49,6 +50,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function LongChart() {
+  const t = useTranslations('HomePage');
+
   const [timeRange, setTimeRange] = React.useState<"7d" | "30d" | "90d">("90d")
   const [chartData, setChartData] = React.useState<ChartData[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
@@ -145,7 +148,7 @@ export function LongChart() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Revenue & Purchases</CardTitle>
+          <CardTitle>{t('longChart.title')}</CardTitle>
         </CardHeader>
         <CardContent className="flex h-[300px] items-center justify-center">
           <div className="text-center text-red-500">{error}</div>
@@ -158,13 +161,14 @@ export function LongChart() {
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 border-b sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Revenue & Purchases</CardTitle>
+          <CardTitle>{t('longChart.title')}</CardTitle>
           <CardDescription>
             {timeRange === "7d"
-              ? "Showing revenue and purchases for the last 7 days"
+              ? t('longChart.desc7')
               : timeRange === "30d"
-                ? "Showing revenue and purchases for the last 30 days"
-                : "Showing revenue and purchases for the last 3 months"}
+                ? t('longChart.desc30')
+                : t('longChart.desc3')
+            }
           </CardDescription>
         </div>
         <Select
@@ -176,13 +180,13 @@ export function LongChart() {
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             <SelectItem value="90d" className="rounded-lg">
-              Last 3 months
+              {t('longChart.select3')}
             </SelectItem>
             <SelectItem value="30d" className="rounded-lg">
-              Last 30 days
+              {t('longChart.select30')}
             </SelectItem>
             <SelectItem value="7d" className="rounded-lg">
-              Last 7 days
+              {t('longChart.select7')}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -274,8 +278,6 @@ export function LongChart() {
                               } as React.CSSProperties
                             }
                           />
-                          {/* {chartConfig[name as keyof typeof chartConfig]?.label ||
-                        name} */}
                           <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
                             <span className="text-muted-foreground font-normal mr-1">
                               Rp
@@ -284,10 +286,6 @@ export function LongChart() {
                           </div>
                         </>
                       )}
-                    // formatter={(value) => [
-                    //   `${formatIDR(Number(value))}`,
-                    //   value === chartData[0]?.revenue
-                    // ]}
                     />
                   }
                 />

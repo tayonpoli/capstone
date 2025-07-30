@@ -5,15 +5,19 @@ import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { Typewriter } from 'react-simple-typewriter';
 import { Button } from '../ui/button';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Download, Loader2, Sparkles } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from '../ui/scroll-area';
 import { toast } from 'sonner';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { SalesAnalysisPDF } from './SalesAnalysisPDF';
+import { TypewriterMarkdown } from './TypewriterMarkdown';
 
 export default function SalesAnalysis() {
     const [result, setResult] = useState<string | null>(null);
@@ -113,6 +117,22 @@ export default function SalesAnalysis() {
                             </motion.div>
                         </div>
                     </ScrollArea>
+                    <DialogFooter className='border-t pt-2'>
+                        {result && (
+                            <PDFDownloadLink
+                                document={<SalesAnalysisPDF content={result} />}
+                                fileName="sales-analysis-report.pdf"
+                                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                            >
+                                {({ loading }) => (
+                                    <>
+                                        <Download className="mr-2 h-4 w-4" />
+                                        {loading ? 'Preparing PDF...' : 'Export to PDF'}
+                                    </>
+                                )}
+                            </PDFDownloadLink>
+                        )}
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

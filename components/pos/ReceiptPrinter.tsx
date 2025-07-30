@@ -6,8 +6,10 @@ import { useRef, useState } from "react"
 import { printBluetoothReceipt } from "@/lib/bluetooth"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 export default function ReceiptPrinter({ order }: { order: any }) {
+    const t = useTranslations('pos');
     const receiptRef = useRef<HTMLDivElement>(null)
     const [isPrinting, setIsPrinting] = useState(false)
 
@@ -102,7 +104,7 @@ export default function ReceiptPrinter({ order }: { order: any }) {
 
             <div className="flex gap-2">
                 <Button onClick={handlePrint} className="flex-1">
-                    Print Struk
+                    {t('print.button')}
                 </Button>
                 <Button
                     variant="outline"

@@ -12,8 +12,11 @@ import {
     SheetTitle,
 } from './ui/sheet';
 import { ScrollArea } from './ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 export function NotificationBell({ userId }: { userId: string }) {
+    const t = useTranslations('notifications');
+
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
@@ -73,17 +76,17 @@ export function NotificationBell({ userId }: { userId: string }) {
                                 {unreadCount}
                             </span>
                         )}
-                        Notifications
+                        {t('title')}
                     </Button>
                 </div>
             </SheetTrigger>
             <SheetContent side="right" className="w-[350px] sm:w-[400px]">
                 <SheetHeader>
-                    <SheetTitle>Notifications</SheetTitle>
+                    <SheetTitle>{t('title')}</SheetTitle>
                 </SheetHeader>
                 <ScrollArea className="max-h-[80vh] rounded-md border">
                     {notifications.length === 0 ? (
-                        <p className="p-4 text-sm text-center">Tidak ada notifikasi</p>
+                        <p className="p-4 text-sm text-center">{t('empty')}</p>
                     ) : (
                         <ul>
                             {notifications.map((notification) => (
@@ -122,7 +125,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                         onClick={markAllAsReadAndDelete}
                     >
                         <CheckCircle2 className="h-4 w-4 mr-1" />
-                        Mark all as read & clear
+                        {t('markAll')}
                     </Button>
                 )}
             </SheetContent>

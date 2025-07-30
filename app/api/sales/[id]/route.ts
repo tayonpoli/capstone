@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { SalesItem, Unit } from '@prisma/client';
 import { convertUnit } from '@/lib/units';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export async function PUT(
   request: Request, {
@@ -9,6 +12,22 @@ export async function PUT(
   }: {
     params: Promise<{ id: string }>
   }) {
+  const session = await getServerSession(authOptions);
+
+  const allowedRoles = ['Admin', 'Owner'];
+
+  // Jika tidak ada session, redirect ke login
+  if (!session?.user) {
+    redirect("/api/auth/signin");
+  }
+
+  if (!allowedRoles.includes(session.user.role)) {
+    return NextResponse.json(
+      { error: 'You are unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params
     const body = await request.json();

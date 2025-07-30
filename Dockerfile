@@ -15,12 +15,20 @@ FROM node:23-alpine AS runner
 
 WORKDIR /work
 
-COPY --from=base /work/package*.json ./
-COPY --from=base /work/node_modules ./node_modules
-COPY --from=base /work/.next ./.next
+COPY --from=base /work/package.json ./
+COPY --from=base /work/next.config.ts ./
 COPY --from=base /work/public ./public
+COPY --from=base /work/.next/standalone ./
+COPY --from=base /work/.next/static ./.next/static
 COPY --from=base /work/prisma ./prisma
 COPY --from=base /work/node_modules/.prisma ./node_modules/.prisma
+
+# COPY --from=base /work/package*.json ./
+# COPY --from=base /work/node_modules ./node_modules
+# COPY --from=base /work/.next ./.next
+# COPY --from=base /work/public ./public
+# COPY --from=base /work/prisma ./prisma
+# COPY --from=base /work/node_modules/.prisma ./node_modules/.prisma
 
 # RUN apk add --no-cache dos2unix && \
 #     dos2unix /usr/local/bin/docker-entrypoint.sh && \
@@ -29,5 +37,6 @@ COPY --from=base /work/node_modules/.prisma ./node_modules/.prisma
 EXPOSE 3000
 
 ENTRYPOINT []
+CMD ["node", "server.js"]
 
-CMD ["npm", "run", "start"]
+# CMD ["npm", "run", "start"]

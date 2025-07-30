@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { convertUnit } from '@/lib/units';
 import { SalesItem, Unit } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export async function POST(req: Request) {
     try {
@@ -144,100 +147,23 @@ export async function POST(req: Request) {
     }
 }
 
-// export async function POST(req: Request) {
-//     try {
-//         const body = await req.json();
-//         const {
-//             customerId,
-//             address,
-//             email,
-//             orderDate,
-//             tag,
-//             status,
-//             memo,
-//             items
-//         } = body;
-
-//         if (!customerId) {
-//             return new NextResponse("Customer ID is required", { status: 400 });
-//         }
-
-//         if (!items || !items.length) {
-//             return new NextResponse("Items are required", { status: 400 });
-//         }
-
-//         // Calculate total
-//         const total = items.reduce((sum: number, item: any) => {
-//             return sum + (item.price * item.quantity);
-//         }, 0);
-
-//         // Start transaction
-//         const result = await prisma.$transaction(async (prisma) => {
-//             // 1. Create sales order
-//             const salesOrder = await prisma.salesOrder.create({
-//                 data: {
-//                     customerId,
-//                     address,
-//                     email,
-//                     orderDate: new Date(orderDate),
-//                     tag,
-//                     status,
-//                     memo,
-//                     total,
-//                     items: {
-//                         create: items.map((item: any) => ({
-//                             productId: item.productId,
-//                             note: item.note,
-//                             quantity: item.quantity,
-//                             price: item.price,
-//                             total: item.price * item.quantity,
-//                         })),
-//                     },
-//                 },
-//                 include: {
-//                     items: true,
-//                 },
-//             });
-
-//             // 2. Update stock for each product
-//             for (const item of items) {
-//                 await prisma.inventory.update({
-//                     where: { id: item.productId },
-//                     data: {
-//                         stock: {
-//                             decrement: item.quantity
-//                         }
-//                     }
-//                 });
-
-//                 // Optional: Check for negative stock (if you want to prevent it)
-//                 const updatedProduct = await prisma.inventory.findUnique({
-//                     where: { id: item.productId }
-//                 });
-
-//                 if (updatedProduct && updatedProduct.stock < 0) {
-//                     throw new Error(`Insufficient stock for product ${item.productId}`);
-//                 }
-//             }
-
-//             return salesOrder;
-//         });
-
-//         return NextResponse.json(result);
-//     } catch (error) {
-//         console.error('[SALES_POST]', error);
-
-//         if (error instanceof Error && error.message.includes('Insufficient stock')) {
-//             return new NextResponse(error.message, { status: 400 });
-//         }
-
-//         return new NextResponse("Internal error", { status: 500 });
-//     } finally {
-//         await prisma.$disconnect();
-//     }
-// }
-
 export async function DELETE(request: Request) {
+    const session = await getServerSession(authOptions);
+
+    const allowedRoles = ['Admin', 'Owner'];
+
+    // Jika tidak ada session, redirect ke login
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    if (!allowedRoles.includes(session.user.role)) {
+        return NextResponse.json(
+            { error: 'You are unauthorized' },
+            { status: 401 }
+        );
+    }
+
     const { id } = await request.json()
 
     if (!id) {

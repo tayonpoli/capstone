@@ -18,11 +18,17 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Type } from '@prisma/client';
 
 const FormSchema = z.object({
     name: z.string().min(1, 'Staff name is required').max(100),
     email: z.string(),
     position: z.string(),
+    type: z.nativeEnum(Type, {
+        errorMap: (issue) => ({
+            message: 'Please select a valid employment type'
+        })
+    }),
     phone: z.string(),
     address: z.string(),
 });
@@ -39,6 +45,7 @@ export function StaffForm({ initialData }: { initialData?: any }) {
             name: '',
             email: '',
             position: '',
+            type: '',
             phone: '',
             address: '',
         },
@@ -136,6 +143,27 @@ export function StaffForm({ initialData }: { initialData?: any }) {
                                                 <SelectItem value="Barista">Barista</SelectItem>
                                                 <SelectItem value="Headbar">Head Bar</SelectItem>
                                                 <SelectItem value="Admin">Admin</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name='type'
+                                render={({ field }) => (
+                                    <FormItem className='w-50'>
+                                        <FormLabel>Type</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder="Select employment type" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="FullTime">Full-Time</SelectItem>
+                                                <SelectItem value="PartTime">Part-Time</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />

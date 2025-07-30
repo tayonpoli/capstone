@@ -23,6 +23,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { PurchasePaymentFormProps } from "@/types/purchase";
 
 const paymentSchema = z.object({
     amount: z.number().min(1, "Amount must be greater than 0"),
@@ -33,12 +34,6 @@ const paymentSchema = z.object({
         required_error: "Payment date is required.",
     }),
 });
-
-interface PurchasePaymentFormProps {
-    purchaseId: string;
-    remainingAmount: number;
-    onSuccess?: () => void;
-}
 
 export function PaymentPurchase({ purchaseId, remainingAmount }: PurchasePaymentFormProps) {
 

@@ -2,7 +2,7 @@
 
 import { formatIDR } from "@/lib/formatCurrency"
 import { SalesOrder, Customer, SalesItem, Inventory, SalesInvoice } from "@prisma/client"
-import { MapPinIcon, MailIcon, CreditCardIcon } from "lucide-react"
+import { CreditCardIcon } from "lucide-react"
 import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"

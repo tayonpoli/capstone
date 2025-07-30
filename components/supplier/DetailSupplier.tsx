@@ -1,10 +1,22 @@
 import { Supplier } from "@prisma/client"
-import { InfoIcon, Undo2Icon } from "lucide-react"
+import { Undo2Icon } from "lucide-react"
 import { Button } from "../ui/button"
 import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Label } from "../ui/label"
+import { Badge } from "../ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 
 interface SupplierDetailProps {
-    supplier: Supplier
+    supplier: Supplier & {
+        contacts?: {
+            id: string
+            name: string
+            department: string
+            email: string | null
+            phone: string | null
+        }[]
+    }
 }
 
 export function DetailSupplier({ supplier }: SupplierDetailProps) {
@@ -32,30 +44,75 @@ export function DetailSupplier({ supplier }: SupplierDetailProps) {
                     </Button>
                 </div>
             </div>
-            <div>
-                <div className="lg:w-150 grid grid-cols-2 gap-8 mt-2">
-                    <div className="mt-4 col-span-2 flex flex-center items-center text-lg font-semibold">
-                        <InfoIcon />
-                        <h2 className="ml-3">Supplier Information</h2>
+            <Card className="mb-4">
+                <CardHeader>
+                    <CardTitle>
+                        Supplier Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-2/3 flex grid grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Name
+                            </CardDescription>
+                            <Label className="text-md font-medium">{supplier.name}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Email
+                            </CardDescription>
+                            <Label className="text-md font-medium">{supplier.email || '-'}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Phone Number
+                            </CardDescription>
+                            <Label className="text-md font-medium">{supplier.phone || '-'}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Address
+                            </CardDescription>
+                            <Label className="text-md font-medium">{supplier.address || '-'}</Label>
+                        </div>
                     </div>
-                    <div className="font-medium text-gray-500">
-                        Name
-                    </div>
-                    <div className="font-medium">{supplier.name}</div>
-                    <div className="font-medium text-gray-500">
-                        Email
-                    </div>
-                    <div className="font-medium">{supplier.email}</div>
-                    <div className="font-medium text-gray-500">
-                        Phone Number
-                    </div>
-                    <div className="font-medium">{supplier.phone}</div>
-                    <div className="font-medium text-gray-500">
-                        Address
-                    </div>
-                    <div className="font-medium">{supplier.address}</div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
+
+            {supplier.contacts && supplier.contacts.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Contacts</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader className="bg-muted">
+                                <TableRow>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Department</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Phone</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {supplier.contacts.map((contact) => (
+                                    <TableRow key={contact.id}>
+                                        <TableCell>{contact.name}</TableCell>
+                                        <TableCell>
+                                            <Badge variant='secondary'>
+                                                {contact.department}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>{contact.email || '-'}</TableCell>
+                                        <TableCell>{contact.phone || '-'}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     )
 }

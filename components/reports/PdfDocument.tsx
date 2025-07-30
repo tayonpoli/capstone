@@ -1,24 +1,6 @@
 import { formatIDR } from '@/lib/formatCurrency'
 import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer'
 
-// Register fonts (you'll need to provide these files)
-Font.register({
-  family: 'Open Sans',
-  fonts: [
-    { src: '/fonts/OpenSans-Regular.ttf' },
-    { src: '/fonts/OpenSans-Bold.ttf', fontWeight: 'bold' },
-    { src: '/fonts/OpenSans-Italic.ttf', fontStyle: 'italic' },
-  ]
-});
-
-Font.register({
-  family: 'Roboto',
-  fonts: [
-    { src: '/fonts/Roboto-Regular.ttf' },
-    { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' },
-  ]
-});
-
 const styles = StyleSheet.create({
   page: {
     padding: 40,
@@ -30,10 +12,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   header: {
-    marginBottom: 20,
+    marginBottom: 10,
     paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4E4E4'
   },
   companyHeader: {
     flexDirection: 'row',
@@ -42,36 +22,28 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 120,
-    height: 50,
+    height: 48,
     objectFit: 'contain'
   },
   companyInfo: {
-    textAlign: 'right',
     fontSize: 9,
     color: '#555555'
   },
   titleSection: {
     textAlign: 'center',
-    marginVertical: 15
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
-    color: '#2C3E50',
-    fontFamily: 'Roboto'
-  },
-  subtitle: {
-    fontSize: 12,
-    color: '#7F8C8D',
-    marginTop: 5
+    fontFamily: 'Helvetica'
   },
   reportInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    backgroundColor: '#F8F9FA',
+    marginBottom: 10,
+    marginTop: 5,
+    backgroundColor: "#e5e5e5",
     padding: 10,
-    borderRadius: 5
   },
   infoBox: {
     width: '30%'
@@ -84,7 +56,6 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#2C3E50'
   },
   summaryCards: {
     flexDirection: 'row',
@@ -104,22 +75,17 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   cardValue: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#2C3E50'
   },
   table: {
     display: "flex",
     width: "100%",
     marginBottom: 20,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: '#E4E4E4',
-    borderRadius: 5,
     overflow: 'hidden'
   },
   tableHeader: {
-    backgroundColor: '#2C3E50',
+    backgroundColor: '#9e9e9e',
     flexDirection: "row"
   },
   tableColHeader: {
@@ -129,11 +95,11 @@ const styles = StyleSheet.create({
   headerText: {
     fontWeight: 'bold',
     fontSize: 10,
-    color: 'white',
-    fontFamily: 'Roboto'
+    fontFamily: 'Helvetica'
   },
   bodyText: {
-    fontSize: 9
+    fontSize: 9,
+    textAlign: 'center'
   },
   tableRow: {
     flexDirection: "row",
@@ -176,17 +142,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E4E4E4',
     borderRadius: 5,
-    backgroundColor: '#F8F9FA'
+    backgroundColor: '#f5f5f5',
   },
   notesTitle: {
     fontSize: 10,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#2C3E50'
   },
   notesText: {
     fontSize: 9,
-    color: '#7F8C8D'
+    color: '#7F8C8D',
+    marginBottom: 4,
   }
 });
 
@@ -224,12 +190,11 @@ export const PdfDocument = ({
     address?: string;
     phone?: string;
     email?: string;
-    logo?: string;
   },
   summaryData?: {
     totalAmount?: number;
     totalOrders?: number;
-    averageOrder?: number;
+    account?: number;
     paidOrders?: number;
     unpaidOrders?: number;
   }
@@ -237,12 +202,12 @@ export const PdfDocument = ({
   // Column widths
   const colWidths = {
     date: '12%',
-    reference: '15%',
-    customer: '23%',
-    amount: '15%',
-    status: '15%',
+    reference: '10%',
+    customer: '18%',
+    type: '15%',
     payment: '15%',
-    items: '10%'
+    status: '15%',
+    amount: '15%',
   };
 
   return (
@@ -251,64 +216,63 @@ export const PdfDocument = ({
         {/* Header with company info */}
         <View style={styles.header}>
           <View style={styles.companyHeader}>
-            {/* {companyInfo.logo && (
-              <Image
-                src={companyInfo.logo}
-                style={styles.logo}
-              />
-            )} */}
-            <View style={styles.companyInfo}>
-              <Text>{companyInfo.name || 'Your Company Name'}</Text>
-              <Text>{companyInfo.address || 'Company Address'}</Text>
-              <Text>Phone: {companyInfo.phone || '(+123) 456-7890'}</Text>
-              <Text>Email: {companyInfo.email || 'info@company.com'}</Text>
+            <Image
+              src={'/logo.png'}
+              style={styles.logo}
+            />
+            <View style={styles.titleSection}>
+              <Text style={styles.title}>
+                {reportType === 'sales' ? 'Laporan Penjualan' : 'Laporan Pembelian'}
+              </Text>
+              <Text style={styles.companyInfo}>
+                {dateRange?.from?.toLocaleDateString() || 'N/A'} -{' '}
+                {dateRange?.to?.toLocaleDateString() || 'N/A'}
+              </Text>
             </View>
           </View>
-        </View>
-
-        {/* Report title */}
-        <View style={styles.titleSection}>
-          <Text style={styles.title}>
-            {reportType === 'sales' ? 'SALES TRANSACTION REPORT' : 'PURCHASE ORDER REPORT'}
-          </Text>
-          <Text style={styles.subtitle}>
-            {dateRange?.from?.toLocaleDateString() || 'N/A'} -{' '}
-            {dateRange?.to?.toLocaleDateString() || 'N/A'}
-          </Text>
+          <View style={styles.companyInfo}>
+            <Text>{companyInfo.name || 'Your Company Name'}</Text>
+            <Text>{companyInfo.address || 'Company Address'}</Text>
+            <Text>{companyInfo.phone || '(+123) 456-7890'}</Text>
+            <Text>{companyInfo.email || 'info@company.com'}</Text>
+          </View>
         </View>
 
         {/* Report info */}
         <View style={styles.reportInfo}>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Report Generated</Text>
+            <Text style={styles.infoLabel}>Dicetak</Text>
             <Text style={styles.infoValue}>{new Date().toLocaleDateString()}</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Period</Text>
+            <Text style={styles.infoLabel}>Periode</Text>
             <Text style={styles.infoValue}>
               {dateRange?.from?.toLocaleDateString() || 'N/A'} -{' '}
               {dateRange?.to?.toLocaleDateString() || 'N/A'}
             </Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Total Records</Text>
+            <Text style={styles.infoLabel}>Total Transaksi</Text>
             <Text style={styles.infoValue}>{data.length}</Text>
           </View>
         </View>
 
-        {/* Summary cards */}
-        <View style={styles.summaryCards}>
-          <View style={[styles.card, { borderLeftColor: '#2C3E50' }]}>
-            <Text style={styles.cardTitle}>TOTAL {reportType === 'sales' ? 'SALES' : 'PURCHASES'}</Text>
+        <Text style={styles.title}>
+          Ringkasan
+        </Text>
+
+        <View style={styles.reportInfo}>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoLabel}>Total {reportType === 'sales' ? 'Penjualan' : 'Pembelian'}</Text>
             <Text style={styles.cardValue}>{formatIDR(summaryData.totalAmount || 0)}</Text>
           </View>
-          <View style={[styles.card, { borderLeftColor: '#27AE60' }]}>
-            <Text style={styles.cardTitle}>TOTAL ORDERS</Text>
-            <Text style={styles.cardValue}>{summaryData.totalOrders || 0}</Text>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoLabel}>Total {reportType === 'sales' ? 'Piutang' : 'Hutang'}</Text>
+            <Text style={styles.cardValue}>{formatIDR(summaryData.account || 0)}</Text>
           </View>
-          <View style={[styles.card, { borderLeftColor: '#2980B9' }]}>
-            <Text style={styles.cardTitle}>AVG. ORDER VALUE</Text>
-            <Text style={styles.cardValue}>{formatIDR(summaryData.averageOrder || 0)}</Text>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoLabel}>Total Transaksi</Text>
+            <Text style={styles.cardValue}>{summaryData.totalOrders || 0} {reportType === 'sales' ? 'pesanan' : 'pembelian'}</Text>
           </View>
         </View>
 
@@ -317,27 +281,27 @@ export const PdfDocument = ({
           {/* Table Header */}
           <View style={styles.tableHeader}>
             <View style={[styles.tableColHeader, { width: colWidths.date }]}>
-              <Text style={styles.headerText}>Date</Text>
+              <Text style={styles.headerText}>Tanggal</Text>
             </View>
             <View style={[styles.tableColHeader, { width: colWidths.reference }]}>
-              <Text style={styles.headerText}>Order #</Text>
+              <Text style={styles.headerText}>ID</Text>
             </View>
             <View style={[styles.tableColHeader, { width: colWidths.customer }]}>
               <Text style={styles.headerText}>
                 {reportType === 'sales' ? 'Customer' : 'Supplier'}
               </Text>
             </View>
-            <View style={[styles.tableColHeader, { width: colWidths.amount }]}>
-              <Text style={styles.headerText}>Amount</Text>
+            <View style={[styles.tableColHeader, { width: colWidths.type }]}>
+              <Text style={styles.headerText}>Tipe Pesanan</Text>
+            </View>
+            <View style={[styles.tableColHeader, { width: colWidths.payment }]}>
+              <Text style={styles.headerText}>Metode Pembayaran</Text>
             </View>
             <View style={[styles.tableColHeader, { width: colWidths.status }]}>
               <Text style={styles.headerText}>Status</Text>
             </View>
-            <View style={[styles.tableColHeader, { width: colWidths.payment }]}>
-              <Text style={styles.headerText}>Payment</Text>
-            </View>
-            <View style={[styles.tableColHeader, { width: colWidths.items }]}>
-              <Text style={styles.headerText}>Items</Text>
+            <View style={[styles.tableColHeader, { width: colWidths.amount }]}>
+              <Text style={styles.headerText}>Nilai Pesanan</Text>
             </View>
           </View>
 
@@ -355,34 +319,36 @@ export const PdfDocument = ({
                 </View>
                 <View style={[styles.tableCol, { width: colWidths.reference }]}>
                   <Text style={styles.bodyText}>
-                    {item.id.substring(0, 8).toUpperCase()}
+                    {item.id.substring(0, 4).toUpperCase()}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: colWidths.customer }]}>
                   <Text style={styles.bodyText}>
                     {reportType === 'sales'
-                      ? item.customer?.name || 'N/A'
+                      ? item.customerName || item.customer?.name || 'N/A'
                       : item.supplier?.name || 'N/A'}
+                  </Text>
+                </View>
+                <View style={[styles.tableCol, { width: colWidths.type }]}>
+                  <Text style={styles.bodyText}>
+                    {item.tag}
+                  </Text>
+                </View>
+                <View style={[styles.tableCol, { width: colWidths.payment }]}>
+                  <Text style={styles.bodyText}>
+                    {reportType === 'sales'
+                      ? item.SalesInvoice?.[0]?.paymentMethod || 'N/A'
+                      : item.Invoice?.[0]?.paymentMethod || 'N/A'}
+                  </Text>
+                </View>
+                <View style={[styles.tableCol, { width: colWidths.status }]}>
+                  <Text style={[styles.statusBadge, paymentStyle]}>
+                    {item.paymentStatus}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: colWidths.amount }]}>
                   <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>
                     {formatIDR(item.total)}
-                  </Text>
-                </View>
-                <View style={[styles.tableCol, { width: colWidths.status }]}>
-                  <Text style={[styles.statusBadge, statusStyle]}>
-                    {item.status}
-                  </Text>
-                </View>
-                <View style={[styles.tableCol, { width: colWidths.payment }]}>
-                  <Text style={[styles.statusBadge, paymentStyle]}>
-                    {item.paymentStatus}
-                  </Text>
-                </View>
-                <View style={[styles.tableCol, { width: colWidths.items }]}>
-                  <Text style={styles.bodyText}>
-                    {item.items?.length || 0}
                   </Text>
                 </View>
               </View>
@@ -392,15 +358,18 @@ export const PdfDocument = ({
 
         {/* Notes section */}
         <View style={styles.notesSection}>
-          <Text style={styles.notesTitle}>Report Notes</Text>
+          <Text style={styles.notesTitle}>Catatan Laporan</Text>
           <Text style={styles.notesText}>
-            • This report includes all {reportType === 'sales' ? 'sales orders' : 'purchase orders'} within the specified date range.
+            • Laporan ini memuat semua transaksi {reportType === 'sales' ? 'penjualan' : 'pembelian'} dalam periode tanggal yang ditentukan.
           </Text>
           <Text style={styles.notesText}>
-            • Amounts are shown in IDR (Indonesian Rupiah).
+            • Semua angka dalam IDR (Indonesian Rupiah).
           </Text>
           <Text style={styles.notesText}>
-            • Status indicators: Completed (green), Approved (blue), Draft (orange), Cancelled (red).
+            • Untuk keperluan penghitungan, total angka dalam laporan ini akan dibulatkan jika perlu.
+          </Text>
+          <Text style={styles.notesText}>
+            • Status Indikator: Paid (green), Unpaid (red).
           </Text>
         </View>
 
@@ -417,145 +386,3 @@ export const PdfDocument = ({
     </Document>
   )
 }
-// import { formatIDR } from '@/lib/formatCurrency'
-// import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer'
-
-// const styles = StyleSheet.create({
-//   page: {
-//     padding: 30,
-//     fontFamily: 'Helvetica'
-//   },
-//   header: {
-//     marginBottom: 20,
-//     textAlign: 'center'
-//   },
-//   title: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     marginBottom: 10
-//   },
-//   dateRange: {
-//     fontSize: 12,
-//     marginBottom: 20
-//   },
-//   table: {
-//     display: "flex",
-//     width: "100%",
-//     borderStyle: "solid",
-//     borderWidth: 1,
-//     borderRightWidth: 0,
-//     borderBottomWidth: 0
-//   },
-//   tableRow: {
-//     flexDirection: "row"
-//   },
-//   tableColHeader: {
-//     width: "25%",
-//     borderStyle: "solid",
-//     borderWidth: 1,
-//     borderLeftWidth: 0,
-//     borderTopWidth: 0,
-//     backgroundColor: '#f0f0f0',
-//     padding: 5
-//   },
-//   tableCol: {
-//     width: "25%",
-//     borderStyle: "solid",
-//     borderWidth: 1,
-//     borderLeftWidth: 0,
-//     borderTopWidth: 0,
-//     padding: 5
-//   },
-//   headerText: {
-//     fontWeight: 'bold',
-//     fontSize: 10
-//   },
-//   bodyText: {
-//     fontSize: 9
-//   },
-//   footer: {
-//     position: 'absolute',
-//     bottom: 30,
-//     left: 0,
-//     right: 0,
-//     textAlign: 'center',
-//     fontSize: 10,
-//     color: 'grey'
-//   }
-// })
-
-// export const PdfDocument = ({
-//   data,
-//   reportType,
-//   dateRange
-// }: {
-//   data: any[],
-//   reportType: string,
-//   dateRange?: { from?: Date | null, to?: Date | null } // Tambahkan optional chaining
-// }) => (
-//   <Document>
-//     <Page size="A4" style={styles.page}>
-//       <View style={styles.header}>
-//         <Text style={styles.title}>
-//           {reportType === 'sales' ? 'SALES REPORT' : 'PURCHASING REPORT'}
-//         </Text>
-//         {/* Tambahkan pengecekan null */}
-//         <Text style={styles.dateRange}>
-//           {dateRange?.from?.toLocaleDateString() || 'N/A'} -{' '}
-//           {dateRange?.to?.toLocaleDateString() || 'N/A'}
-//         </Text>
-//       </View>
-
-//       <View style={styles.table}>
-//         {/* Table Header */}
-//         <View style={styles.tableRow}>
-//           <View style={styles.tableColHeader}>
-//             <Text style={styles.headerText}>Date</Text>
-//           </View>
-//           <View style={styles.tableColHeader}>
-//             <Text style={styles.headerText}>
-//               {reportType === 'sales' ? 'Customer' : 'Supplier'}
-//             </Text>
-//           </View>
-//           <View style={styles.tableColHeader}>
-//             <Text style={styles.headerText}>Amount</Text>
-//           </View>
-//           <View style={styles.tableColHeader}>
-//             <Text style={styles.headerText}>Status</Text>
-//           </View>
-//         </View>
-
-//         {/* Table Rows */}
-//         {data.map((item, index) => (
-//           <View key={index} style={styles.tableRow}>
-//             <View style={styles.tableCol}>
-//               <Text style={styles.bodyText}>
-//                 {new Date(item.orderDate || item.purchaseDate).toLocaleDateString()}
-//               </Text>
-//             </View>
-//             <View style={styles.tableCol}>
-//               <Text style={styles.bodyText}>
-//                 {reportType === 'sales' ? item.customer?.name : item.supplier?.name}
-//               </Text>
-//             </View>
-//             <View style={styles.tableCol}>
-//               <Text style={styles.bodyText}>
-//                 {formatIDR(item.total)}
-//               </Text>
-//             </View>
-//             <View style={styles.tableCol}>
-//               <Text style={styles.bodyText}>
-//                 {item.status}
-//               </Text>
-//             </View>
-//           </View>
-//         ))}
-//       </View>
-
-//       {/* Footer */}
-//       <View style={styles.footer}>
-//         <Text>Generated on {new Date().toLocaleDateString()}</Text>
-//       </View>
-//     </Page>
-//   </Document>
-// )

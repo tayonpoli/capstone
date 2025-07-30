@@ -1,6 +1,5 @@
 'use client';
 
-// OrderItem.tsx (buat file terpisah)
 import { useWatch } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -16,7 +15,7 @@ export function PurchaseItem({
     onRemove,
     canRemove,
 }: {
-    form: any; // Gunakan tipe yang lebih spesifik jika ada
+    form: any;
     index: number;
     products: Inventory[];
     onRemove: () => void;

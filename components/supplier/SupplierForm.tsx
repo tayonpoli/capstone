@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import {
     Form,
     FormControl,
@@ -17,12 +17,22 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Textarea } from '../ui/textarea';
+import { Plus } from 'lucide-react';
+import { Card } from '../ui/card';
+
+const ContactSchema = z.object({
+    name: z.string().min(1, 'Contact name is required'),
+    department: z.string().min(1, 'Department is required'),
+    email: z.string().email('Invalid email address').or(z.literal('')),
+    phone: z.string(),
+});
 
 const FormSchema = z.object({
     name: z.string().min(1, 'Supplier name is required').max(100),
-    email: z.string(),
+    email: z.string().email('Invalid email address').or(z.literal('')),
     phone: z.string(),
     address: z.string(),
+    contacts: z.array(ContactSchema).optional(),
 });
 
 export function SupplierForm({ initialData }: { initialData?: any }) {
@@ -33,12 +43,19 @@ export function SupplierForm({ initialData }: { initialData?: any }) {
         resolver: zodResolver(FormSchema),
         defaultValues: initialData ? {
             ...initialData,
+            contacts: initialData.contacts || [],
         } : {
             name: '',
             email: '',
             phone: '',
             address: '',
+            contacts: [],
         },
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: 'contacts',
     });
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
@@ -75,14 +92,14 @@ export function SupplierForm({ initialData }: { initialData?: any }) {
         <div className='p-3'>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
-                    <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-4 items-start'>
-                        <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
+                    <div className='space-y-6 grid gap-4 md:grid-cols-3 xl:grid-cols-4 my-4 items-start'>
+                        <div className='col-span-2 space-y-6 gap-6 grid grid-cols-2 items-start'>
                             <FormField
                                 control={form.control}
                                 name='name'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Supplier Name</FormLabel>
+                                        <FormLabel>Name</FormLabel>
                                         <FormControl>
                                             <Input placeholder='John doe' {...field} />
                                         </FormControl>
@@ -94,8 +111,8 @@ export function SupplierForm({ initialData }: { initialData?: any }) {
                                 control={form.control}
                                 name='email'
                                 render={({ field }) => (
-                                    <FormItem className='w-50'>
-                                        <FormLabel>Supplier Email</FormLabel>
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
                                         <FormControl>
                                             <Input placeholder='supplier@mail.com' {...field} />
                                         </FormControl>
@@ -116,24 +133,113 @@ export function SupplierForm({ initialData }: { initialData?: any }) {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                control={form.control}
+                                name='address'
+                                render={({ field }) => (
+                                    <FormItem className='max-w-lg'>
+                                        <FormLabel>Address</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder='Company address' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
-                        <FormField
-                            control={form.control}
-                            name='address'
-                            render={({ field }) => (
-                                <FormItem
-                                    className='col-span-2 max-w-lg'
-                                >
-                                    <FormLabel>Supplier Address</FormLabel>
-                                    <FormControl>
-                                        <Textarea placeholder='Supplier Street'
-                                            {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                     </div>
+
+                    {/* Contacts Section */}
+                    <div className="mt-8 border-t pt-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-medium">Contacts</h3>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => append({ name: '', department: '', email: '', phone: '' })}
+                            >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Contact
+                            </Button>
+                        </div>
+
+                        {fields.length === 0 ? (
+                            <Card className="text-center py-4 text-gray-500">
+                                No contacts added yet.
+                            </Card>
+                        ) : (
+                            <div className="space-y-4">
+                                {fields.map((field, index) => (
+                                    <Card key={field.id} className="p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <FormField
+                                            control={form.control}
+                                            name={`contacts.${index}.name`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Contact name" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name={`contacts.${index}.department`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Department</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Department" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name={`contacts.${index}.email`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Email</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="contact@mail.com" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name={`contacts.${index}.phone`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Phone</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Phone number" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <div className="md:col-span-4 flex justify-end">
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => remove(index)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     <div className='fixed bottom-16 right-14 space-x-4'>
                         <Button asChild variant='outline'>
                             <Link href={'/supplier'}>

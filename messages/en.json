@@ -1,0 +1,297 @@
+{
+    "HomePage": {
+        "title": "Dashboard",
+        "subTitle": "Business Overview",
+        "revenue": {
+            "title": "Total Revenue",
+            "desc": "Total revenue in this current month"
+        },
+        "purchases": {
+            "title": "Total Purchases",
+            "desc": "Total purchase in this current month"
+        },
+        "expenses": {
+            "title": "Total Expenses",
+            "desc": "Total expenses in this current month"
+        },
+        "receivable": {
+            "title": "Account Receivable",
+            "desc": "Total account receivable in this current month"
+        },
+        "payable": {
+            "title": "Account Payable",
+            "desc": "Total account payable in this current month"
+        },
+        "longChart": {
+            "title": "Revenue & Purchase",
+            "desc3": "Showing revenue and purchases for the last 3 months",
+            "desc30": "Showing revenue and purchases for the last 30 days",
+            "desc7": "Showing revenue and purchases for the last 7 days",
+            "select3": "Last 3 months",
+            "select30": "Last 30 days",
+            "select7": "Last 7 days"
+        },
+        "salesChart": {
+            "title": "Daily Sales",
+            "desc": "Showing daily sales for the Last 7 days"
+        },
+        "expensesChart": {
+            "title": "Monthly Expenses",
+            "desc": "Showing monthly expenses by category",
+            "down": "Monthly expenses decreased by ",
+            "up": "Monthly expenses increased by ",
+            "footer": "Showing total expenses for this current month"
+        },
+        "purchaseChart": {
+            "title": "Recent Purchase",
+            "desc": "Showing recent purchase orders",
+            "date": "Date",
+            "total": "Amount"
+        }
+    },
+    "Sidebar": {
+        "overview": "Overview",
+        "pos": "Point of Sales",
+        "sales": "Sales",
+        "purchase": "Purchasing",
+        "expenses": "Expenses",
+        "inventory": "Inventory",
+        "guide": "Help Centre",
+        "production": "Production",
+        "contacts": {
+            "customer": "Customers",
+            "vendor": "Supplier",
+            "staff": "Employee"
+        },
+        "footer": {
+            "notif": "Notifications",
+            "user": "User Management"
+        },
+        "profile": {
+            "account": "Account",
+            "logout": "Log out"
+        }
+    },
+    "pos": {
+        "title": "Point of Sales",
+        "backButton": "Back to Dashboard",
+        "summary": {
+            "title": "Order Summary",
+            "name": "Customer name",
+            "empty": "No products",
+            "create": "Create Order"
+        },
+        "print": {
+            "title": "Print Receipt",
+            "button": "Print Receipt"
+        }
+    },
+    "sales": {
+        "title": "Sales",
+        "create": "Create New Sales",
+        "generate": "Generate Report",
+        "card": {
+            "revenue": "Total Revenue",
+            "receivable": "Account Receivable",
+            "transaction": "Sales Transactions",
+            "customer": "Customers"
+        },
+        "tabs": {
+            "pos": "Point of Sales",
+            "sales": "Sales Order"
+        },
+        "column": {
+            "search": "Search customer...",
+            "staff": "Staff",
+            "customer": "Customer Name",
+            "date": "Order Date",
+            "type": "Type",
+            "payment": "Payment Method",
+            "status": "Payment Status",
+            "total": "Total Amount"
+        }
+    },
+    "purchase": {
+        "title": "Purchase",
+        "create": "Create New Purchase",
+        "generate": "Generate Report",
+        "card": {
+            "purchases": "Total Purchases",
+            "payable": "Account Payable",
+            "transaction": "Purchase Transactions",
+            "supplier": "Suppliers"
+        },
+        "tabs": {
+            "order": "Purchase Order",
+            "invoice": "Purchase Invoice"
+        },
+        "column": {
+            "search": "Search supplier...",
+            "supplier": "Supplier",
+            "contact": "Supplier Contact",
+            "date": "Purchase Date",
+            "memo": "Memo",
+            "status": "Status",
+            "total": "Total Amount"
+        }
+    },
+    "expenses": {
+        "title": "Expenses List",
+        "create": "Create New Expenses",
+        "card": {
+            "expenses": "Total Expenses",
+            "payable": "Account Payable",
+            "transaction": "Expenses Transactions",
+            "vendor": "Vendors"
+        },
+        "column": {
+            "search": "Search vendor...",
+            "vendor": "Vendor",
+            "date": "Expenses Date",
+            "category": "Category",
+            "memo": "Memo",
+            "status": "Status",
+            "total": "Total Amount"
+        }
+    },
+    "inventory": {
+        "title": "Inventory",
+        "create": "Create New Item",
+        "detail": "Product Details",
+        "card": {
+            "listed": "Listed Items",
+            "low": "Low Stock",
+            "out": "Out of Stock",
+            "in": "In Stock"
+        },
+        "column": {
+            "title": "Product Information",
+            "search": "Search products...",
+            "product": "Product",
+            "sku": "SKU",
+            "desc": "Description",
+            "category": "Category",
+            "buy": "Buy Price",
+            "sell": "Sell Price",
+            "stock": "Stock"
+        },
+        "recent": {
+            "title": "Recent Purchases",
+            "date": "Purchase Date",
+            "id": "Purchase ID",
+            "qty": "Quantity",
+            "unit": "Unit Price",
+            "total": "Total Price"
+        }
+    },
+    "production": {
+        "title": "Production",
+        "create": "Create New BOM",
+        "card": {
+            "bom": "Bills of Material",
+            "product": "Products",
+            "material": "Raw Material",
+            "in": "In Stock"
+        },
+        "column": {
+            "search": "Search BOM...",
+            "title": "Title",
+            "desc": "Description",
+            "tag": "Tag",
+            "output": "Output Product",
+            "cost": "Total Cost"
+        }
+    },
+    "staff": {
+        "title": "Human Resource",
+        "subTitle": "Employee",
+        "create": "Add New Employee",
+        "column": {
+            "search": "Search employee...",
+            "name": "Name",
+            "email": "Email",
+            "position": "Position",
+            "type": "Type",
+            "phone": "Phone",
+            "address": "Address"
+        }
+    },
+    "contacts": {
+        "title": "Contacts",
+        "customer": {
+            "subTitle": "Customers",
+            "create": "Add New Customer",
+            "search": "Search customer..."
+        },
+        "supplier": {
+            "subTitle": "Supplier",
+            "create": "Add New Supplier",
+            "search": "Search supplier..."
+        },
+        "card": {
+            "customer": "Customers",
+            "supplier": "Suppliers",
+            "staff": "Staff"
+        },
+        "column": {
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address"
+        }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "markAll": "Mark all as read & clear",
+        "empty": "No notifications"
+    },
+    "user": {
+        "title": "User Management",
+        "create": "Invite User",
+        "tabs": {
+            "users": "Users",
+            "invitation": "Invitation"
+        },
+        "userColumn": {
+            "search": "Search user...",
+            "name": "User name",
+            "email": "Email",
+            "role": "Role",
+            "Status": "Status"
+        },
+        "inviteColumn": {
+            "search": "Search email...",
+            "email": "Email",
+            "role": "Role",
+            "date": "Expired Date"
+        }
+    },
+    "profile": {
+        "title": "Account",
+        "subTitle": "User Profile",
+        "personal": {
+            "title": "Personal Information",
+            "name": "Full name",
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address",
+            "role": "Role"
+        },
+        "company": {
+            "title": "Company Information",
+            "name": "Company name",
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address"
+        },
+        "change": {
+            "title": "Change Password",
+            "desc": "You can change your password account here",
+            "button": "Change Password"
+        }
+    },
+    "unauthorized": {
+        "desc": "Oops! Sorry you do not have enough authorization for accessing this feature. You need a higher user authorization.",
+        "button": "Back to Dashboard"
+    }
+}

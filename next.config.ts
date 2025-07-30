@@ -1,15 +1,9 @@
-import type { NextConfig } from "next";
-/** @type {import('next').NextConfig} */
-
-module.exports = {
-  output: "standalone",
-};
+import { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  experimental: {
-    authInterrupts: true,
-  },
+    output: 'standalone'
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+export default withNextIntl(nextConfig);

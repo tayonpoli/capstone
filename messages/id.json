@@ -1,0 +1,297 @@
+{
+    "HomePage": {
+        "title": "Dasbor",
+        "subTitle": "Ringkasan Bisnis",
+        "revenue": {
+            "title": "Total Pendapatan",
+            "desc": "Total pendapatan di bulan ini"
+        },
+        "purchases": {
+            "title": "Total Pembelian",
+            "desc": "Total pembelian di bulan ini"
+        },
+        "expenses": {
+            "title": "Total Pengeluaran",
+            "desc": "Total pengeluaran di bulan ini"
+        },
+        "receivable": {
+            "title": "Piutang Usaha",
+            "desc": "Total piutang usaha di bulan ini"
+        },
+        "payable": {
+            "title": "Utang Usaha",
+            "desc": "Total utang usaha di bulan ini"
+        },
+        "longChart": {
+            "title": "Pendapatan & Pembelian",
+            "desc3": "Menampilkan pendapatan dan pembelian selama 3 bulan terakhir",
+            "desc30": "Menampilkan pendapatan dan pembelian selama 30 hari terakhir",
+            "desc7": "Menampilkan pendapatan dan pembelian selama 7 hari terakhir",
+            "select3": "3 Bulan Terakhir",
+            "select30": "30 Hari Terakhir",
+            "select7": "7 Hari Terakhir"
+        },
+        "salesChart": {
+            "title": "Penjualan Harian",
+            "desc": "Menampilkan penjualan harian selama 7 hari terakhir"
+        },
+        "expensesChart": {
+            "title": "Pengeluaran Bulanan",
+            "desc": "Menampilkan pengeluaran bulanan berdasarkan kategori",
+            "down": "Pengeluaran bulan ini turun sebesar ",
+            "up": "Pengeluaran bulan ini naik sebesar ",
+            "footer": "Menampilkan total pengeluaran di bulan ini"
+        },
+        "purchaseChart": {
+            "title": "Pembelian Terbaru",
+            "desc": "Menampilkan pesanan pembelian terakhir",
+            "date": "Tanggal",
+            "total": "Jumlah"
+        }
+    },
+    "Sidebar": {
+        "overview": "Dasbor",
+        "pos": "Kasir",
+        "sales": "Penjualan",
+        "purchase": "Pembelian",
+        "expenses": "Pengeluaran",
+        "inventory": "Inventaris",
+        "guide": "Pusat Bantuan",
+        "production": "Produksi",
+        "contacts": {
+            "customer": "Pelanggan",
+            "vendor": "Supplier",
+            "staff": "Karyawan"
+        },
+        "footer": {
+            "notif": "Notifikasi",
+            "user": "Manajemen Pengguna"
+        },
+        "profile": {
+            "account": "Akun",
+            "logout": "Keluar"
+        }
+    },
+    "pos": {
+        "title": "Point of Sales",
+        "backButton": "Kembali ke Dashboard",
+        "summary": {
+            "title": "Ringkasan Pesanan",
+            "name": "Nama Pelanggan",
+            "empty": "Tidak ada produk",
+            "create": "Buat Pesanan"
+        },
+        "print": {
+            "title": "Cetak Resi",
+            "button": "Cetak Resi"
+        }
+    },
+    "sales": {
+        "title": "Penjualan",
+        "create": "Buat Penjualan Baru",
+        "generate": "Buat Laporan",
+        "card": {
+            "revenue": "Total Pendapatan",
+            "receivable": "Piutang Usaha",
+            "transaction": "Transaksi Penjualan",
+            "customer": "Pelanggan"
+        },
+        "tabs": {
+            "pos": "Point of Sales",
+            "sales": "Pesanan Penjualan"
+        },
+        "column": {
+            "search": "Cari pelanggan...",
+            "staff": "Staf",
+            "customer": "Nama Pelanggan",
+            "date": "Tanggal Pesanan",
+            "type": "Tipe",
+            "payment": "Metode Pembayaran",
+            "status": "Status Pembayaran",
+            "total": "Jumlah Total"
+        }
+    },
+    "purchase": {
+        "title": "Pembelian",
+        "create": "Buat Pembelian Baru",
+        "generate": "Buat Laporan",
+        "card": {
+            "purchases": "Total Pembelian",
+            "payable": "Utang Usaha",
+            "transaction": "Transaksi Pembelian",
+            "supplier": "Vendor"
+        },
+        "tabs": {
+            "order": "Pesanan Pembelian",
+            "invoice": "Faktur Pembelian"
+        },
+        "column": {
+            "search": "Cari vendor...",
+            "supplier": "Vendor",
+            "contact": "Kontak Vendor",
+            "date": "Tanggal Pembelian",
+            "memo": "Memo",
+            "status": "Status",
+            "total": "Jumlah Total"
+        }
+    },
+    "expenses": {
+        "title": "Daftar Pengeluaran",
+        "create": "Buat Pengeluaran Baru",
+        "card": {
+            "expenses": "Total Pengeluaran",
+            "payable": "Utang Usaha",
+            "transaction": "Transaksi Pengeluaran",
+            "vendor": "Vendor"
+        },
+        "column": {
+            "search": "Cari vendor...",
+            "vendor": "Vendor",
+            "date": "Tanggal Pengeluaran",
+            "category": "Kategori",
+            "memo": "Memo",
+            "status": "Status",
+            "total": "Jumlah Total"
+        }
+    },
+    "inventory": {
+        "title": "Inventaris",
+        "create": "Buat Item Baru",
+        "detail": "Rincian Produk",
+        "card": {
+            "listed": "Item Terdaftar",
+            "low": "Stok Rendah",
+            "out": "Stok Habis",
+            "in": "Stok Tersedia"
+        },
+        "column": {
+            "title": "Informasi Produk",
+            "search": "Cari produk...",
+            "product": "Produk",
+            "sku": "SKU",
+            "desc": "Deskripsi",
+            "category": "Kategori",
+            "buy": "Harga Beli",
+            "sell": "Harga Jual",
+            "stock": "Stok"
+        },
+        "recent": {
+            "title": "Pembelian Terakhir",
+            "date": "Tanggal Pembelian",
+            "id": "ID Pembelian",
+            "qty": "Jumlah",
+            "unit": "Harga Satuan",
+            "total": "Total Harga"
+        }
+    },
+    "production": {
+        "title": "Produksi",
+        "create": "Buat BOM Baru",
+        "card": {
+            "bom": "Daftar Bahan (BOM)",
+            "product": "Produk",
+            "material": "Bahan Baku",
+            "in": "Stok Tersedia"
+        },
+        "column": {
+            "search": "Cari BOM...",
+            "title": "Judul",
+            "desc": "Deskripsi",
+            "tag": "Tag",
+            "output": "Produk Hasil",
+            "cost": "Total Biaya"
+        }
+    },
+    "staff": {
+        "title": "Sumber Daya Manusia",
+        "subTitle": "Karyawan",
+        "create": "Tambah Karyawan Baru",
+        "column": {
+            "search": "Cari karyawan...",
+            "name": "Nama",
+            "email": "Email",
+            "position": "Posisi",
+            "type": "Tipe",
+            "phone": "Telepon",
+            "address": "Alamat"
+        }
+    },
+    "contacts": {
+        "title": "Kontak",
+        "customer": {
+            "subTitle": "Pelanggan",
+            "create": "Tambah Pelanggan Baru",
+            "search": "Cari pelanggan..."
+        },
+        "supplier": {
+            "subTitle": "Supplier",
+            "create": "Tambah Supplier Baru",
+            "search": "Cari supplier..."
+        },
+        "card": {
+            "customer": "Pelanggan",
+            "supplier": "Pemasok",
+            "staff": "Staf"
+        },
+        "column": {
+            "name": "Nama",
+            "email": "Email",
+            "phone": "Telepon",
+            "address": "Alamat"
+        }
+    },
+    "notifications": {
+        "title": "Notifikasi",
+        "markAll": "Tandai semua sudah dibaca & hapus",
+        "empty": "Tidak ada notifikasi"
+    },
+    "user": {
+        "title": "Manajemen Pengguna",
+        "create": "Undang Pengguna",
+        "tabs": {
+            "users": "Pengguna",
+            "invitation": "Undangan"
+        },
+        "userColumn": {
+            "search": "Cari pengguna...",
+            "name": "Nama Pengguna",
+            "email": "Email",
+            "role": "Peran",
+            "Status": "Status"
+        },
+        "inviteColumn": {
+            "search": "Cari email...",
+            "email": "Email",
+            "role": "Peran",
+            "date": "Tanggal Kadaluwarsa"
+        }
+    },
+    "profile": {
+        "title": "Akun",
+        "subTitle": "Profil Pengguna",
+        "personal": {
+            "title": "Informasi Pribadi",
+            "name": "Nama Lengkap",
+            "email": "Email",
+            "phone": "Telepon",
+            "address": "Alamat",
+            "role": "Peran"
+        },
+        "company": {
+            "title": "Informasi Perusahaan",
+            "name": "Nama Perusahaan",
+            "email": "Email",
+            "phone": "Telepon",
+            "address": "Alamat"
+        },
+        "change": {
+            "title": "Ubah Kata Sandi",
+            "desc": "Anda dapat mengubah kata sandi akun Anda di sini",
+            "button": "Ubah Kata Sandi"
+        }
+    },
+    "unauthorized": {
+        "desc": "Ups! Maaf Anda tidak memiliki otorisasi yang cukup untuk mengakses fitur ini. Anda membutuhkan otorisasi pengguna yang lebih tinggi.",
+        "button": "Kembali ke Dashboard"
+    }
+}

@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getUserNotifications } from '@/lib/notification';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-
-  if (!userId) {
-    return NextResponse.json({ error: 'User ID required' }, { status: 400 });
-  }
 
   try {
-    const notifications = await getUserNotifications(userId);
+    const notifications = await prisma.notification.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    });
+
     return NextResponse.json(notifications);
   } catch (error) {
     console.error('[NOTIFICATION_GET]', error);
@@ -24,11 +21,8 @@ export async function GET(req: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const { userId } = await request.json();
 
-    await prisma.notification.deleteMany({
-      where: { userId }
-    });
+    await prisma.notification.deleteMany();
 
     return NextResponse.json({ success: true });
   } catch (error) {

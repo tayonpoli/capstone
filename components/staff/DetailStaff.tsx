@@ -1,7 +1,10 @@
 import { Staff } from "@prisma/client"
-import { InfoIcon, Undo2Icon } from "lucide-react"
+import { Undo2Icon } from "lucide-react"
 import { Button } from "../ui/button"
 import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Label } from "../ui/label"
+import { Badge } from "../ui/badge"
 
 interface StaffDetailProps {
     staff: Staff
@@ -32,32 +35,61 @@ export function DetailStaff({ staff }: StaffDetailProps) {
                     </Button>
                 </div>
             </div>
-            <div className="lg:w-150 grid grid-cols-2 gap-8 mt-2">
-                <div className="mt-4 col-span-2 flex flex-center items-center text-lg font-semibold">
-                    <InfoIcon />
-                    <h2 className="ml-3">Staff Information</h2>
-                </div>
-                <div className="font-medium text-gray-500">
-                    Name
-                </div>
-                <div className="font-medium">{staff.name}</div>
-                <div className="font-medium text-gray-500">
-                    Email
-                </div>
-                <div className="font-medium">{staff.email}</div>
-                <div className="font-medium text-gray-500">
-                    Position
-                </div>
-                <div className="font-medium">{staff.position}</div>
-                <div className="font-medium text-gray-500">
-                    Phone Number
-                </div>
-                <div className="font-medium">{staff.phone}</div>
-                <div className="font-medium text-gray-500">
-                    Address
-                </div>
-                <div className="font-medium">{staff.address}</div>
-            </div>
+            <Card className="mb-4">
+                <CardHeader>
+                    <CardTitle>
+                        Staff Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="w-2/3 flex grid grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Name
+                            </CardDescription>
+                            <Label className="text-md font-medium">{staff.name}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Email
+                            </CardDescription>
+                            <Label className="text-md font-medium">{staff.email}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Phone Number
+                            </CardDescription>
+                            <Label className="text-md font-medium">{staff.phone}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Address
+                            </CardDescription>
+                            <Label className="text-md font-medium">{staff.address}</Label>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Position
+                            </CardDescription>
+                            <Badge variant='outline' className="text-md font-medium">{staff.position}</Badge>
+                        </div>
+                        <div className="space-y-1">
+                            <CardDescription>
+                                Type
+                            </CardDescription>
+                            {(staff.type === 'FullTime') && (
+                                <Badge className="text-md font-medium">
+                                    Full-Time
+                                </Badge>
+                            ) || (
+                                    <Badge variant='secondary' className="text-md font-medium">
+                                        Part-Time
+                                    </Badge>
+                                )}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }

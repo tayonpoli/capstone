@@ -67,6 +67,7 @@ export function AdjustForm({ product, onSuccess }: AdjustStockProps) {
         resolver: zodResolver(adjustStockSchema),
         defaultValues: {
             ...product,
+            stock: Math.round(product.stock)
         },
     });
 

@@ -29,7 +29,7 @@ import { Calendar } from '../ui/calendar';
 const FormSchema = z.object({
     staffId: z.string().min(1, 'Staff is required'),
     supplierId: z.string().min(1, 'Customer is required'),
-    contact: z.string().min(1, 'Supplier contact is required'),
+    contact: z.string().min(1, 'Supplier contact is required'), // Stores contact name
     address: z.string().optional(),
     email: z.string().optional(),
     purchaseDate: z.date({
@@ -54,7 +54,13 @@ const FormSchema = z.object({
 
 type CreatePurchaseFormProps = {
     staffs: Staff[];
-    suppliers: Supplier[];
+    suppliers: (Supplier & {
+        contacts?: {
+            id: string;
+            name: string;
+            department: string;
+        }[];
+    })[];
     products: Inventory[];
 };
 
@@ -79,6 +85,10 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
         },
     });
 
+    const selectedSupplierId = form.watch('supplierId');
+    const selectedSupplier = suppliers.find(s => s.id === selectedSupplierId);
+    const items = form.watch('items');
+
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
             const response = await fetch('/api/purchase', {
@@ -97,7 +107,7 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
 
             if (response.ok) {
                 toast.success("Purchase order created successfully!");
-                router.push(`/purchase/${data.id}`)
+                router.push(`/purchase/${data.id}`);
                 router.refresh();
             } else {
                 throw new Error("Failed to create Purchase order");
@@ -108,14 +118,13 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
         }
     }
 
-    const items = form.watch('items');
-
     return (
         <div className='p-3'>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start'>
                         <div className='col-span-2 space-y-6 gap-6 grid md:grid-cols-1 lg:grid-cols-2 items-start'>
+                            {/* Staff Select */}
                             <FormField
                                 control={form.control}
                                 name='staffId'
@@ -140,26 +149,27 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Supplier Select */}
                             <FormField
                                 control={form.control}
                                 name='supplierId'
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Supplier</FormLabel>
-                                        <Select onValueChange={(value) => {
-                                            field.onChange(value);
+                                        <Select
+                                            onValueChange={(value) => {
+                                                field.onChange(value);
+                                                form.resetField('contact'); // Reset contact when supplier changes
 
-                                            const selectedSupplier = suppliers.find(s => s.id === value);
-
-                                            if (selectedSupplier && selectedSupplier.email) {
-                                                form.setValue('email', selectedSupplier.email);
-                                            }
-
-                                            if (selectedSupplier && selectedSupplier.address) {
-                                                form.setValue('address', selectedSupplier.address);
-                                            }
-                                        }}
-                                            defaultValue={field.value}>
+                                                const selectedSupplier = suppliers.find(s => s.id === value);
+                                                if (selectedSupplier) {
+                                                    form.setValue('email', selectedSupplier.email || '');
+                                                    form.setValue('address', selectedSupplier.address || '');
+                                                }
+                                            }}
+                                            defaultValue={field.value}
+                                        >
                                             <FormControl className='w-full'>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select supplier" />
@@ -177,19 +187,44 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Contact Select - Shows names but stores name */}
                             <FormField
                                 control={form.control}
                                 name='contact'
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Contact</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder='Supplier Contact' {...field} />
-                                        </FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                            disabled={!selectedSupplierId || !selectedSupplier?.contacts?.length}
+                                        >
+                                            <FormControl className='w-full'>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={
+                                                        !selectedSupplierId
+                                                            ? "Select a supplier first"
+                                                            : !selectedSupplier?.contacts?.length
+                                                                ? "No contacts available"
+                                                                : "Select contact"
+                                                    } />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {selectedSupplier?.contacts?.map((contact) => (
+                                                    <SelectItem key={contact.id} value={contact.name}>
+                                                        {contact.name} ({contact.department})
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Email Field */}
                             <FormField
                                 control={form.control}
                                 name='email'
@@ -205,6 +240,8 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Purchase Date */}
                             <FormField
                                 control={form.control}
                                 name='purchaseDate'
@@ -246,6 +283,8 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Due Date */}
                             <FormField
                                 control={form.control}
                                 name='dueDate'
@@ -284,6 +323,8 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                                 )}
                             />
                         </div>
+
+                        {/* Address, Tag, and Memo Fields */}
                         <div className='mx-8 space-y-6'>
                             <FormField
                                 control={form.control}
@@ -327,6 +368,7 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                         </div>
                     </div>
 
+                    {/* Purchase Items Section */}
                     <div className="mt-8">
                         <h3 className="text-lg font-medium mb-4">Purchase Items</h3>
                         {items.map((item, index) => (
@@ -355,6 +397,7 @@ export function CreatePurchaseForm({ staffs, suppliers, products }: CreatePurcha
                         </Button>
                     </div>
 
+                    {/* Form Actions */}
                     <div className='flex justify-end my-6 space-x-4'>
                         <Button asChild variant='outline'>
                             <Link href='/purchase'>

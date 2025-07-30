@@ -1,7 +1,26 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  const allowedRoles = ['Admin', 'Owner'];
+
+  // Jika tidak ada session, redirect ke login
+  if (!session?.user) {
+    redirect("/api/auth/signin");
+  }
+
+  if (!allowedRoles.includes(session.user.role)) {
+    return NextResponse.json(
+      { error: 'You are unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { reportType, startDate, endDate, includeSummary } = await req.json()
 
@@ -28,6 +47,11 @@ export async function POST(req: Request) {
               phone: true
             }
           },
+          SalesInvoice: {
+            select: {
+              paymentMethod: true,
+            }
+          },
           items: {
             include: {
               product: {
@@ -45,20 +69,15 @@ export async function POST(req: Request) {
       })
 
       if (includeSummary) {
+        const unpaidOrders = salesData.filter(order => order.paymentStatus === 'Unpaid');
+        const receivable = unpaidOrders.reduce((sum, order) => sum + order.total, 0);
+
         const summary = {
           totalAmount: salesData.reduce((sum, order) => sum + order.total, 0),
           totalOrders: salesData.length,
-          averageOrder: salesData.length > 0
-            ? salesData.reduce((sum, order) => sum + order.total, 0) / salesData.length
-            : 0,
           paidOrders: salesData.filter(order => order.paymentStatus === 'Paid').length,
-          unpaidOrders: salesData.filter(order => order.paymentStatus === 'Unpaid').length,
-          statusCounts: {
-            completed: salesData.filter(order => order.status === 'Completed').length,
-            approved: salesData.filter(order => order.status === 'Approved').length,
-            draft: salesData.filter(order => order.status === 'Draft').length,
-            cancelled: salesData.filter(order => order.status === 'Cancelled').length
-          }
+          unpaidOrders: unpaidOrders.length,
+          account: receivable,
         }
 
         return NextResponse.json({
@@ -86,6 +105,11 @@ export async function POST(req: Request) {
               phone: true
             }
           },
+          Invoice: {
+            select: {
+              paymentMethod: true,
+            }
+          },
           items: {
             include: {
               product: {
@@ -103,25 +127,15 @@ export async function POST(req: Request) {
       })
 
       if (includeSummary) {
+        const unpaidOrders = purchasingData.filter(order => order.paymentStatus === 'Unpaid');
+        const payable = unpaidOrders.reduce((sum, order) => sum + order.total, 0);
+
         const summary = {
           totalAmount: purchasingData.reduce((sum, order) => sum + order.total, 0),
           totalOrders: purchasingData.length,
-          averageOrder: purchasingData.length > 0
-            ? purchasingData.reduce((sum, order) => sum + order.total, 0) / purchasingData.length
-            : 0,
           paidOrders: purchasingData.filter(order => order.paymentStatus === 'Paid').length,
-          unpaidOrders: purchasingData.filter(order => order.paymentStatus === 'Unpaid').length,
-          statusCounts: {
-            completed: purchasingData.filter(order => order.status === 'Completed').length,
-            approved: purchasingData.filter(order => order.status === 'Approved').length,
-            draft: purchasingData.filter(order => order.status === 'Draft').length,
-            cancelled: purchasingData.filter(order => order.status === 'Cancelled').length
-          },
-          urgencyCounts: {
-            low: purchasingData.filter(order => order.urgency === 'Low').length,
-            medium: purchasingData.filter(order => order.urgency === 'Medium').length,
-            high: purchasingData.filter(order => order.urgency === 'High').length
-          }
+          unpaidOrders: unpaidOrders.length,
+          account: payable,
         }
 
         return NextResponse.json({

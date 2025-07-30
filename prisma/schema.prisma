@@ -81,12 +81,18 @@ model Staff {
   email          String          @unique
   phone          String?
   address        String?
-  position       String?
+  position       String
+  type           Type            @default(FullTime)
   purchaseOrders PurchaseOrder[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
   @@map("staff")
+}
+
+enum Type {
+  FullTime
+  PartTime
 }
 
 model Inventory {
@@ -146,6 +152,7 @@ model Supplier {
   phone          String
   address        String
   createdAt      DateTime        @default(now())
+  contacts       Contact[]
   purchaseOrders PurchaseOrder[]
   Expenses       Expenses[]
 }
@@ -304,4 +311,14 @@ model ExpenseInvoice {
   expensesId    String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Contact {
+  id         String   @id @default(cuid())
+  name       String
+  department String
+  email      String?
+  phone      String?
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  supplierId String
 }

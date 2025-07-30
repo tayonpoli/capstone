@@ -5,9 +5,10 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
-import { Blocks, Waypoints, ShoppingBasket, SquareChartGantt, Boxes, PackageOpen, UsersRound, UserRoundCog, CreditCard, Keyboard } from "lucide-react"
+import { Blocks, Waypoints, ShoppingBasket, SquareChartGantt, Boxes, PackageOpen, UsersRound, UserRoundCog, CreditCard, Keyboard, HelpCircle, IdCardIcon } from "lucide-react"
 import { NotificationBell } from "./NotificationBell"
 import { NavProjects } from "./nav-projects"
+import { useTranslations } from "next-intl"
 
 interface AppSidebarProps {
   session: Session | null
@@ -18,6 +19,8 @@ export function AppSidebar({ session }: AppSidebarProps) {
   const isAdminOwner = ['Admin', 'Owner'].includes(userRole);
   const isOwner = userRole === 'Owner';
 
+  const t = useTranslations('Sidebar');
+
   const data = {
     user: {
       id: session?.user?.id || "Guest",
@@ -27,39 +30,45 @@ export function AppSidebar({ session }: AppSidebarProps) {
       role: userRole,
     },
     navMain: [
-      { title: "Overview", url: "/", icon: Waypoints },
-      { title: "Point of Sales", url: "/pos", icon: Keyboard },
-      { title: "Sales", url: "/sales", icon: ShoppingBasket },
-      { title: "Purchasing", url: "/purchase", icon: SquareChartGantt },
+      { title: t('overview'), url: "/", icon: Waypoints },
+      { title: t('pos'), url: "/pos", icon: Keyboard },
+      { title: t('sales'), url: "/sales", icon: ShoppingBasket },
+      { title: t('purchase'), url: "/purchase", icon: SquareChartGantt },
       ...(isAdminOwner ? [
-        { title: "Expenses", url: "/expenses", icon: CreditCard },
+        { title: t('expenses'), url: "/expenses", icon: CreditCard },
       ] : []),
-      { title: "Inventory", url: "/product", icon: PackageOpen },
+      { title: t('inventory'), url: "/product", icon: PackageOpen },
       ...(isAdminOwner ? [
-        { title: "Production", url: "/production", icon: Boxes },
+        { title: t('production'), url: "/production", icon: Boxes },
+        {
+          title: t('contacts.staff'),
+          url: "/staff",
+          icon: IdCardIcon,
+        },
       ] : []),
     ],
     projects: [
-      { title: "Customers", url: "/customer", icon: UsersRound },
+      { title: t('contacts.customer'), url: "/customer", icon: UsersRound },
       ...(isAdminOwner ? [
         {
-          title: "Vendors",
+          title: t('contacts.vendor'),
           url: "/supplier",
           icon: UsersRound
-        },
-        {
-          title: "Staff",
-          url: "/staff",
-          icon: UsersRound,
         },
       ] : []),
     ],
     navSecondary: [
       ...(isOwner ? [{
-        title: "User Management",
+        title: t('footer.user'),
         url: "/user",
         icon: UserRoundCog,
       }] : []),
+      {
+        title: t('guide'),
+        url: "https://maumanage-docs.vercel.app",
+        external: true,
+        icon: HelpCircle
+      },
     ],
   }
 
