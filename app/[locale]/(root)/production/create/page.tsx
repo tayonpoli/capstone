@@ -31,7 +31,10 @@ export default async function CreateBomPage() {
     // Fetch raw materials data
     const rawMaterials = await prisma.inventory.findMany({
         where: {
-            category: 'material'
+            OR: [
+                { category: 'material' },
+                { category: 'packaging' }
+            ]
         },
         orderBy: {
             product: 'asc',

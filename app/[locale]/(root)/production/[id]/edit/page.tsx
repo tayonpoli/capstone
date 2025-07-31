@@ -81,7 +81,10 @@ export default async function EditProductionPage({
         try {
             return await prisma.inventory.findMany({
                 where: {
-                    category: 'material'
+                    OR: [
+                        { category: 'material' },
+                        { category: 'packaging' }
+                    ]
                 },
                 orderBy: { product: 'asc' },
             })
