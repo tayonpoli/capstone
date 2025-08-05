@@ -25,6 +25,7 @@ import { Sales } from "@/types/sales"
 
 const SalesActions = ({ sales }: { sales: Sales }) => {
   const router = useRouter();
+  const isPaid = sales.paymentStatus === 'Paid';
 
   const handleDelete = async () => {
     try {
@@ -65,9 +66,11 @@ const SalesActions = ({ sales }: { sales: Sales }) => {
         <DropdownMenuItem asChild>
           <Link href={`/sales/${sales.id}`}>View Details</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={`/sales/${sales.id}/edit`}>Edit</Link>
-        </DropdownMenuItem>
+        {!isPaid && (
+          <DropdownMenuItem asChild>
+            <Link href={`/sales/${sales.id}/edit`}>Edit</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <DeleteSales onConfirm={handleDelete} />
         </DropdownMenuItem>

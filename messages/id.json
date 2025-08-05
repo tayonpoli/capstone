@@ -214,6 +214,16 @@
             "type": "Tipe",
             "phone": "Telepon",
             "address": "Alamat"
+        },
+        "card": {
+            "title1": "Jumlah Karyawan",
+            "title2": "Karyawan Baru",
+            "title3": "Barista",
+            "title4": "Kasir",
+            "subTitle1": "Jumlah karyawan saat ini",
+            "subTitle2": "Penambahan karyawan di bulan ini",
+            "subTitle3": "Karyawan pada Posisi Barista",
+            "subTitle4": "Karyawan pada Posisi Kasir"
         }
     },
     "contacts": {
@@ -221,17 +231,28 @@
         "customer": {
             "subTitle": "Pelanggan",
             "create": "Tambah Pelanggan Baru",
-            "search": "Cari pelanggan..."
+            "search": "Cari pelanggan...",
+            "title1": "Jumlah Pelanggan",
+            "title2": "Pelanggan Baru",
+            "title3": "Total Penjualan",
+            "title4": "Piutang Usaha",
+            "subTitle1": "Pelanggan yang terdaftar saat ini",
+            "subTitle2": "Penambahan pelanggan di bulan ini",
+            "subTitle3": "Total pendapatan yang dihasilkan dari pelanggan",
+            "subTitle4": "Total piutang usaha dari pelanggan"
         },
         "supplier": {
-            "subTitle": "Supplier",
-            "create": "Tambah Supplier Baru",
-            "search": "Cari supplier..."
-        },
-        "card": {
-            "customer": "Pelanggan",
-            "supplier": "Pemasok",
-            "staff": "Staf"
+            "subTitle": "Pemasok",
+            "create": "Tambah Pemasok Baru",
+            "search": "Cari pemasok...",
+            "title1": "Jumlah Pemasok",
+            "title2": "Pemasok Baru",
+            "title3": "Total Pembelian",
+            "title4": "Utang Usaha",
+            "subTitle1": "Pemasok yang terdaftar saat ini",
+            "subTitle2": "Penambahan pemasok di bulan ini",
+            "subTitle3": "Total pembelian yang dihasilkan dari pemasok",
+            "subTitle4": "Total utang usaha saat ini dari pemasok"
         },
         "column": {
             "name": "Nama",

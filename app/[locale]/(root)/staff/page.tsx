@@ -8,8 +8,8 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
-import { ContactCards } from "@/components/charts/ContactCards"
 import { Staff } from "@prisma/client"
+import { StaffCard } from "@/components/staff/StaffCard"
 
 async function getData(): Promise<Staff[]> {
     try {
@@ -59,7 +59,7 @@ export default async function page() {
                     </Link>
                 </div>
             </div>
-            <ContactCards />
+            <StaffCard />
             <div className="container mx-auto py-8">
                 <StaffDataTable data={data} />
             </div>

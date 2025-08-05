@@ -25,6 +25,7 @@ import { Purchase } from "@/types/purchase"
 
 const PurchaseActions = ({ purchase }: { purchase: Purchase }) => {
   const router = useRouter();
+  const isPaid = purchase.paymentStatus === 'Paid';
 
   const handleDelete = async () => {
     try {
@@ -65,9 +66,11 @@ const PurchaseActions = ({ purchase }: { purchase: Purchase }) => {
         <DropdownMenuItem asChild>
           <Link href={`/purchase/${purchase.id}`}>View Details</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={`/purchase/${purchase.id}/edit`}>Edit</Link>
-        </DropdownMenuItem>
+        {!isPaid && (
+          <DropdownMenuItem asChild>
+            <Link href={`/purchase/${purchase.id}/edit`}>Edit</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <DeletePurchase onConfirm={handleDelete} />
         </DropdownMenuItem>

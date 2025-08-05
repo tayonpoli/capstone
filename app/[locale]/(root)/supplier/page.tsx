@@ -8,8 +8,8 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
-import { ContactCards } from "@/components/charts/ContactCards"
 import { Supplier } from "@prisma/client"
+import { SupplierCard } from "@/components/supplier/SupplierCard"
 
 async function getData(): Promise<Supplier[]> {
     try {
@@ -28,7 +28,6 @@ export default async function page() {
 
     const allowedRoles = ['Admin', 'Owner'];
 
-    // Jika tidak ada session, redirect ke login
     if (!session?.user) {
         redirect("/api/auth/signin");
     }
@@ -60,7 +59,7 @@ export default async function page() {
                     </Link>
                 </div>
             </div>
-            <ContactCards />
+            <SupplierCard />
             <div className="container mx-auto py-8">
                 <SupplierDataTable
                     data={data}

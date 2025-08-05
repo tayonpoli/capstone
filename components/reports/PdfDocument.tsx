@@ -222,7 +222,7 @@ export const PdfDocument = ({
             />
             <View style={styles.titleSection}>
               <Text style={styles.title}>
-                {reportType === 'sales' ? 'Laporan Penjualan' : 'Laporan Pembelian'}
+                {reportType === 'sales' ? 'Laporan Penjualan' : reportType === 'purchasing' ? 'Laporan Pembelian' : 'Laporan Pengeluaran'}
               </Text>
               <Text style={styles.companyInfo}>
                 {dateRange?.from?.toLocaleDateString() || 'N/A'} -{' '}
@@ -263,7 +263,7 @@ export const PdfDocument = ({
 
         <View style={styles.reportInfo}>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Total {reportType === 'sales' ? 'Penjualan' : 'Pembelian'}</Text>
+            <Text style={styles.infoLabel}>Total {reportType === 'sales' ? 'Penjualan' : reportType === 'purchasing' ? 'Pembelian' : 'Pengeluaran'}</Text>
             <Text style={styles.cardValue}>{formatIDR(summaryData.totalAmount || 0)}</Text>
           </View>
           <View style={styles.infoBox}>
@@ -272,7 +272,7 @@ export const PdfDocument = ({
           </View>
           <View style={styles.infoBox}>
             <Text style={styles.infoLabel}>Total Transaksi</Text>
-            <Text style={styles.cardValue}>{summaryData.totalOrders || 0} {reportType === 'sales' ? 'pesanan' : 'pembelian'}</Text>
+            <Text style={styles.cardValue}>{summaryData.totalOrders || 0} {reportType === 'sales' ? 'pesanan' : reportType === 'purchasing' ? 'pembelian' : 'transaksi'}</Text>
           </View>
         </View>
 
@@ -288,11 +288,11 @@ export const PdfDocument = ({
             </View>
             <View style={[styles.tableColHeader, { width: colWidths.customer }]}>
               <Text style={styles.headerText}>
-                {reportType === 'sales' ? 'Customer' : 'Supplier'}
+                {reportType === 'sales' ? 'Customer' : reportType === 'purchasing' ? 'Supplier' : 'Vendor'}
               </Text>
             </View>
             <View style={[styles.tableColHeader, { width: colWidths.type }]}>
-              <Text style={styles.headerText}>Tipe Pesanan</Text>
+              <Text style={styles.headerText}>{reportType === 'sales' ? 'Tipe Pesanan' : reportType === 'purchasing' ? 'Tag' : 'Kategori'}</Text>
             </View>
             <View style={[styles.tableColHeader, { width: colWidths.payment }]}>
               <Text style={styles.headerText}>Metode Pembayaran</Text>
@@ -314,7 +314,7 @@ export const PdfDocument = ({
               <View key={index} style={styles.tableRow}>
                 <View style={[styles.tableCol, { width: colWidths.date }]}>
                   <Text style={styles.bodyText}>
-                    {new Date(item.orderDate || item.purchaseDate).toLocaleDateString()}
+                    {new Date(item.orderDate || item.purchaseDate || item.expenseDate).toLocaleDateString()}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: colWidths.reference }]}>
@@ -331,14 +331,18 @@ export const PdfDocument = ({
                 </View>
                 <View style={[styles.tableCol, { width: colWidths.type }]}>
                   <Text style={styles.bodyText}>
-                    {item.tag}
+                    {reportType === 'expenses'
+                      ? item.category
+                      : item.tag}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: colWidths.payment }]}>
                   <Text style={styles.bodyText}>
                     {reportType === 'sales'
                       ? item.SalesInvoice?.[0]?.paymentMethod || 'N/A'
-                      : item.Invoice?.[0]?.paymentMethod || 'N/A'}
+                      : reportType === 'purchasing'
+                        ? item.Invoice?.[0]?.paymentMethod || 'N/A'
+                        : item.ExpenseInvoice?.[0]?.paymentMethod || 'N/A'}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: colWidths.status }]}>

@@ -6,10 +6,10 @@ services:
     ports:
       - '3000:3000'
     environment:
-      DIRECT_URL: "postgresql://postgres.qlbrgrxqvmxtikuoxlpp:IlJXUs8qO81QK06m@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
-      DATABASE_URL: "postgresql://postgres.qlbrgrxqvmxtikuoxlpp:IlJXUs8qO81QK06m@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
-      NEXTAUTH_SECRET: "capstone"
-      NEXTAUTH_URL: http://localhost:3000
-      RESEND_API_KEY: re_7odnGk9E_P9hMfhTGtusQKKod6wUXAPPu
-      GEMINI_API_KEY: AIzaSyCoNtGEnq4GqrOvfdG4AKjKWzRsR3U0peQ
+      DIRECT_URL: ${DIRECT_URL}
+      DATABASE_URL: ${DATABASE_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     restart: always

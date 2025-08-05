@@ -1,4 +1,4 @@
-import { notFound, redirect, unauthorized } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { Customer, Inventory } from '@prisma/client'
 import { EditSalesForm } from '@/components/sales/EditSalesForm'
 import { prisma } from "@/lib/prisma";
@@ -49,7 +49,7 @@ export default async function EditSalesPage({
   ])
 
   if (!saleData) {
-    notFound()
+    redirect(`/sales/${id}`);
   }
 
   async function getSaleData(id: string): Promise<SalesData | null> {
@@ -60,6 +60,8 @@ export default async function EditSalesPage({
       })
 
       if (!sale) return null
+
+      if (sale.paymentStatus === "Paid") return null
 
       return {
         id: sale.id,

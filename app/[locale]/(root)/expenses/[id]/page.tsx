@@ -44,19 +44,17 @@ export default async function CustomerDetailPage({
         <div className="h-full m-3 p-5 rounded-md">
             <DetailExpense expenses={expenses} />
             <div className='fixed bottom-16 right-14 space-x-4'>
-                {!isStaff && (
+                {(!isStaff && !isPaid) && (
                     <>
                         <EditExpenses
                             initialData={expenses}
                             suppliers={suppliers}
                         />
 
-                        {!isPaid && (
-                            <PaymentExpenses
-                                expenseId={id}
-                                remainingAmount={remainingAmount}
-                            />
-                        )}
+                        <PaymentExpenses
+                            expenseId={id}
+                            remainingAmount={remainingAmount}
+                        />
                     </>
                 )}
             </div>

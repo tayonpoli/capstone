@@ -49,7 +49,7 @@ export function EditExpenses({ initialData, suppliers }: EditExpensesFormProps) 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button>Edit</Button>
+                <Button variant="outline">Edit</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>

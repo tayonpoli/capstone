@@ -9,6 +9,7 @@ import { redirect } from "next/navigation"
 import { CreateExpense } from "@/components/expenses/CreateExpense"
 import { getTranslations } from "next-intl/server"
 import { Expenses } from "@/types/expenses"
+import { ReportGenerator } from "@/components/reports/ReportGenerator"
 
 async function getData(): Promise<Expenses[]> {
     try {
@@ -174,6 +175,11 @@ export default async function page() {
                 </Card>
             </div>
             <div className="container mx-auto mt-8 py-2">
+                <div className="flex justify-end">
+                    {!isStaff && (
+                        <ReportGenerator reportType="expenses" />
+                    )}
+                </div>
                 <ExpensesDataTable data={data} />
             </div>
         </div>

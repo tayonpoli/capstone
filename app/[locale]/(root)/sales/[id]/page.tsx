@@ -70,7 +70,7 @@ export default async function SalesDetailPage({
 
             <div className='flex justify-end mt-auto space-x-4'>
                 <ReportButton order={sales} type="sales" />
-                {!isStaff && (
+                {(!isStaff && !isPaid) && (
                     <Button asChild variant='outline'>
                         <Link href={`/sales/${id}/edit`}>
                             Edit

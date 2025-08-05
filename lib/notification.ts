@@ -6,14 +6,9 @@ export async function checkStockNotifications() {
         where: {
             AND: [
                 {
-                    OR: [
-                        { stock: { lte: 0 } }, // Out of stock
-                        {
-                            AND: [
-                                { limit: { not: null } },
-                                { stock: { lte: prisma.inventory.fields.limit } }
-                            ]
-                        } // Di bawah limit
+                    AND: [
+                        { limit: { not: null } },
+                        { stock: { lte: prisma.inventory.fields.limit } }
                     ]
                 },
                 {
@@ -28,7 +23,7 @@ export async function checkStockNotifications() {
 
     // Buat notifikasi untuk setiap produk
     for (const product of lowStockProducts) {
-        const flooredStock = Math.floor(Number(product.stock));
+        const flooredStock = Math.round(Number(product.stock));
         await prisma.notification.create({
             data: {
                 title: `The stock of ${product.product} ${product.stock <= 0 ? 'is out' : 'is low'}`,

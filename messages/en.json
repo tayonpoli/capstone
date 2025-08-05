@@ -214,6 +214,16 @@
             "type": "Type",
             "phone": "Phone",
             "address": "Address"
+        },
+        "card": {
+            "title1": "Total Employee",
+            "title2": "New Employee",
+            "title3": "Barista",
+            "title4": "Cashier",
+            "subTitle1": "Current number of employee",
+            "subTitle2": "Employee addition in this month",
+            "subTitle3": "Employee on the Barista Position",
+            "subTitle4": "Employee on the Cashier Position"
         }
     },
     "contacts": {
@@ -221,17 +231,28 @@
         "customer": {
             "subTitle": "Customers",
             "create": "Add New Customer",
-            "search": "Search customer..."
+            "search": "Search customer...",
+            "title1": "Total Customers",
+            "title2": "New Customers",
+            "title3": "Total Sales",
+            "title4": "Account Receivable",
+            "subTitle1": "Customers currently listed",
+            "subTitle2": "Customer additions in this month",
+            "subTitle3": "Total revenue generated from customers",
+            "subTitle4": "Total account receivable from customers"
         },
         "supplier": {
             "subTitle": "Supplier",
             "create": "Add New Supplier",
-            "search": "Search supplier..."
-        },
-        "card": {
-            "customer": "Customers",
-            "supplier": "Suppliers",
-            "staff": "Staff"
+            "search": "Search supplier...",
+            "title1": "Total Supplier",
+            "title2": "New Supplier",
+            "title3": "Total Purchase",
+            "title4": "Account Payable",
+            "subTitle1": "Supplier currently listed",
+            "subTitle2": "Supplier additions in this month",
+            "subTitle3": "Total purchase generated from supplier",
+            "subTitle4": "Current account payable from supplier"
         },
         "column": {
             "name": "Name",

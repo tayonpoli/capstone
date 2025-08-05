@@ -28,6 +28,11 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginBottom: 3
     },
+    companyInfo: {
+        textAlign: 'right',
+        fontSize: 12,
+        marginBottom: 3
+    },
     section: {
         marginBottom: 20
     },
@@ -155,6 +160,7 @@ export const PdfOrderTemplate = ({
     const counterpart = isSales ? order.customer : order.supplier
     const counterpartLabel = isSales ? 'Customer' : 'Supplier'
     const orderDate = isSales ? order.orderDate : order.purchaseDate
+    const orderLabel = isSales ? 'INVOICE' : 'Purchase Order'
     const tax = order.total * 0.1
     const total = order.total + tax
 
@@ -169,27 +175,31 @@ export const PdfOrderTemplate = ({
                             src="/logo.png"
                             style={styles.logo}
                         /> */}
-                        <Text style={styles.title}>INVOICE</Text>
-                        <Text style={styles.orderInfo}>#INV-{order.id.slice(0, 8).toUpperCase()}</Text>
-                        <Text style={styles.orderInfo}>Date: {new Date(orderDate).toLocaleDateString()}</Text>
+                        <Text style={styles.title}>{orderLabel}</Text>
                         {!isSales && (
-                            <Text style={styles.orderInfo}>Due Date: {new Date(order.dueDate).toLocaleDateString()}</Text>
+                            <Text style={styles.orderInfo}>#PO-{order.id.slice(0, 8).toUpperCase()}</Text>
+                        ) || (
+                                <Text style={styles.orderInfo}>#INV-{order.id.slice(0, 8).toUpperCase()}</Text>
+                            )}
+                        <Text style={styles.orderInfo}>Tanggal: {new Date(orderDate).toLocaleDateString()}</Text>
+                        {!isSales && (
+                            <Text style={styles.orderInfo}>Jatuh Tempo: {new Date(order.dueDate).toLocaleDateString()}</Text>
                         )}
+                        <Text style={styles.orderInfo}>Status: {order.paymentStatus}</Text>
                     </View>
                     <View>
-                        <Text style={styles.orderInfo}>Status: {order.status}</Text>
-                        <Text style={styles.orderInfo}>Created At: {new Date(order.createdAt).toLocaleDateString()}</Text>
-                        {order.updatedAt && (
-                            <Text style={styles.orderInfo}>Last Updated: {new Date(order.updatedAt).toLocaleDateString()}</Text>
-                        )}
+                        <Text style={styles.companyInfo}>Mau Ngopi</Text>
+                        <Text style={styles.companyInfo}>Bekasi, Jawa Barat, Indonesia</Text>
+                        <Text style={styles.companyInfo}>6281234567891</Text>
+                        <Text style={styles.companyInfo}>maungopiofficial@gmail.com</Text>
                     </View>
                 </View>
 
                 {/* Counterpart Information */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>{counterpartLabel} Information</Text>
+                    <Text style={styles.sectionTitle}>Informasi {counterpartLabel}</Text>
                     <View style={styles.row}>
-                        <Text style={styles.label}>Name:</Text>
+                        <Text style={styles.label}>Nama:</Text>
                         <Text style={styles.value}>{counterpart?.name || 'N/A'}</Text>
                     </View>
                     {isSales && (
@@ -199,22 +209,32 @@ export const PdfOrderTemplate = ({
                                 <Text style={styles.value}>{order.email || 'N/A'}</Text>
                             </View>
                             <View style={styles.row}>
-                                <Text style={styles.label}>Address:</Text>
+                                <Text style={styles.label}>Alamat:</Text>
                                 <Text style={styles.value}>{order.address || 'N/A'}</Text>
                             </View>
                         </>
                     )}
                     {!isSales && (
-                        <View style={styles.row}>
-                            <Text style={styles.label}>Contact:</Text>
-                            <Text style={styles.value}>{order.contact || 'N/A'}</Text>
-                        </View>
+                        <>
+                            <View style={styles.row}>
+                                <Text style={styles.label}>Kontak:</Text>
+                                <Text style={styles.value}>{order.contact || 'N/A'}</Text>
+                            </View>
+                            <View style={styles.row}>
+                                <Text style={styles.label}>Email:</Text>
+                                <Text style={styles.value}>{counterpart?.email || 'N/A'}</Text>
+                            </View>
+                            <View style={styles.row}>
+                                <Text style={styles.label}>Alamat:</Text>
+                                <Text style={styles.value}>{counterpart?.address || 'N/A'}</Text>
+                            </View>
+                        </>
                     )}
                 </View>
 
                 {/* Order Items */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Order Items</Text>
+                    <Text style={styles.sectionTitle}>Item Pesanan</Text>
                     <View style={styles.table}>
                         {/* Table Header */}
                         <View style={styles.tableRow}>
@@ -222,13 +242,13 @@ export const PdfOrderTemplate = ({
                                 <Text style={styles.headerText}>No.</Text>
                             </View>
                             <View style={[styles.tableColHeader, { width: '40%' }]}>
-                                <Text style={styles.headerText}>Product</Text>
+                                <Text style={styles.headerText}>Produk</Text>
                             </View>
                             <View style={styles.tableColHeader}>
-                                <Text style={styles.headerText}>Qty</Text>
+                                <Text style={styles.headerText}>Kuantitas</Text>
                             </View>
                             <View style={styles.tableColHeader}>
-                                <Text style={styles.headerText}>Price</Text>
+                                <Text style={styles.headerText}>Harga</Text>
                             </View>
                             <View style={styles.tableColHeader}>
                                 <Text style={styles.headerText}>Total</Text>
@@ -245,7 +265,7 @@ export const PdfOrderTemplate = ({
                                     <Text style={styles.bodyText}>{item.product.product}</Text>
                                     {item.note && (
                                         <Text style={[styles.bodyText, { fontSize: 8, color: 'grey' }]}>
-                                            Note: {item.note}
+                                            {item.note}
                                         </Text>
                                     )}
                                 </View>
@@ -279,7 +299,7 @@ export const PdfOrderTemplate = ({
                         <Text style={styles.value}>{formatIDR(order.total)}</Text>
                     </View>
                     <View style={styles.totalRow}>
-                        <Text style={styles.label}>Tax (10%):</Text>
+                        <Text style={styles.label}>PPN (10%):</Text>
                         <Text style={styles.value}>{formatIDR(tax)}</Text>
                     </View>
                     <View style={[styles.totalRow, { marginTop: 5 }]}>

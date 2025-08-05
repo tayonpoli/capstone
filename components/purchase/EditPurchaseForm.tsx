@@ -57,7 +57,7 @@ interface EditPurchaseFormProps {
     suppliers: (Supplier & {
         contacts?: {
             id: string;
-            name: string;
+            name: string
             department: string
         }[];
     })[];

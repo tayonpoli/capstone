@@ -23,7 +23,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer'
 import { useTranslations } from 'next-intl'
 import * as XLSX from 'xlsx'
 
-export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchasing' }) {
+export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchasing' | 'expenses' }) {
   const t = useTranslations('sales')
   const [dateRange, setDateRange] = useState<DateRange>({
     from: subDays(new Date(), 30),
@@ -114,6 +114,16 @@ export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchas
             'Metode Pembayaran': item.SalesInvoice?.[0]?.paymentMethod || 'N/A',
             'Status': item.paymentStatus,
             'Jumlah Item': item.items.length,
+            'Total': item.total,
+          }
+        } else if (reportType === 'expenses') {
+          return {
+            'Order ID': item.id.slice(0, 8).toUpperCase(),
+            'Tanggal': formatDate(new Date(item.expenseDate), 'yyyy-MM-dd'),
+            'Vendor': item.supplier?.name || 'N/A',
+            'Kategori': item.category || 'N/A',
+            'Metode Pembayaran': item.ExpenseInvoice?.[0]?.paymentMethod || 'N/A',
+            'Status': item.paymentStatus,
             'Total': item.total,
           }
         } else {

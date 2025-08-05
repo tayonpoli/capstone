@@ -147,6 +147,52 @@ export async function POST(req: Request) {
       return NextResponse.json(purchasingData)
     }
 
+    if (reportType === 'expenses') {
+      const expensesData = await prisma.expenses.findMany({
+        where: {
+          expenseDate: {
+            gte: start,
+            lte: end
+          }
+        },
+        include: {
+          supplier: {
+            select: {
+              name: true,
+            }
+          },
+          ExpenseInvoice: {
+            select: {
+              paymentMethod: true,
+            }
+          },
+        },
+        orderBy: {
+          expenseDate: 'desc'
+        }
+      })
+
+      if (includeSummary) {
+        const unpaidOrders = expensesData.filter(order => order.paymentStatus === 'Unpaid');
+        const payable = unpaidOrders.reduce((sum, order) => sum + order.total, 0);
+
+        const summary = {
+          totalAmount: expensesData.reduce((sum, order) => sum + order.total, 0),
+          totalOrders: expensesData.length,
+          paidOrders: expensesData.filter(order => order.paymentStatus === 'Paid').length,
+          unpaidOrders: unpaidOrders.length,
+          account: payable,
+        }
+
+        return NextResponse.json({
+          records: expensesData,
+          summary
+        })
+      }
+
+      return NextResponse.json(expensesData)
+    }
+
     return NextResponse.json({ error: 'Invalid report type' }, { status: 400 })
   } catch (error) {
     console.error('Report generation error:', error)

@@ -73,17 +73,18 @@ export default async function PurchaseDetailPage({
                 {!isStaff && (
                     <>
                         <ReportButton order={purchase} type="purchase" />
-                        <Button variant='outline' asChild>
-                            <Link href={`/purchase/${id}/edit`}>
-                                Edit
-                            </Link>
-                        </Button>
-
                         {!isPaid && (
-                            <PaymentPurchase
-                                purchaseId={id}
-                                remainingAmount={remainingAmount}
-                            />
+                            <>
+                                <Button variant='outline' asChild>
+                                    <Link href={`/purchase/${id}/edit`}>
+                                        Edit
+                                    </Link>
+                                </Button>
+                                <PaymentPurchase
+                                    purchaseId={id}
+                                    remainingAmount={remainingAmount}
+                                />
+                            </>
                         )}
                     </>
                 )}

@@ -54,7 +54,7 @@ export default async function EditPurchasePage({
   ])
 
   if (!purchaseData) {
-    notFound()
+    redirect(`/purchase/${id}`);
   }
 
   async function getPurchaseData(id: string): Promise<PurchaseData | null> {
@@ -65,6 +65,8 @@ export default async function EditPurchasePage({
       })
 
       if (!purchase) return null
+
+      if (purchase.paymentStatus === "Paid") return null
 
       return {
         id: purchase.id,
@@ -118,7 +120,12 @@ export default async function EditPurchasePage({
   async function getProducts(): Promise<Inventory[]> {
     try {
       return await prisma.inventory.findMany({
-        where: { stock: { gt: 0 } },
+        where: {
+          OR: [
+            { category: 'material' },
+            { category: 'packaging' },
+          ]
+        },
         orderBy: { product: 'asc' },
       })
     } catch (error) {

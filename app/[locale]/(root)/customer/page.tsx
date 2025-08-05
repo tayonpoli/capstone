@@ -4,8 +4,8 @@ import { CustomerDataTable } from "./columns"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
-import { ContactCards } from "@/components/charts/ContactCards"
 import { Customer } from "@prisma/client"
+import { CustomerCard } from "@/components/customer/CustomerCard"
 
 async function getData(): Promise<Customer[]> {
     try {
@@ -42,14 +42,8 @@ export default async function page() {
                     </Link>
                 </div>
             </div>
-            <ContactCards />
+            <CustomerCard />
             <div className="container mx-auto py-8">
-                {/* <DataTable
-                    columns={columns}
-                    data={data}
-                    searchColumn="name"
-                    searchPlaceholder={t('customer.search')}
-                /> */}
                 <CustomerDataTable data={data} />
             </div>
         </div>
