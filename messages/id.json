@@ -119,16 +119,16 @@
             "purchases": "Total Pembelian",
             "payable": "Utang Usaha",
             "transaction": "Transaksi Pembelian",
-            "supplier": "Vendor"
+            "supplier": "Supplier"
         },
         "tabs": {
             "order": "Pesanan Pembelian",
             "invoice": "Faktur Pembelian"
         },
         "column": {
-            "search": "Cari vendor...",
-            "supplier": "Vendor",
-            "contact": "Kontak Vendor",
+            "search": "Cari supplier...",
+            "supplier": "Supplier",
+            "contact": "Kontak Supplier",
             "date": "Tanggal Pembelian",
             "memo": "Memo",
             "status": "Status",

@@ -63,7 +63,7 @@ export default function SalesAnalysis() {
     return (
         <div className='py-2'>
             <Button
-                className='bg-gradient-to-r from-sky-200 from-10% via-blue-400 via-30% to-indigo-900 to-90%'
+                className='bg-gradient-to-r from-sky-500 from-10% via-blue-400 via-30% to-indigo-900 to-90% hover:outline-4 hover:outline-double'
                 onClick={analyzeSales}
                 disabled={loading}
             >

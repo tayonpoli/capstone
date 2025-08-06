@@ -1,13 +1,12 @@
 import { prisma } from './prisma';
 
 export async function checkStockNotifications() {
-    // Cek produk yang stoknya di bawah limit atau habis
     const lowStockProducts = await prisma.inventory.findMany({
         where: {
             AND: [
                 {
                     AND: [
-                        { limit: { not: null } },
+                        { limit: { gt: 0 } },
                         { stock: { lte: prisma.inventory.fields.limit } }
                     ]
                 },
@@ -21,19 +20,30 @@ export async function checkStockNotifications() {
         }
     });
 
-    // Buat notifikasi untuk setiap produk
+    const users = await prisma.user.findMany({
+        select: {
+            id: true
+        }
+    });
+
     for (const product of lowStockProducts) {
         const flooredStock = Math.round(Number(product.stock));
-        await prisma.notification.create({
-            data: {
-                title: `The stock of ${product.product} ${product.stock <= 0 ? 'is out' : 'is low'}`,
-                message: `Stock of ${product.product} only ${flooredStock} ${product.unit} left. ${product.limit ? `(Limit: ${product.limit})` : ''}`,
-                type: 'stock',
-                relatedId: product.id
-            }
-        });
+        const notificationData = {
+            title: `The stock of ${product.product} ${product.stock <= 0 ? 'is out' : 'is low'}`,
+            message: `Stock of ${product.product} only ${flooredStock} ${product.unit} left. ${product.limit ? `(Limit: ${product.limit})` : ''}`,
+            type: 'stock',
+            relatedId: product.id
+        };
 
-        // Update lastNotified
+        for (const user of users) {
+            await prisma.notification.create({
+                data: {
+                    ...notificationData,
+                    userId: user.id
+                }
+            });
+        }
+
         await prisma.inventory.update({
             where: { id: product.id },
             data: { lastNotified: new Date() }
@@ -41,16 +51,33 @@ export async function checkStockNotifications() {
     }
 }
 
-// Fungsi untuk mendapatkan notifikasi user
 export async function getUserNotifications(userId: string) {
     return await prisma.notification.findMany({
         where: {
             OR: [
-                { userId: null }, // Notifikasi global
-                { userId }        // Notifikasi spesifik user
+                { userId: null },
+                { userId }
             ]
         },
         orderBy: { createdAt: 'desc' },
         take: 50
     });
 }
+
+// for (const product of lowStockProducts) {
+//     const flooredStock = Math.round(Number(product.stock));
+//     await prisma.notification.create({
+//         data: {
+//             title: `The stock of ${product.product} ${product.stock <= 0 ? 'is out' : 'is low'}`,
+//             message: `Stock of ${product.product} only ${flooredStock} ${product.unit} left. ${product.limit ? `(Limit: ${product.limit})` : ''}`,
+//             type: 'stock',
+//             relatedId: product.id
+//         }
+//     });
+
+//     // Update lastNotified
+//     await prisma.inventory.update({
+//         where: { id: product.id },
+//         data: { lastNotified: new Date() }
+//     });
+// }

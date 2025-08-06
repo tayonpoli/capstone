@@ -65,7 +65,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
       }] : []),
       {
         title: t('guide'),
-        url: "https://maumanage-docs.vercel.app",
+        url: "https://docs.maumanage.site",
         external: true,
         icon: HelpCircle
       },
