@@ -1,50 +1,134 @@
+import { AnalysisResult } from '@/types/analysis';
 import { Page, Text, View, Document, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
     page: {
         padding: 40,
-        fontFamily: 'Helvetica'
+        fontFamily: 'Helvetica',
+    },
+    header: {
+        marginBottom: 20,
+        borderBottomWidth: 2,
+        borderBottomColor: '#2563eb',
+        paddingBottom: 10,
     },
     title: {
         fontSize: 24,
-        marginBottom: 20,
-        textAlign: 'center',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: '#1e3a8a',
+        marginBottom: 5,
     },
-    content: {
+    subtitle: {
         fontSize: 12,
-        lineHeight: 1.5,
-        marginBottom: 10
+        color: '#64748b',
     },
     section: {
-        marginBottom: 20
+        marginBottom: 15,
     },
-    header: {
+    sectionTitle: {
         fontSize: 16,
-        marginBottom: 10,
         fontWeight: 'bold',
-        color: '#333'
-    }
+        color: '#1e40af',
+        marginBottom: 8,
+    },
+    sectionContent: {
+        fontSize: 12,
+        lineHeight: 1.5,
+        textAlign: 'justify',
+    },
+    productList: {
+        marginLeft: 4,
+    },
+    productItem: {
+        marginBottom: 5,
+        fontSize: 12,
+    },
+    recommendation: {
+        backgroundColor: '#f1f5f9',
+        padding: 12,
+        borderRadius: 5,
+        marginBottom: 8,
+    },
+    recommendationCategory: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginBottom: 3,
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 30,
+        left: 0,
+        right: 0,
+        textAlign: 'center',
+        fontSize: 10,
+        color: '#64748b',
+    },
 });
 
-export const SalesAnalysisPDF = ({ content }: { content: string }) => {
-    // Split content into sections if needed
-    const sections = content.split('\n\n');
+export const SalesAnalysisPDF = ({ content }: { content: AnalysisResult }) => (
+    <Document>
+        <Page style={styles.page}>
+            <View style={styles.header}>
+                <Text style={styles.title}>Hasil Analisis AI</Text>
+                <Text style={styles.subtitle}>Dibuat pada {new Date().toLocaleDateString()}</Text>
+            </View>
 
-    return (
-        <Document>
-            <Page size="A4" style={styles.page}>
-                <View>
-                    <Text style={styles.title}>Sales Analysis Report</Text>
-                    <Text style={styles.content}>Generated on: {new Date().toLocaleDateString()}</Text>
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Rangkuman Analisis</Text>
+                <Text style={styles.sectionContent}>{content.summary_analysis}</Text>
+            </View>
 
-                    {sections.map((section, index) => (
-                        <View key={index} style={styles.section}>
-                            <Text style={styles.content}>{section}</Text>
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Perkiraan Tren Pasar</Text>
+                <Text style={styles.sectionContent}>{content.market_trend_analysis}</Text>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Analisis Histori Pembelian</Text>
+                <Text style={styles.sectionContent}>{content.purchase_history_analysis}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', marginBottom: 15 }}>
+                <View style={{ width: '50%', paddingRight: 10 }}>
+                    <Text style={styles.sectionTitle}>Produk Terlaris</Text>
+                    <View style={styles.productList}>
+                        {content.top_products.map((product, index) => (
+                            <Text key={index} style={styles.productItem}>
+                                {product.name}: {product.sales_qty} unit
+                            </Text>
+                        ))}
+                    </View>
+                </View>
+
+                <View style={{ width: '50%', paddingLeft: 10 }}>
+                    <Text style={styles.sectionTitle}>Pembelian Tebanyak</Text>
+                    <View style={styles.productList}>
+                        {content.top_purchased_products.map((product, index) => (
+                            <Text key={index} style={styles.productItem}>
+                                {product.name}: {product.purchase_qty} unit
+                            </Text>
+                        ))}
+                    </View>
+                </View>
+            </View>
+
+            {content.recommendations && (
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Rekomendasi</Text>
+                    {content.recommendations.map((rec, index) => (
+                        <View key={index} style={styles.recommendation}>
+                            <Text style={styles.recommendationCategory}>
+                                {rec.category.charAt(0).toUpperCase() + rec.category.slice(1)}
+                            </Text>
+                            <Text style={styles.sectionContent}>{rec.action}</Text>
                         </View>
                     ))}
                 </View>
-            </Page>
-        </Document>
-    );
-};
+            )}
+
+            <View style={styles.footer}>
+                <Text>Generated by MauManage</Text>
+            </View>
+        </Page>
+    </Document>
+);

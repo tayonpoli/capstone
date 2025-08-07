@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma'; // pastikan prisma instance kamu tersedia
 import { NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from "@google/genai";
+import { AnalysisResult } from '@/types/analysis';
 
-export async function POST() {
+export async function POST(): Promise<NextResponse<{ success: boolean; data?: AnalysisResult; error?: string }>> {
     try {
         const oneMonth = new Date();
         oneMonth.setDate(oneMonth.getDate() - 30);
@@ -100,22 +101,22 @@ berikan analisis bisnis yang komprehensif.
 Fokus pada poin-poin berikut untuk analisis Anda:
 1.  **summary_analysis**: Ringkasan performa bisnis secara keseluruhan.
 2.  **market_trend_analysis**: Analisis tren pasar dan perkiraan penjualan untuk 7-30 hari ke depan.
-3.  **top_products**: 5 produk terlaris berdasarkan kuantitas penjualan.
-4.  **slow_moving_products**: 5 produk yang paling lambat terjual.
-5.  **inventory_alerts**: Produk yang stoknya di bawah batas minimum.
-6.  **purchase_history_analysis**: Analisis histori pembelian, tren, dan pemasok utama.
-7.  **top_purchased_products**: 5 produk yang paling sering dibeli dari pemasok.
+3.  **top_products**: 3 produk terlaris berdasarkan kuantitas penjualan.
+5.  **inventory_alerts**: Produk dengan category material atau packaging yang stoknya di bawah batas minimum atau mendekati.
+6.  **purchase_history_analysis**: Analisis histori pembelian, tren, dan pemasok utama dan berikan prediksi untuk pembelian selanjutnya.
+7.  **top_purchased_products**: 3 produk yang paling sering dibeli dari pemasok.
 8.  **recommendations**: Rekomendasi konkret untuk setiap kategori: 'marketing', 'inventory', 'pricing', 'operations', 'purchasing'.
 
 Data untuk dianalisis:
 Data Penjualan (JSON):
 ${JSON.stringify(formattedSales, null, 2)}
+(Hanya untuk data penjualan dengan customerId=001, ini adalah sebuah customerId default untuk POS system, untuk kasus ini analisis nama customernya dapat menggunakan field customerName)
 
-Data Inventaris (JSON):
-${JSON.stringify(formattedInventory, null, 2)}
+        Data Inventaris (JSON):
+        ${JSON.stringify(formattedInventory, null, 2)}
 
-Data Pembelian (JSON):
-${JSON.stringify(formattedPurchases, null, 2)}
+        Data Pembelian (JSON):
+        ${JSON.stringify(formattedPurchases, null, 2)}
 `;
 
         const ai = new GoogleGenAI({});
@@ -139,20 +140,7 @@ ${JSON.stringify(formattedPurchases, null, 2)}
                         },
                         top_products: {
                             type: Type.ARRAY,
-                            description: "Daftar 5 produk terlaris berdasarkan kuantitas penjualan.",
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    sku: { type: Type.STRING },
-                                    name: { type: Type.STRING },
-                                    sales_qty: { type: Type.NUMBER },
-                                },
-                                required: ["sku", "name", "sales_qty"]
-                            }
-                        },
-                        slow_moving_products: {
-                            type: Type.ARRAY,
-                            description: "Daftar 5 produk yang paling lambat terjual.",
+                            description: "Daftar 3 produk terlaris berdasarkan kuantitas penjualan.",
                             items: {
                                 type: Type.OBJECT,
                                 properties: {
@@ -165,7 +153,7 @@ ${JSON.stringify(formattedPurchases, null, 2)}
                         },
                         inventory_alerts: {
                             type: Type.ARRAY,
-                            description: "Daftar produk yang stoknya di bawah batas minimum.",
+                            description: "Daftar produk dengan category material atau packaging yang stoknya di bawah limit atau mendekati limit.",
                             items: {
                                 type: Type.OBJECT,
                                 properties: {
@@ -184,7 +172,7 @@ ${JSON.stringify(formattedPurchases, null, 2)}
                         },
                         top_purchased_products: {
                             type: Type.ARRAY,
-                            description: "Daftar 5 produk yang paling sering dibeli/dipesan dari pemasok.",
+                            description: "Daftar 3 produk yang paling sering dibeli/dipesan dari pemasok.",
                             items: {
                                 type: Type.OBJECT,
                                 properties: {
@@ -208,7 +196,7 @@ ${JSON.stringify(formattedPurchases, null, 2)}
                             }
                         },
                     },
-                    propertyOrdering: ["summary_analysis", "market_trend_analysis", "top_products", "slow_moving_products", "inventory_alerts", "purchase_history_analysis", "top_purchased_products", "recommendations"]
+                    propertyOrdering: ["summary_analysis", "market_trend_analysis", "top_products", "inventory_alerts", "purchase_history_analysis", "top_purchased_products", "recommendations"]
                 },
             },
         });
@@ -227,9 +215,43 @@ ${JSON.stringify(formattedPurchases, null, 2)}
         // });
 
         const data = response.text;
-        console.log(response.text)
 
-        return NextResponse.json({ success: true, data: data });
+        let parsedData: AnalysisResult;
+
+        try {
+            // Pastikan data ada dan merupakan string
+            if (!data || typeof data !== 'string') {
+                throw new Error('Invalid or empty AI response data');
+            }
+
+            // Remove markdown code block if present
+            const jsonString = data.replace(/```json/g, '').replace(/```/g, '').trim();
+
+            // Pastikan jsonString tidak kosong
+            if (!jsonString) {
+                throw new Error('Empty JSON string after formatting');
+            }
+
+            // Parse JSON
+            parsedData = JSON.parse(jsonString); // Sekarang aman karena jsonString pasti string
+
+            // Validasi struktur data
+            if (
+                !parsedData.summary_analysis ||
+                !Array.isArray(parsedData.top_products) ||
+                !Array.isArray(parsedData.recommendations)
+            ) {
+                throw new Error('Invalid analysis data structure');
+            }
+        } catch (parseError) {
+            console.error('Failed to parse AI response:', parseError);
+            throw new Error('Failed to parse AI analysis response');
+        }
+
+        return NextResponse.json({
+            success: true,
+            data: parsedData // parsedData sekarang pasti valid
+        });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ success: false, error: 'AI analysis failed' }, { status: 500 });

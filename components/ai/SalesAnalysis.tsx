@@ -1,14 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
-import { Typewriter } from 'react-simple-typewriter';
 import { Button } from '../ui/button';
-import { Download, Loader2, Sparkles } from 'lucide-react';
+import { CalendarIcon, Download, Loader2, Sparkles } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -17,23 +16,38 @@ import { ScrollArea } from '../ui/scroll-area';
 import { toast } from 'sonner';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { SalesAnalysisPDF } from './SalesAnalysisPDF';
-import { TypewriterMarkdown } from './TypewriterMarkdown';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { AnalysisResult } from '@/types/analysis';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { Calendar } from '../ui/calendar';
+import { DateRange, SelectRangeEventHandler } from 'react-day-picker';
 
 export default function SalesAnalysis() {
-    const [result, setResult] = useState<string | null>(null);
+    const [result, setResult] = useState<AnalysisResult | null>(null);
     const [loading, setLoading] = useState(false);
+    const [analyzing, setAnalyzing] = useState(false); // Loading state khusus untuk analisis
     const [error, setError] = useState<string | null>(null);
     const [open, setOpen] = useState(false);
+    const [showAnalysis, setShowAnalysis] = useState(false); // Untuk toggle antara form dan hasil
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(new Date().setDate(new Date().getDate() - 30)),
+        to: new Date(),
+    });
     const contentRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (contentRef.current && result) {
-            contentRef.current.scrollTop = contentRef.current.scrollHeight;
-        }
-    }, [result]);
+    const handleDateRangeChange: SelectRangeEventHandler = (range) => {
+        setDateRange(range);
+    };
 
     const analyzeSales = async () => {
-        setLoading(true);
+        if (!dateRange?.from || !dateRange?.to) {
+            toast.error('Please select a date range');
+            return;
+        }
+
+        setAnalyzing(true);
         setError(null);
         setResult(null);
 
@@ -43,92 +57,276 @@ export default function SalesAnalysis() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    startDate: dateRange.from,
+                    endDate: dateRange.to,
+                }),
             });
 
             if (!response.ok) {
-                toast.error("Ai Analysis failed");
-                throw new Error('Analysis failed');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || 'Analysis failed');
+            }
+
             setResult(data.data);
-            setOpen(true);
+            setShowAnalysis(true);
+            toast.success('Analysis completed successfully');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Unknown error');
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+            setError(errorMessage);
+            toast.error('Analysis failed', {
+                description: errorMessage,
+            });
         } finally {
-            setLoading(false);
+            setAnalyzing(false);
         }
     };
 
+    const handleOpenChange = (open: boolean) => {
+        if (!open) {
+            // Reset state ketika dialog ditutup
+            setShowAnalysis(false);
+            setDateRange({
+                from: new Date(new Date().setDate(new Date().getDate() - 30)),
+                to: new Date(),
+            });
+        }
+        setOpen(open);
+    };
+
     return (
-        <div className='py-2'>
+        <div className="py-2">
             <Button
-                className='bg-gradient-to-r from-sky-500 from-10% via-blue-400 via-30% to-indigo-900 to-90% hover:outline-4 hover:outline-double'
-                onClick={analyzeSales}
+                className="bg-gradient-to-r from-sky-500 to-indigo-900 hover:opacity-90 transition-opacity"
+                onClick={() => setOpen(true)}
                 disabled={loading}
             >
-                {loading ? (
-                    <>
-                        <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                        Analyzing...
-                    </>
-                ) : (
-                    <>
-                        <Sparkles />
-                        Ask Analysis
-                    </>
-                )}
+                <Sparkles className="h-4 w-4" />
+                AI Analysis
             </Button>
 
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className='flex items-center gap-2'>
-                            <Sparkles className='text-primary' /> Analysis Results
+            <Dialog open={open} onOpenChange={(open) => {
+                if (!open) {
+                    setShowAnalysis(false);
+                    setAnalyzing(false);
+                }
+                setOpen(open);
+            }}>
+                <DialogContent className={cn(
+                    "overflow-hidden p-0 flex flex-col md:max-h-[70vh]",
+                    showAnalysis ? "md:max-w-[700px] lg:max-w-[800px]" : "md:max-w-[480px]",
+                    analyzing && "md:max-w-[500px]"
+                )}>
+                    <DialogHeader className='m-0'>
+                        <DialogTitle className="flex items-center gap-2 pt-4 pl-4">
+                            <Sparkles className="text-primary" />
+                            {showAnalysis ? 'Analysis Result' : analyzing ? 'Analyzing' : 'Select Date Range'}
                         </DialogTitle>
+                        {!showAnalysis && !analyzing && (
+                            <DialogDescription className="pl-4">
+                                Please select the date range for business analysis
+                            </DialogDescription>
+                        )}
                     </DialogHeader>
-                    <ScrollArea ref={contentRef} className='max-h-[50vh] overflow-y-auto border-t py-2'>
-                        <div className="flex-1 py-2">
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                                className="prose max-w-none"
-                            >
-                                {result && (
-                                    <div className="whitespace-pre-line">
-                                        <ReactMarkdown>
-                                            {/* <Typewriter
-                                            words={[result]}
-                                            typeSpeed={15}
-                                            deleteSpeed={0}
-                                            delaySpeed={1000}
-                                            cursor
-                                            onType={() => {
-                                                // Trigger scroll on each type
-                                                if (contentRef.current) {
-                                                    contentRef.current.scrollTop = contentRef.current.scrollHeight;
-                                                }
-                                            }}
-                                        /> */}
-                                            {result}
-                                        </ReactMarkdown>
+
+                    <ScrollArea ref={contentRef} className="max-h-[50vh] overflow-y-auto border-t flex-1 py-2 px-4">
+                        {showAnalysis ? (
+                            result ? (
+                                <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs space-y-6">
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>
+                                                Ringkasan Analisis
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {result.summary_analysis}
+                                        </CardContent>
+                                    </Card>
+
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>
+                                                Perkiraan Tren Pasar
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {result.market_trend_analysis}
+                                        </CardContent>
+                                    </Card>
+
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>
+                                                Analisis Histori Pembelian
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {result.purchase_history_analysis}
+                                        </CardContent>
+                                    </Card>
+
+                                    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>
+                                                    Produk Terlaris
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-3">
+                                                    {result.top_products.map((product) => (
+                                                        <div key={product.sku}>
+                                                            <div className="font-medium">{product.name}</div>
+                                                            <CardDescription>
+                                                                Dengan total terjual sebanyak {product.sales_qty} unit
+                                                            </CardDescription>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>
+                                                    Item Pembelian Terbanyak
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-3">
+                                                    {result.top_purchased_products.map((product) => (
+                                                        <div key={product.sku}>
+                                                            <div className="font-medium">{product.name}</div>
+                                                            <CardDescription>
+                                                                Dengan total pembelian sebanyak {product.purchase_qty} unit
+                                                            </CardDescription>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
                                     </div>
-                                )}
-                            </motion.div>
-                        </div>
+
+                                    {result.recommendations && (
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>
+                                                    Rekomendasi
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-4">
+                                                    {result.recommendations.map((rec, index) => (
+                                                        <div key={index} className="p-3 bg-muted/75 rounded-xl">
+                                                            <div className="font-bold capitalize mb-2">{rec.category}</div>
+                                                            <div>{rec.action}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-64">
+                                    <Loader2 className="animate-spin h-8 w-8 text-primary mb-4" />
+                                    <p>Generating analysis...</p>
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                        {dateRange?.from && format(dateRange.from, 'MMM dd, yyyy')}
+                                        {' → '}
+                                        {dateRange?.to && format(dateRange.to, 'MMM dd, yyyy')}
+                                    </p>
+                                </div>
+                            )
+                        ) : analyzing ? (
+                            <div className="flex flex-col items-center justify-center h-64">
+                                <Loader2 className="animate-spin h-8 w-8 text-primary mb-4" />
+                                <p>Generating analysis...</p>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                    {dateRange?.from && format(dateRange.from, 'MMM dd, yyyy')}
+                                    {' → '}
+                                    {dateRange?.to && format(dateRange.to, 'MMM dd, yyyy')}
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="flex space-y-6 py-12 items-center justify-center">
+                                <div className="grid gap-4">
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">Date Range</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Must be between 30 and 90 days
+                                        </p>
+                                    </div>
+                                    <div className="py-4">
+                                        <Popover modal={true}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-[300px] justify-start text-left font-normal"
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {dateRange?.from ? (
+                                                        dateRange.to ? (
+                                                            <>
+                                                                {format(dateRange.from, 'LLL dd, y')} -{' '}
+                                                                {format(dateRange.to, 'LLL dd, y')}
+                                                            </>
+                                                        ) : (
+                                                            format(dateRange.from, 'LLL dd, y')
+                                                        )
+                                                    ) : (
+                                                        <span>Pick a date range</span>
+                                                    )}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="range"
+                                                    defaultMonth={dateRange?.from}
+                                                    selected={dateRange}
+                                                    onSelect={setDateRange}
+                                                    numberOfMonths={2}
+                                                    min={2}
+                                                    max={30}
+                                                    className="rounded-lg border shadow-sm"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                    <Button
+                                        onClick={analyzeSales}
+                                        disabled={!dateRange?.from || !dateRange?.to || analyzing}
+                                    >
+                                        {/* {analyzing ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Analyzing...
+                                    </>
+                                ) : 'Run Analysis'} */}
+                                        Run Analysis
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </ScrollArea>
-                    <DialogFooter className='border-t pt-2'>
-                        {result && (
+
+                    <DialogFooter className="border-t p-2">
+                        {(showAnalysis && result) && (
                             <PDFDownloadLink
                                 document={<SalesAnalysisPDF content={result} />}
-                                fileName="sales-analysis-report.pdf"
+                                fileName="analysis-report.pdf"
                                 className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
                             >
-                                {({ loading }) => (
+                                {({ loading: pdfLoading }) => (
                                     <>
                                         <Download className="mr-2 h-4 w-4" />
-                                        {loading ? 'Preparing PDF...' : 'Export to PDF'}
+                                        {pdfLoading ? 'Preparing PDF...' : 'Export to PDF'}
                                     </>
                                 )}
                             </PDFDownloadLink>
