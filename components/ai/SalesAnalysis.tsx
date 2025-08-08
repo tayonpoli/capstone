@@ -61,6 +61,7 @@ export default function SalesAnalysis() {
                 body: JSON.stringify({
                     startDate: dateRange.from,
                     endDate: dateRange.to,
+                    language: t('prompt.language')
                 }),
             });
 
@@ -214,13 +215,17 @@ export default function SalesAnalysis() {
                                                             <div key={product.sku} className="py-3 px-4 bg-muted/75 rounded-lg">
                                                                 <div className="font-medium flex justify-between">
                                                                     {product.name}
-                                                                    {product.status === t('prompt.out') ? (
+                                                                    {product.status === "Stok Habis" ? (
                                                                         <Badge variant="destructive">
-                                                                            {product.status}
+                                                                            {t('prompt.out')}
+                                                                        </Badge>
+                                                                    ) : product.status === "Perlu Segera Restock" ? (
+                                                                        <Badge variant="outline">
+                                                                            {t('prompt.restock')}
                                                                         </Badge>
                                                                     ) : (
-                                                                        <Badge variant="outline">
-                                                                            {product.status}
+                                                                        <Badge>
+                                                                            {t('prompt.limit')}
                                                                         </Badge>
                                                                     )}
                                                                 </div>
@@ -362,7 +367,7 @@ export default function SalesAnalysis() {
                                 {({ loading: pdfLoading }) => (
                                     <>
                                         <Download className="mr-2 h-4 w-4" />
-                                        {pdfLoading ? 'Preparing PDF...' : 'Export to PDF'}
+                                        {pdfLoading ? t('prepare') : t('export')}
                                     </>
                                 )}
                             </PDFDownloadLink>

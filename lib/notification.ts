@@ -6,6 +6,12 @@ export async function checkStockNotifications() {
             AND: [
                 {
                     AND: [
+                        {
+                            OR: [
+                                { category: 'material' },
+                                { category: 'packaging' }
+                            ]
+                        },
                         { limit: { gt: 0 } },
                         { stock: { lte: prisma.inventory.fields.limit } }
                     ]

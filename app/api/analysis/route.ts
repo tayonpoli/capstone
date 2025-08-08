@@ -6,7 +6,7 @@ import { getTranslations } from 'next-intl/server';
 
 export async function POST(request: Request): Promise<NextResponse<{ success: boolean; data?: AnalysisResult; error?: string }>> {
     try {
-        const { startDate, endDate }: AnalysisRequest = await request.json();
+        const { startDate, endDate, language }: AnalysisRequest = await request.json();
 
         if (!startDate || !endDate) {
             throw new Error('Start date and end date are required');
@@ -18,6 +18,8 @@ export async function POST(request: Request): Promise<NextResponse<{ success: bo
         if (start > end) {
             throw new Error('Start date cannot be after end date');
         }
+
+        const bahasa = language;
 
         const t = await getTranslations('ai.prompt');
 
@@ -103,8 +105,6 @@ export async function POST(request: Request): Promise<NextResponse<{ success: bo
         }));
 
         const prompt = `
-${t('language')}
-
         Anda adalah seorang analis bisnis profesional. Berdasarkan data penjualan, inventaris, dan pembelian yang disediakan,
 berikan analisis bisnis yang komprehensif.
 
@@ -117,6 +117,8 @@ Fokus pada poin-poin berikut untuk analisis Anda:
 7.  **top_purchased_products**: 3 produk yang paling sering dibeli dari pemasok.
 8.  **recommendations**: Rekomendasi konkret untuk setiap kategori: 'marketing', 'inventory', 'pricing', 'operations', 'purchasing'.
 
+Dan hasilkan output menggunakan ${bahasa},
+ 
 Data untuk dianalisis:
 Data Penjualan (JSON):
 ${JSON.stringify(formattedSales, null, 2)}
@@ -176,7 +178,7 @@ ${JSON.stringify(formattedSales, null, 2)}
                                     minimum_limit: { type: Type.NUMBER },
                                     status: {
                                         type: Type.STRING,
-                                        enum: [t('out'), t('restock'), t('limit')]
+                                        enum: ["Stok Habis", "Perlu Segera Restock", "Mendekati Limit"]
                                     },
                                 },
                                 required: ["sku", "name", "current_stock", "minimum_limit", "status"]

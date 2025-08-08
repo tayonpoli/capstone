@@ -11,6 +11,7 @@ export interface AnalysisResult {
 export interface AnalysisRequest {
     startDate: string | Date;
     endDate: string | Date;
+    language: string;
 }
 
 

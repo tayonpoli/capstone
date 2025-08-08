@@ -74,6 +74,8 @@
     },
     "ai": {
         "button": "AI Analysis",
+        "export": "Export to PDF",
+        "prepare": "Preparing PDF...",
         "datePick": {
             "title": "Select Date Range",
             "subTitle": "Please select the date range for business analysis",
@@ -86,7 +88,7 @@
             "subTitle": "Generating analysis..."
         },
         "prompt": {
-            "language": "Respond in english language,",
+            "language": "English language",
             "out": "Out of Stock",
             "restock": "Immediate Restock",
             "limit": "Approaching Limit"

@@ -74,6 +74,8 @@
     },
     "ai": {
         "button": "Analisis AI",
+        "export": "Ekspor ke PDF",
+        "prepare": "Menyiapkan PDF...",
         "datePick": {
             "title": "Pilih Rentang Tanggal",
             "subTitle": "Mohon pilih rentang tanggal untuk analisis bisnis",
@@ -86,7 +88,7 @@
             "subTitle": "Membuat analisis..."
         },
         "prompt": {
-            "language": "Respon dalam bahasa indonesia,",
+            "language": "Bahasa Indonesia",
             "out": "Stok Habis",
             "restock": "Perlu Segera Restock",
             "limit": "Mendekati Limit"
