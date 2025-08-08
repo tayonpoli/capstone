@@ -72,6 +72,46 @@
             "logout": "Keluar"
         }
     },
+    "ai": {
+        "button": "Analisis AI",
+        "datePick": {
+            "title": "Pilih Rentang Tanggal",
+            "subTitle": "Mohon pilih rentang tanggal untuk analisis bisnis",
+            "cardTitle": "Rentang Tanggal",
+            "cardDesc": "Harus antara 30 hingga 90 hari",
+            "button": "Mulai Analisis"
+        },
+        "loading": {
+            "title": "Menganalisis",
+            "subTitle": "Membuat analisis..."
+        },
+        "prompt": {
+            "language": "Respon dalam bahasa indonesia,",
+            "out": "Stok Habis",
+            "restock": "Perlu Segera Restock",
+            "limit": "Mendekati Limit"
+        },
+        "result": {
+            "title": "Hasil Analisis",
+            "card1": "Ringkasan Analisis",
+            "card2": "Analisis Pembelian",
+            "card3": {
+                "title": "Produk Terlaris",
+                "desc": "Dengan total penjualan sekitar "
+            },
+            "card4": {
+                "title": "Material Terbeli Teratas",
+                "desc": "Dengan total pembelian sekitar "
+            },
+            "card5": {
+                "title": "Tingkat Inventaris",
+                "desc1": "Stok saat ini hanya sekitar ",
+                "desc2": "dengan limit yang ditetapkan "
+            },
+            "card6": "Perkiraan Tren Pasar",
+            "card7": "Rekomendasi"
+        }
+    },
     "pos": {
         "title": "Point of Sales",
         "backButton": "Kembali ke Dashboard",

@@ -8,6 +8,12 @@ export interface AnalysisResult {
     recommendations: Recommendation[];
 }
 
+export interface AnalysisRequest {
+    startDate: string | Date;
+    endDate: string | Date;
+}
+
+
 export interface ProductAnalysis {
     sku: string;
     name: string;
@@ -16,10 +22,10 @@ export interface ProductAnalysis {
 }
 
 export interface InventoryAlert {
-    code: string;
+    sku: string;
     name: string;
-    stock: number;
-    limit: number;
+    current_stock: number;
+    minimum_limit: number;
     status: string;
 }
 

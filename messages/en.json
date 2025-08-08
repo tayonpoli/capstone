@@ -72,6 +72,46 @@
             "logout": "Log out"
         }
     },
+    "ai": {
+        "button": "AI Analysis",
+        "datePick": {
+            "title": "Select Date Range",
+            "subTitle": "Please select the date range for business analysis",
+            "cardTitle": "Date Range",
+            "cardDesc": "Must be between 30 and 90 days",
+            "button": "Start Analysis"
+        },
+        "loading": {
+            "title": "Analyzing",
+            "subTitle": "Generating analysis..."
+        },
+        "prompt": {
+            "language": "Respond in english language,",
+            "out": "Out of Stock",
+            "restock": "Immediate Restock",
+            "limit": "Approaching Limit"
+        },
+        "result": {
+            "title": "Analysis Result",
+            "card1": "Summary Analysis",
+            "card2": "Purchases Analysis",
+            "card3": {
+                "title": "Top Products Sold",
+                "desc": "With a total sales around "
+            },
+            "card4": {
+                "title": "Top Purchased Materials",
+                "desc": "With a total purchased around "
+            },
+            "card5": {
+                "title": "Inventory Level",
+                "desc1": "current stock only around ",
+                "desc2": "with limit set to "
+            },
+            "card6": "Market Trend Forecast",
+            "card7": "Reccomendations"
+        }
+    },
     "pos": {
         "title": "Point of Sales",
         "backButton": "Back to Dashboard",

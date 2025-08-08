@@ -199,7 +199,6 @@ export const PdfDocument = ({
     unpaidOrders?: number;
   }
 }) => {
-  // Column widths
   const colWidths = {
     date: '12%',
     reference: '10%',

@@ -22,7 +22,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Calendar } from '../ui/calendar';
-import { DateRange, SelectRangeEventHandler } from 'react-day-picker';
+import { DateRange } from 'react-day-picker';
+import { Badge } from '../ui/badge';
+import { useTranslations } from 'next-intl';
 
 export default function SalesAnalysis() {
     const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -35,11 +37,10 @@ export default function SalesAnalysis() {
         from: new Date(new Date().setDate(new Date().getDate() - 30)),
         to: new Date(),
     });
-    const contentRef = useRef<HTMLDivElement>(null);
 
-    const handleDateRangeChange: SelectRangeEventHandler = (range) => {
-        setDateRange(range);
-    };
+    const t = useTranslations('ai');
+
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const analyzeSales = async () => {
         if (!dateRange?.from || !dateRange?.to) {
@@ -89,7 +90,6 @@ export default function SalesAnalysis() {
 
     const handleOpenChange = (open: boolean) => {
         if (!open) {
-            // Reset state ketika dialog ditutup
             setShowAnalysis(false);
             setDateRange({
                 from: new Date(new Date().setDate(new Date().getDate() - 30)),
@@ -107,7 +107,7 @@ export default function SalesAnalysis() {
                 disabled={loading}
             >
                 <Sparkles className="h-4 w-4" />
-                AI Analysis
+                {t('button')}
             </Button>
 
             <Dialog open={open} onOpenChange={(open) => {
@@ -125,11 +125,11 @@ export default function SalesAnalysis() {
                     <DialogHeader className='m-0'>
                         <DialogTitle className="flex items-center gap-2 pt-4 pl-4">
                             <Sparkles className="text-primary" />
-                            {showAnalysis ? 'Analysis Result' : analyzing ? 'Analyzing' : 'Select Date Range'}
+                            {showAnalysis ? t('result.title') : analyzing ? t('loading.title') : t('datePick.title')}
                         </DialogTitle>
                         {!showAnalysis && !analyzing && (
                             <DialogDescription className="pl-4">
-                                Please select the date range for business analysis
+                                {t('datePick.subTitle')}
                             </DialogDescription>
                         )}
                     </DialogHeader>
@@ -141,7 +141,7 @@ export default function SalesAnalysis() {
                                     <Card>
                                         <CardHeader>
                                             <CardTitle>
-                                                Ringkasan Analisis
+                                                {t('result.card1')}
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>
@@ -152,18 +152,7 @@ export default function SalesAnalysis() {
                                     <Card>
                                         <CardHeader>
                                             <CardTitle>
-                                                Perkiraan Tren Pasar
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            {result.market_trend_analysis}
-                                        </CardContent>
-                                    </Card>
-
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>
-                                                Analisis Histori Pembelian
+                                                {t('result.card2')}
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>
@@ -175,7 +164,7 @@ export default function SalesAnalysis() {
                                         <Card>
                                             <CardHeader>
                                                 <CardTitle>
-                                                    Produk Terlaris
+                                                    {t('result.card3.title')}
                                                 </CardTitle>
                                             </CardHeader>
                                             <CardContent>
@@ -184,7 +173,7 @@ export default function SalesAnalysis() {
                                                         <div key={product.sku}>
                                                             <div className="font-medium">{product.name}</div>
                                                             <CardDescription>
-                                                                Dengan total terjual sebanyak {product.sales_qty} unit
+                                                                {t('result.card3.desc')}{product.sales_qty} unit
                                                             </CardDescription>
                                                         </div>
                                                     ))}
@@ -195,7 +184,7 @@ export default function SalesAnalysis() {
                                         <Card>
                                             <CardHeader>
                                                 <CardTitle>
-                                                    Item Pembelian Terbanyak
+                                                    {t('result.card4.title')}
                                                 </CardTitle>
                                             </CardHeader>
                                             <CardContent>
@@ -204,26 +193,70 @@ export default function SalesAnalysis() {
                                                         <div key={product.sku}>
                                                             <div className="font-medium">{product.name}</div>
                                                             <CardDescription>
-                                                                Dengan total pembelian sebanyak {product.purchase_qty} unit
+                                                                {t('result.card4.desc')}{product.purchase_qty} unit
                                                             </CardDescription>
                                                         </div>
                                                     ))}
                                                 </div>
                                             </CardContent>
                                         </Card>
+
+                                        {result.inventory_alerts && (
+                                            <Card className='col-span-2'>
+                                                <CardHeader>
+                                                    <CardTitle>
+                                                        {t('result.card5.title')}
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <div className="space-y-4">
+                                                        {result.inventory_alerts.map((product) => (
+                                                            <div key={product.sku} className="py-3 px-4 bg-muted/75 rounded-lg">
+                                                                <div className="font-medium flex justify-between">
+                                                                    {product.name}
+                                                                    {product.status === t('prompt.out') ? (
+                                                                        <Badge variant="destructive">
+                                                                            {product.status}
+                                                                        </Badge>
+                                                                    ) : (
+                                                                        <Badge variant="outline">
+                                                                            {product.status}
+                                                                        </Badge>
+                                                                    )}
+                                                                </div>
+                                                                <CardDescription>
+                                                                    {product.name} {t('result.card5.desc1')} {Math.floor(product.current_stock)} unit {t('result.card5.desc2')} {product.minimum_limit} unit.
+                                                                </CardDescription>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )}
                                     </div>
+
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>
+                                                {t('result.card6')}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {result.market_trend_analysis}
+                                        </CardContent>
+                                    </Card>
 
                                     {result.recommendations && (
                                         <Card>
                                             <CardHeader>
                                                 <CardTitle>
-                                                    Rekomendasi
+                                                    {t('result.card7')}
                                                 </CardTitle>
                                             </CardHeader>
                                             <CardContent>
                                                 <div className="space-y-4">
                                                     {result.recommendations.map((rec, index) => (
-                                                        <div key={index} className="p-3 bg-muted/75 rounded-xl">
+                                                        <div key={index} className="py-3 px-4 bg-muted/75 rounded-xl">
                                                             <div className="font-bold capitalize mb-2">{rec.category}</div>
                                                             <div>{rec.action}</div>
                                                         </div>
@@ -247,7 +280,7 @@ export default function SalesAnalysis() {
                         ) : analyzing ? (
                             <div className="flex flex-col items-center justify-center h-64">
                                 <Loader2 className="animate-spin h-8 w-8 text-primary mb-4" />
-                                <p>Generating analysis...</p>
+                                <p>{t('loading.subTitle')}</p>
                                 <p className="text-sm text-muted-foreground mt-2">
                                     {dateRange?.from && format(dateRange.from, 'MMM dd, yyyy')}
                                     {' → '}
@@ -258,9 +291,9 @@ export default function SalesAnalysis() {
                             <div className="flex space-y-6 py-12 items-center justify-center">
                                 <div className="grid gap-4">
                                     <div className="space-y-2">
-                                        <h4 className="font-medium leading-none">Date Range</h4>
+                                        <h4 className="font-medium leading-none">{t('datePick.cardTitle')}</h4>
                                         <p className="text-sm text-muted-foreground">
-                                            Must be between 30 and 90 days
+                                            {t('datePick.cardDesc')}
                                         </p>
                                     </div>
                                     <div className="py-4">
@@ -291,9 +324,12 @@ export default function SalesAnalysis() {
                                                     defaultMonth={dateRange?.from}
                                                     selected={dateRange}
                                                     onSelect={setDateRange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
                                                     numberOfMonths={2}
-                                                    min={2}
-                                                    max={30}
+                                                    min={30}
+                                                    max={90}
                                                     className="rounded-lg border shadow-sm"
                                                 />
                                             </PopoverContent>
@@ -309,7 +345,7 @@ export default function SalesAnalysis() {
                                         Analyzing...
                                     </>
                                 ) : 'Run Analysis'} */}
-                                        Run Analysis
+                                        {t('datePick.button')}
                                     </Button>
                                 </div>
                             </div>

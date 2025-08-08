@@ -1,60 +1,70 @@
-import { prisma } from '@/lib/prisma'; // pastikan prisma instance kamu tersedia
+import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult } from '@/types/analysis';
+import { AnalysisRequest, AnalysisResult } from '@/types/analysis';
+import { getTranslations } from 'next-intl/server';
 
-export async function POST(): Promise<NextResponse<{ success: boolean; data?: AnalysisResult; error?: string }>> {
+export async function POST(request: Request): Promise<NextResponse<{ success: boolean; data?: AnalysisResult; error?: string }>> {
     try {
-        const oneMonth = new Date();
-        oneMonth.setDate(oneMonth.getDate() - 30);
+        const { startDate, endDate }: AnalysisRequest = await request.json();
 
-        // Ambil semua sales order dan items-nya
+        if (!startDate || !endDate) {
+            throw new Error('Start date and end date are required');
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        if (start > end) {
+            throw new Error('Start date cannot be after end date');
+        }
+
+        const t = await getTranslations('ai.prompt');
+
         const orders = await prisma.salesOrder.findMany({
             where: {
                 orderDate: {
-                    gte: oneMonth
+                    gte: start,
+                    lte: end
                 }
             },
             include: {
                 items: {
                     include: {
-                        product: true, // untuk akses nama produk, dsb
+                        product: true,
                     },
                 },
             },
         });
 
-        // Ambil semua purchase order dan items-nya
         const purchases = await prisma.purchaseOrder.findMany({
             where: {
-                purchaseDate: { // Asumsi field tanggal pembelian adalah 'purchaseDate'
-                    gte: oneMonth
+                purchaseDate: {
+                    gte: start,
+                    lte: end
                 }
             },
             include: {
                 items: {
                     include: {
-                        product: true, // untuk akses nama produk, dsb
+                        product: true,
                     },
                 },
-                supplier: true, // untuk akses detail supplier
+                supplier: true,
             },
         });
 
-        // Ambil data inventaris
-        // Asumsi ada model 'Product' dengan field 'stock' dan 'minLimit'
         const inventory = await prisma.inventory.findMany({
             select: {
                 id: true,
-                product: true, // Nama produk
+                product: true,
                 code: true,
                 stock: true,
-                limit: true, // Batas stok minimum
+                limit: true,
                 category: true,
             }
         });
 
-        // Format data penjualan
         const formattedSales = orders.map((order) => ({
             id: order.id,
             orderDate: order.orderDate.toISOString(),
@@ -69,11 +79,10 @@ export async function POST(): Promise<NextResponse<{ success: boolean; data?: An
             })),
         }));
 
-        // Format data pembelian
         const formattedPurchases = purchases.map((purchase) => ({
             id: purchase.id,
             purchaseDate: purchase.purchaseDate.toISOString(),
-            supplierName: purchase.supplier.name, // Asumsi ada field 'name' di model Supplier
+            supplierName: purchase.supplier.name,
             total: purchase.total,
             items: purchase.items.map((item) => ({
                 productName: item.product.product,
@@ -84,7 +93,6 @@ export async function POST(): Promise<NextResponse<{ success: boolean; data?: An
             })),
         }));
 
-        // Format data inventaris
         const formattedInventory = inventory.map((item) => ({
             id: item.id,
             productName: item.product,
@@ -95,7 +103,9 @@ export async function POST(): Promise<NextResponse<{ success: boolean; data?: An
         }));
 
         const prompt = `
-Anda adalah seorang analis bisnis profesional. Berdasarkan data penjualan, inventaris, dan pembelian yang disediakan,
+${t('language')}
+
+        Anda adalah seorang analis bisnis profesional. Berdasarkan data penjualan, inventaris, dan pembelian yang disediakan,
 berikan analisis bisnis yang komprehensif.
 
 Fokus pada poin-poin berikut untuk analisis Anda:
@@ -103,14 +113,14 @@ Fokus pada poin-poin berikut untuk analisis Anda:
 2.  **market_trend_analysis**: Analisis tren pasar dan perkiraan penjualan untuk 7-30 hari ke depan.
 3.  **top_products**: 3 produk terlaris berdasarkan kuantitas penjualan.
 5.  **inventory_alerts**: Produk dengan category material atau packaging yang stoknya di bawah batas minimum atau mendekati.
-6.  **purchase_history_analysis**: Analisis histori pembelian, tren, dan pemasok utama dan berikan prediksi untuk pembelian selanjutnya.
+6.  **purchase_history_analysis**: Analisis histori pembelian, tren, dan pemasok utama dan berikan rencana untuk pembelian selanjutnya.
 7.  **top_purchased_products**: 3 produk yang paling sering dibeli dari pemasok.
 8.  **recommendations**: Rekomendasi konkret untuk setiap kategori: 'marketing', 'inventory', 'pricing', 'operations', 'purchasing'.
 
 Data untuk dianalisis:
 Data Penjualan (JSON):
 ${JSON.stringify(formattedSales, null, 2)}
-(Hanya untuk data penjualan dengan customerId=001, ini adalah sebuah customerId default untuk POS system, untuk kasus ini analisis nama customernya dapat menggunakan field customerName)
+(Disclaimer: Hanya untuk data penjualan dengan customerId=001, ini adalah sebuah customerId default untuk POS system, untuk kasus ini analisis nama customernya dapat menggunakan field customerName)
 
         Data Inventaris (JSON):
         ${JSON.stringify(formattedInventory, null, 2)}
@@ -122,10 +132,13 @@ ${JSON.stringify(formattedSales, null, 2)}
         const ai = new GoogleGenAI({});
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-pro",
             contents: prompt,
             config: {
                 systemInstruction: "Kamu adalah agen profesional analis bisnis yang ahli dalam data penjualan, inventaris, dan pembelian.",
+                thinkingConfig: {
+                    thinkingBudget: 2048,
+                },
                 responseMimeType: "application/json",
                 responseSchema: {
                     type: Type.OBJECT,
@@ -161,7 +174,10 @@ ${JSON.stringify(formattedSales, null, 2)}
                                     name: { type: Type.STRING },
                                     current_stock: { type: Type.NUMBER },
                                     minimum_limit: { type: Type.NUMBER },
-                                    status: { type: Type.STRING, description: "Contoh: 'Stok Kritis' atau 'Perlu Segera Restock'" },
+                                    status: {
+                                        type: Type.STRING,
+                                        enum: [t('out'), t('restock'), t('limit')]
+                                    },
                                 },
                                 required: ["sku", "name", "current_stock", "minimum_limit", "status"]
                             }
@@ -219,23 +235,18 @@ ${JSON.stringify(formattedSales, null, 2)}
         let parsedData: AnalysisResult;
 
         try {
-            // Pastikan data ada dan merupakan string
             if (!data || typeof data !== 'string') {
                 throw new Error('Invalid or empty AI response data');
             }
 
-            // Remove markdown code block if present
             const jsonString = data.replace(/```json/g, '').replace(/```/g, '').trim();
 
-            // Pastikan jsonString tidak kosong
             if (!jsonString) {
                 throw new Error('Empty JSON string after formatting');
             }
 
-            // Parse JSON
-            parsedData = JSON.parse(jsonString); // Sekarang aman karena jsonString pasti string
+            parsedData = JSON.parse(jsonString);
 
-            // Validasi struktur data
             if (
                 !parsedData.summary_analysis ||
                 !Array.isArray(parsedData.top_products) ||
@@ -250,7 +261,7 @@ ${JSON.stringify(formattedSales, null, 2)}
 
         return NextResponse.json({
             success: true,
-            data: parsedData // parsedData sekarang pasti valid
+            data: parsedData
         });
     } catch (error) {
         console.error(error);

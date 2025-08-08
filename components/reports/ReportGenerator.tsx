@@ -183,6 +183,9 @@ export function ReportGenerator({ reportType }: { reportType: 'sales' | 'purchas
             mode="range"
             defaultMonth={dateRange?.from}
             selected={dateRange}
+            disabled={(date) =>
+              date > new Date() || date < new Date("1900-01-01")
+            }
             onSelect={setDateRange as SelectRangeEventHandler}
             numberOfMonths={2}
           />
