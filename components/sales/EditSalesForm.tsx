@@ -275,7 +275,7 @@ export function EditSalesForm({ initialData, customers, products }: any) {
                             variant="outline"
                             className="mt-2"
                             onClick={() => {
-                                form.setValue('items', [...items, { productId: '', quantity: 1, price: 0 }]);
+                                form.setValue('items', [...items, { productId: '', note: '', quantity: 1, price: 0 }]);
                             }}
                         >
                             Add Item

@@ -49,6 +49,14 @@
             "total": "Jumlah"
         }
     },
+    "forget": {
+        "title": "Lupa Password",
+        "button": "Kirim Link Reset",
+        "loading": "Mengirim...",
+        "success": "Link reset password telah dikirim. Silakan cek inbox email Anda.",
+        "fail": "Gagal mengirim link reset",
+        "back": "Kembali ke halaman login"
+    },
     "Sidebar": {
         "overview": "Dasbor",
         "pos": "Kasir",

@@ -49,6 +49,14 @@
             "total": "Amount"
         }
     },
+    "forget": {
+        "title": "Forgot Password",
+        "button": "Send Reset Link",
+        "loading": "Sending...",
+        "success": "The reset password link sent to your email, Please check the your inbox.",
+        "fail": "Failed to send the reset link",
+        "back": "Back to login page"
+    },
     "Sidebar": {
         "overview": "Overview",
         "pos": "Point of Sales",

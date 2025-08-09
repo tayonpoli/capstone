@@ -16,7 +16,7 @@ export function OrderItem({
     onRemove,
     canRemove,
 }: {
-    form: any; // Gunakan tipe yang lebih spesifik jika ada
+    form: any;
     index: number;
     products: Inventory[];
     onRemove: () => void;
@@ -91,8 +91,8 @@ export function OrderItem({
                         <FormControl>
                             <Input
                                 type="number"
-                                step="0.01"
-                                min="0.01"
+                                step="1"
+                                min="1"
                                 {...field}
                             />
                         </FormControl>

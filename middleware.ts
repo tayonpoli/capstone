@@ -12,6 +12,7 @@ const handleI18nRouting = createMiddleware(routing);
 const publicPages = [
     '/',
     '/sign-in',
+    '/forgot-password',
     '/sign-up',
     '/unauthorized',
     '/api/auth'

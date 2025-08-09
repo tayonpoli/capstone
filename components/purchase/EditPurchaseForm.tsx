@@ -328,7 +328,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: E
                                         <FormControl>
                                             <Textarea
                                                 disabled
-                                                placeholder='Shipping address' {...field} />
+                                                placeholder='Supplier address' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -390,7 +390,7 @@ export function EditPurchaseForm({ initialData, suppliers, staffs, products }: E
                             variant="outline"
                             className="mt-4"
                             onClick={() => {
-                                form.setValue('items', [...items, { productId: '', quantity: 1, price: 0 }]);
+                                form.setValue('items', [...items, { productId: '', note: '', quantity: 1, price: 0 }]);
                             }}
                         >
                             Add Item

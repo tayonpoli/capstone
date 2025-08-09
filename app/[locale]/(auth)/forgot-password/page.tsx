@@ -1,4 +1,3 @@
-// app/auth/forgot-password/page.tsx
 "use client"
 
 import { useForm } from 'react-hook-form'
@@ -11,6 +10,7 @@ import { CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 const formSchema = z.object({
     email: z.string().email("Email tidak valid")
@@ -24,6 +24,8 @@ export default function ForgotPasswordPage() {
             email: ""
         }
     })
+
+    const t = useTranslations('forget');
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsLoading(true)
@@ -39,10 +41,10 @@ export default function ForgotPasswordPage() {
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.error || "Gagal mengirim email reset")
+                throw new Error(data.error || t('fail'))
             }
 
-            toast.success("Email reset password telah dikirim. Silakan cek inbox Anda.")
+            toast.success(t('success'))
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Terjadi kesalahan")
         } finally {
@@ -53,7 +55,7 @@ export default function ForgotPasswordPage() {
     return (
         <div className='w-full'>
             <CardHeader>
-                <CardTitle className='text-center mb-6'>Forgot Password</CardTitle>
+                <CardTitle className='text-center mb-6'>{t('title')}</CardTitle>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -65,7 +67,7 @@ export default function ForgotPasswordPage() {
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
                                     <Input
-                                        placeholder="email@contoh.com"
+                                        placeholder="sample@mail.com"
                                         {...field}
                                         type="email"
                                         disabled={isLoading}
@@ -80,15 +82,16 @@ export default function ForgotPasswordPage() {
                         className="w-full"
                         disabled={isLoading}
                     >
-                        {isLoading ? "Mengirim..." : "Kirim Link Reset"}
+                        {isLoading ? t('loading') : t('button')}
                     </Button>
                 </form>
             </Form>
             <div className="mt-6 text-center text-sm">
-
-                <Link href="/sign-in" className="text-muted-foreground hover:text-primary">
-                    Kembali ke halaman login
-                </Link>
+                <Button asChild variant="outline" className='w-full'>
+                    <Link href="/sign-in">
+                        {t('back')}
+                    </Link>
+                </Button>
             </div>
         </div>
     )
