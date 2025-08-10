@@ -117,8 +117,6 @@ Fokus pada poin-poin berikut untuk analisis Anda:
 7.  **top_purchased_products**: 3 produk yang paling sering dibeli dari pemasok.
 8.  **recommendations**: Rekomendasi konkret untuk setiap kategori: 'marketing', 'inventory', 'pricing', 'operations', 'purchasing'.
 
-Dan hasilkan output menggunakan ${bahasa},
- 
 Data untuk dianalisis:
 Data Penjualan (JSON):
 ${JSON.stringify(formattedSales, null, 2)}
@@ -137,7 +135,7 @@ ${JSON.stringify(formattedSales, null, 2)}
             model: "gemini-2.5-pro",
             contents: prompt,
             config: {
-                systemInstruction: "Kamu adalah agen profesional analis bisnis yang ahli dalam data penjualan, inventaris, dan pembelian.",
+                systemInstruction: `Kamu adalah agen profesional analis bisnis yang ahli dalam data penjualan, inventaris, dan pembelian. Output menggunakan ${bahasa}`,
                 thinkingConfig: {
                     thinkingBudget: 2048,
                 },
