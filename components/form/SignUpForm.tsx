@@ -51,7 +51,6 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
         },
     });
 
-    // Set email jika ada di invitation
     useEffect(() => {
         const fetchInvitation = async () => {
             if (token) {
@@ -139,6 +138,7 @@ export const SignUpForm = ({ token }: SignUpFormProps) => {
                                     <Input
                                         placeholder='mail@example.com'
                                         {...field}
+                                        disabled={true}
                                         readOnly={!!token} // Email readonly jika dari invitation
                                         className={token ? 'bg-gray-100' : ''}
                                     />

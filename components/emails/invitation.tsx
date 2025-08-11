@@ -73,7 +73,7 @@ export const InvitationEmail = ({
                         </Button>
                         <Text style={text}>
                             If you didn&apos;t expect this email, you can ignore it or contact us at{' '}
-                            <Link href="mailto:support@maumanage.com" style={anchor}>
+                            <Link href="mailto:maumanage@official.com" style={anchor}>
                                 support@maumanage.com
                             </Link>
                         </Text>
