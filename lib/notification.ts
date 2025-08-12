@@ -57,12 +57,12 @@ export async function checkStockNotifications() {
     }
 }
 
-export async function getUserNotifications(userId: string) {
+export async function getUserNotifications(id: string) {
     return await prisma.notification.findMany({
         where: {
             OR: [
                 { userId: null },
-                { userId }
+                { userId: id }
             ]
         },
         orderBy: { createdAt: 'desc' },

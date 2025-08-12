@@ -21,7 +21,7 @@ export function NotificationBell({ userId }: { userId: string }) {
     const [unreadCount, setUnreadCount] = useState(0);
 
     const fetchNotifications = useCallback(async () => {
-        const res = await fetch(`/api/notifications?userId=${userId}`);
+        const res = await fetch(`/api/notifications`);
         const data = await res.json();
         setNotifications(data);
         setUnreadCount(data.filter((n: Notification) => !n.isRead).length);
@@ -52,7 +52,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId })
+                body: JSON.stringify({ id: userId })
             });
             setNotifications([]);
             setUnreadCount(0);

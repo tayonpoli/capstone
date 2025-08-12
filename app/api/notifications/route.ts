@@ -1,12 +1,35 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export async function GET(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    redirect("/api/auth/signin");
+  }
+
+  const id = session.user.id;
+
+  if (!id) {
+    return NextResponse.json(
+      { error: 'User ID is required' },
+      { status: 400 }
+    )
+  }
 
   try {
     const notifications = await prisma.notification.findMany({
+      where: {
+        OR: [
+          { userId: null },
+          { userId: id }
+        ]
+      },
       orderBy: { createdAt: 'desc' },
-      take: 50
+      take: 10
     });
 
     return NextResponse.json(notifications);
@@ -20,9 +43,21 @@ export async function GET(req: Request) {
 }
 
 export async function DELETE(request: Request) {
-  try {
+  const { id } = await request.json()
 
-    await prisma.notification.deleteMany();
+  if (!id) {
+    return NextResponse.json(
+      { error: 'User ID is required' },
+      { status: 400 }
+    )
+  }
+
+  try {
+    await prisma.notification.deleteMany({
+      where: {
+        userId: id
+      }
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
