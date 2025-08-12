@@ -2,7 +2,6 @@
 
 import { Label, Pie, PieChart, Sector } from "recharts"
 import { PieSectorDataItem } from "recharts/types/polar/Pie"
-
 import {
     Card,
     CardContent,
@@ -29,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useMemo, useState } from "react"
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { formatIDR } from "@/lib/formatCurrency"
 
-// Default chart configuration
 const chartConfig = {
     expenses: {
         label: "Expenses",
@@ -53,7 +52,6 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-// Simplified type definitions
 interface ExpenseCategory {
     category: string
     total: number
@@ -75,7 +73,6 @@ export function ExpensesPieChart() {
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    // Fetch expense data from API
     useEffect(() => {
         async function fetchExpenseData() {
             try {
@@ -120,17 +117,6 @@ export function ExpensesPieChart() {
 
     const categories = useMemo(() => data.map((item) => item.category), [data])
 
-    // Format currency
-    const formatCurrency = (amount: number) => {
-        return amount.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        })
-    }
-
-    // Get trend info based on percentage change
     const getTrendInfo = () => {
         if (percentageChange > 0) {
             return {
@@ -247,11 +233,11 @@ export function ExpensesPieChart() {
                     </SelectContent>
                 </Select>
             </CardHeader>
-            <CardContent className="flex flex-1 justify-center items-center gap-2 pb-6">
+            <CardContent className="flex flex-1 xl:flex-col 2xl:flex-row justify-center items-center gap-1 pb-6 xl:pb-2 2xl:pb-6">
                 <ChartContainer
                     id={id}
                     config={chartConfig}
-                    className="mx-auto aspect-square w-full max-w-[300px] max-h-[250px]"
+                    className="mx-auto aspect-square w-full max-w-[300px] max-h-[210px] 2xl:max-h-[250px]"
                 >
                     <PieChart>
                         <ChartTooltip
@@ -318,7 +304,7 @@ export function ExpensesPieChart() {
                                 Total
                             </div>
                             <div className="text-2xl font-bold">
-                                {formatCurrency(data[activeIndex].total)}
+                                {formatIDR(data[activeIndex].total)}
                             </div>
                         </>
                     )}
