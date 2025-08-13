@@ -7,6 +7,14 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
 export async function POST(req: Request) {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+        redirect("/api/auth/signin");
+    }
+
+    const userId = session.user.id;
+
     try {
         const body = await req.json();
         const { customerId, items, ...salesData } = body;
@@ -23,6 +31,7 @@ export async function POST(req: Request) {
             const salesOrder = await prisma.salesOrder.create({
                 data: {
                     ...salesData,
+                    userId,
                     customerId,
                     total,
                     items: {

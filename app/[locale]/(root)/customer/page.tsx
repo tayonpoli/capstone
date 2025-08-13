@@ -9,7 +9,11 @@ import { CustomerCard } from "@/components/customer/CustomerCard"
 
 async function getData(): Promise<Customer[]> {
     try {
-        const customers = await prisma.customer.findMany()
+        const customers = await prisma.customer.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
         return customers
     } catch (error) {
         console.error('Error fetching data:', error)

@@ -18,7 +18,10 @@ async function getContactStats() {
         });
         const totalBarista = await prisma.staff.count({
             where: {
-                position: 'Barista'
+                OR: [
+                    { position: 'Barista' },
+                    { position: 'Headbar' }
+                ]
             }
         });
         const totalCashier = await prisma.staff.count({

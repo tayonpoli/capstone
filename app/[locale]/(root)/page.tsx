@@ -178,7 +178,7 @@ const DashboardPage = async () => {
     redirect("/api/auth/signin");
   }
 
-  const isStaff = session.user.role === 'Staff'
+  const isOwner = session.user.role === 'Owner'
 
   const salesStats = await getSalesStats();
   const stats = await getPurchaseStats();
@@ -196,7 +196,7 @@ const DashboardPage = async () => {
             {t('subTitle')}
           </h1>
         </div>
-        {!isStaff && (
+        {isOwner && (
           <div className="flex justify-end">
             <SalesAnalysis />
           </div>

@@ -88,6 +88,8 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                 body: JSON.stringify(values),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
                 toast.success(
                     isEditMode ? "Product updated successfully!" : "Product created successfully!"
@@ -95,7 +97,7 @@ export function ProductForm({ initialData }: { initialData?: any }) {
                 router.push('/product');
                 router.refresh();
             } else {
-                throw new Error("Failed to save product");
+                toast.error(data.message || "Failed to save product");
             }
         } catch (error) {
             toast.error("Something went wrong");

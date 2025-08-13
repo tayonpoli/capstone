@@ -13,7 +13,11 @@ import { SupplierCard } from "@/components/supplier/SupplierCard"
 
 async function getData(): Promise<Supplier[]> {
     try {
-        const suppliers = await prisma.supplier.findMany()
+        const suppliers = await prisma.supplier.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
         return suppliers
     } catch (error) {
         console.error('Error fetching data:', error)

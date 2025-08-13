@@ -13,7 +13,11 @@ import { StaffCard } from "@/components/staff/StaffCard"
 
 async function getData(): Promise<Staff[]> {
     try {
-        const staff = await prisma.staff.findMany()
+        const staff = await prisma.staff.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
         return staff
     } catch (error) {
         console.error('Error fetching data:', error)

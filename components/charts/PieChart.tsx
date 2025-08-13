@@ -247,11 +247,11 @@ export function ExpensesPieChart() {
                     </SelectContent>
                 </Select>
             </CardHeader>
-            <CardContent className="flex flex-1 justify-center items-center gap-2 pb-6">
+            <CardContent className="flex flex-1 xl:flex-col 2xl:flex-row justify-center items-center gap-1 pb-6 xl:pb-2 2xl:pb-6">
                 <ChartContainer
                     id={id}
                     config={chartConfig}
-                    className="mx-auto aspect-square w-full max-w-[300px] max-h-[250px]"
+                    className="mx-auto aspect-square w-full max-w-[300px] max-h-[210px] 2xl:max-h-[250px]"
                 >
                     <PieChart>
                         <ChartTooltip

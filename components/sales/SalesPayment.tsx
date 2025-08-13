@@ -142,6 +142,7 @@ export function SalesPayment({
                                     <SelectItem value="Transfer">Bank Transfer</SelectItem>
                                     <SelectItem value="Cash">Cash</SelectItem>
                                     <SelectItem value="Qris">QRIS</SelectItem>
+                                    <SelectItem value="Online Payment">Online Payment</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />
