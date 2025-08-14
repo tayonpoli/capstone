@@ -132,7 +132,7 @@ ${JSON.stringify(formattedSales, null, 2)}
         const ai = new GoogleGenAI({});
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-pro",
+            model: "gemini-2.5-flash",
             contents: prompt,
             config: {
                 systemInstruction: `Kamu adalah agen profesional analis bisnis yang ahli dalam data penjualan, inventaris, dan pembelian. Output menggunakan ${bahasa}`,
